@@ -1,172 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verity — Web Protection</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+
+  <!-- Header -->
   <div class="app-header">
-    <h1 class="app-title">Verity</h1>
+    <div class="header-logo">
+      <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <h1 class="app-title">Verity</h1>
+    </div>
     <p class="app-domain" id="app-domain-text">Loading...</p>
   </div>
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="overview">Overview</button>
-    <button class="tab-btn" data-tab="model-card">Model Card</button>
-    <button class="tab-btn" data-tab="benchmark">Benchmark</button>
-  </div>
 
-  <div class="tab-content active" id="tab-overview">
-    
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Loading State -->
     <div id="loading-state" class="state-container">
-      <div class="spinner"></div>
-      <p>Analyzing page...</p>
+      <div class="spinner-ring"></div>
+      <p class="state-label">Analyzing page...</p>
     </div>
 
+    <!-- Verdict State -->
     <div id="verdict-state" class="state-container hidden">
-      <div class="header">
-        <div id="verdict-icon" class="status-icon" style="font-size: 32px;"></div>
-        <h1 id="verdict-title">State</h1>
+
+      <!-- Status Badge -->
+      <div class="status-badge-wrapper">
+        <div class="status-ring" id="status-ring">
+          <div class="status-icon-inner" id="verdict-icon"></div>
+        </div>
+        <h2 class="verdict-title" id="verdict-title">—</h2>
       </div>
 
-      <div style="text-align: center; margin-bottom: 24px;">
-        <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: var(--font-weight-stat); letter-spacing: 0.05em; margin-bottom: 8px;">Risk Score</div>
-        <div style="font-size: 48px; font-weight: 700; line-height: 1;" id="risk-score-value">-- <span style="font-size: 18px; color: var(--text-secondary);">/ 100</span></div>
-        <div id="risk-score-text" style="font-size: 14px; margin-top: 12px; font-style: italic; color: var(--text-secondary);">"Analyzing..."</div>
+      <!-- Risk Score -->
+      <div class="score-section">
+        <div class="score-label">Risk Score</div>
+        <div class="score-value-row">
+          <span class="score-number" id="risk-score-value">0</span>
+          <span class="score-max">/ 100</span>
+        </div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" id="score-bar-fill"></div>
+        </div>
+        <p class="score-desc" id="risk-score-text">Analyzing...</p>
       </div>
 
-      <div id="reasons-container" class="reasons-container">
-        <h3 style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: var(--font-weight-stat); letter-spacing: 0.05em;">Signals</h3>
-        <ul id="reasons-list">
-          <!-- Reasons will be injected here -->
-        </ul>
-        <p id="no-reasons-msg" class="hidden">✓ Everything looks normal.</p>
-      </div>
-      
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 24px;">
-        <button id="btn-report" class="verity-btn verity-btn-secondary" style="border-color: var(--primary-blue); color: var(--primary-blue);">Security Report</button>
-        <button id="btn-history" class="verity-btn verity-btn-secondary">History & Dashboard</button>
+      <!-- Divider -->
+      <div class="divider"></div>
+
+      <!-- Signals -->
+      <div class="signals-section" id="reasons-container">
+        <h3 class="signals-header">Detected Signals</h3>
+        <ul class="signals-list" id="reasons-list"></ul>
+        <p class="no-signals" id="no-reasons-msg">✓ No suspicious signals detected.</p>
       </div>
 
-      <hr style="margin: 20px 0; border-top: 1px solid var(--border-color);">
-      
-      <button id="open-simulator-btn" class="verity-btn verity-btn-danger" style="margin-top: 10px;">
-        Open Attack Simulator
-      </button>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="state-container hidden">
+      <div class="error-icon">?</div>
+      <p class="state-label" id="error-msg">No data available for this page.</p>
     </div>
 
   </div>
 
-  <div class="tab-content" id="tab-model-card">
-    <div class="model-header">
-      <h2>Logistic Regression</h2>
-      <p id="mc-dataset-name">Loading dataset info...</p>
-    </div>
-    
-    <div class="metrics-grid">
-      <div class="metric-box">
-        <div class="metric-label">Accuracy</div>
-        <div class="metric-val" id="mc-accuracy">--</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">Precision</div>
-        <div class="metric-val" id="mc-precision">--</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">Recall</div>
-        <div class="metric-val" id="mc-recall">--</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">F1 Score</div>
-        <div class="metric-val" id="mc-f1">--</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">ROC-AUC</div>
-        <div class="metric-val" id="mc-roc">--</div>
-      </div>
-    </div>
-
-    <div class="cm-container">
-      <h3>Confusion Matrix</h3>
-      <table class="cm-table">
-        <tr>
-          <td></td>
-          <th>Pred Legit</th>
-          <th>Pred Phish</th>
-        </tr>
-        <tr>
-          <th>Act Legit</th>
-          <td id="cm-tn" class="cm-cell">--</td>
-          <td id="cm-fp" class="cm-cell">--</td>
-        </tr>
-        <tr>
-          <th>Act Phish</th>
-          <td id="cm-fn" class="cm-cell">--</td>
-          <td id="cm-tp" class="cm-cell">--</td>
-        </tr>
-      </table>
-    </div>
-    
-    <div class="model-desc">
-      <p>This model was trained offline on a labeled phishing-website dataset and evaluated on a held-out test set (<span id="mc-test-size"></span> sites) that was not used during training.</p>
-      <p><strong>Limitations:</strong> Dataset distribution may differ from modern attacks. The model is one signal among multiple Verity signals. Stage 2 does not guarantee perfect detection.</p>
-    </div>
-
-    <hr style="border-top: 1px solid #334155; margin: 24px 0;">
-
-    <div class="model-header">
-      <h2>Malware/Scam Detection</h2>
-      <p>Powered by Google Safe Browsing + URLhaus</p>
-    </div>
-    
-    <div class="model-desc" style="margin-top: 16px;">
-      <p><strong>Note:</strong> Accuracy and metrics for Malware categories are dictated by Google's published Safe Browsing coverage, not our local ML model, as we do not control the external threat feed.</p>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-benchmark">
-    <div class="benchmark-header">
-      <h2>Local ML Benchmark</h2>
-      <p>Scores URLs locally to test real-time latency and model accuracy against known cases.</p>
-    </div>
-
-    <button id="run-benchmark-btn" class="verity-btn verity-btn-primary">Run Benchmark</button>
-    
-    <div id="benchmark-progress" class="hidden">
-      <p id="bm-status-text">Running benchmark...</p>
-      <div class="progress-bar-container">
-        <div id="bm-progress-fill" class="progress-bar-fill"></div>
-      </div>
-    </div>
-
-    <div id="benchmark-results" class="hidden">
-      <div class="metrics-grid">
-        <div class="metric-box">
-          <div class="metric-label">Accuracy</div>
-          <div class="metric-val" id="bm-accuracy">--</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-label">Correct</div>
-          <div class="metric-val" id="bm-correct">--</div>
-        </div>
-      </div>
-
-      <div class="latency-chart">
-        <div class="latency-row">
-          <span class="latency-label">Min</span>
-          <span class="latency-val" id="bm-min">--</span>
-        </div>
-        <div class="latency-row">
-          <span class="latency-label">Median</span>
-          <span class="latency-val" id="bm-median">--</span>
-        </div>
-        <div class="latency-row">
-          <span class="latency-label">Max</span>
-          <span class="latency-val" id="bm-max">--</span>
-        </div>
-      </div>
-      
-      <p id="bm-errors-text" class="model-desc error-text"></p>
-    </div>
+  <!-- Footer -->
+  <div class="app-footer">
+    <span class="footer-text">Verity Web Protection</span>
+    <span class="footer-dot">•</span>
+    <span class="footer-text">On-device ML</span>
   </div>
 
   <script src="popup.js"></script>

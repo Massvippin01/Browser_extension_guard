@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Verity",
-  "version": "1.0",
-  "description": "Real-time, on-device evaluator for website authenticity. Protects against financial phishing and impersonation.",
+  "version": "2.0",
+  "description": "Real-time, on-device website protection. Detects phishing, brand impersonation, scams, and financial fraud.",
   "permissions": [
     "webNavigation",
     "webRequest",
@@ -22,33 +22,27 @@
     "128": "icons/safe_128.png"
   },
   "background": {
-    "service_worker": "background/service-worker.js",
+    "service_worker": "service_worker.js",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content/content-script.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["content/content-script.js"],
       "run_at": "document_start"
     },
     {
       "matches": [
-        "*://*.google.com/search*",
-        "*://*.bing.com/search*"
+        "*://www.google.com/search*",
+        "*://www.bing.com/search*"
       ],
-      "js": [
-        "content/search-protection.js"
-      ],
+      "js": ["content/search/search-loader.js"],
       "run_at": "document_idle"
     }
   ],
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Verity: Website Authenticity",
+    "default_title": "Verity: Web Protection",
     "default_icon": {
       "16": "icons/safe_16.png",
       "32": "icons/safe_32.png",
@@ -64,7 +58,8 @@
       "resources": [
         "shared/theme.css",
         "content/overlay.css",
-        "reports/report.html"
+        "payment-brands.json",
+        "content/search/*"
       ],
       "matches": ["<all_urls>"]
     }

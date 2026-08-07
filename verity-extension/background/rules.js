@@ -170,14 +170,162 @@ export function hasSuspiciousUrlPattern(urlString) {
     };
   }
 
-  // C. Suspicious TLD patterns
-  const suspiciousTlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.zip', '.info'];
+  // C. Suspicious TLD patterns — commonly abused in phishing campaigns
+  const suspiciousTlds = [
+    '.tk', '.ml', '.ga', '.cf', '.gq',     // Free Freenom TLDs — highest abuse rate
+    '.xyz', '.zip', '.info', '.top',        // High abuse generic TLDs
+    '.click', '.link', '.online', '.site',  // Common phishing TLDs
+    '.pw', '.cc', '.ws', '.biz',            // Known abuse-heavy TLDs
+    '.icu', '.fun', '.vip', '.club',        // Often used in scam campaigns
+    '.cyou', '.sbs', '.uno', '.cfd',        // New-era phishing TLDs
+    '.monster', '.rest', '.skin', '.bar'    // Rare but seen in campaigns
+  ];
   if (suspiciousTlds.some(tld => url.hostname.endsWith(tld))) {
     return {
       score: 30,
       reason: "The URL uses a top-level domain frequently associated with spam or abuse.",
       triggered: true
     };
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+/**
+ * Rule 6: Punycode (homograph) and Suspicious Keywords
+ * Detects xn-- domains and keywords like login, verify in the URL.
+ * @param {string} urlString
+ */
+export function hasPunycodeOrKeywords(urlString) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  // Punycode check
+  if (url.hostname.includes('xn--')) {
+    return {
+      score: 85,
+      reason: "The URL uses Punycode (IDN), which is often used in homograph attacks to spoof legitimate domains.",
+      triggered: true
+    };
+  }
+
+  // Keyword check — path/query/hostname for phishing signals
+  const suspiciousKeywords = [
+    // Auth / account
+    'login', 'signin', 'sign-in', 'logon',
+    // Verification
+    'verify', 'verification', 'validate', 'confirm',
+    // Security
+    'secure', 'security', 'protect', 'alert',
+    // Account actions
+    'account', 'update', 'upgrade', 'recover', 'reset', 'suspend',
+    // Financial
+    'banking', 'netbanking', 'payment', 'recharge', 'refund', 'cashback',
+    // Indian-specific
+    'kyc', 'aadhar', 'pan', 'upi', 'otp',
+    // Rewards / urgency
+    'claim', 'reward', 'prize', 'offer', 'free', 'winner',
+    // Support scams
+    'helpdesk', 'support', 'customer-care'
+  ];
+  const fullUrl = url.pathname.toLowerCase() + url.search.toLowerCase() + url.hostname.toLowerCase();
+  
+  const foundKeywords = suspiciousKeywords.filter(k => fullUrl.includes(k));
+  if (foundKeywords.length >= 2) {
+    return {
+      score: 40,
+      reason: `URL contains multiple suspicious keywords: ${foundKeywords.slice(0, 4).join(', ')}.`,
+      triggered: true
+    };
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+/**
+ * Rule 7: Financial keyword in hostname (not path)
+ * Detects when 'bank', 'banking', 'wallet', 'upi' appear in the actual hostname
+ * alongside a non-standard domain (not a known legitimate bank domain).
+ * @param {string} urlString
+ * @param {Array} brandsList
+ */
+export function hasFinancialKeywordInHostname(urlString, brandsList) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  const hostname = url.hostname.toLowerCase();
+
+  // First check if it's a known-legitimate domain — skip if so
+  if (brandsList && Array.isArray(brandsList)) {
+    const isLegit = brandsList.some(brand =>
+      brand.domains && brand.domains.some(d => hostname === d || hostname.endsWith('.' + d))
+    );
+    if (isLegit) return { score: 0, reason: null, triggered: false };
+  }
+
+  const financialHostKeywords = [
+    'bank', 'banking', 'wallet', 'upi', 'netbanking', 'ibank',
+    'payment', 'paytm', 'phonepe', 'gpay', 'bhim',
+    'kyc', 'loan', 'finance', 'insurance', 'invest',
+    'crypto', 'bitcoin', 'nft', 'demat', 'trading'
+  ];
+  const found = financialHostKeywords.find(k => hostname.includes(k));
+  
+  if (found) {
+    return {
+      score: 55,
+      reason: `Hostname contains financial keyword "${found}" but is not a verified banking domain.`,
+      triggered: true
+    };
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+/**
+ * Rule 8: Brand variant list matching
+ * Uses the 'variants' arrays in brands.json for fast exact-match typosquatting detection.
+ * Catches known alternate spellings like 'icicl', 'hdfcbankl', etc.
+ * @param {string} urlString
+ * @param {Array} brandsList
+ */
+export function hasBrandVariantMatch(urlString, brandsList) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+  if (!brandsList || !Array.isArray(brandsList)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  const hostname = url.hostname.toLowerCase().replace(/^www\./, '');
+
+  for (const brand of brandsList) {
+    // Skip if it's already a legitimate domain
+    const isLegit = brand.domains && brand.domains.some(d =>
+      hostname === d || hostname.endsWith('.' + d)
+    );
+    if (isLegit) continue;
+
+    // Check variants array
+    if (brand.variants && Array.isArray(brand.variants)) {
+      for (const variant of brand.variants) {
+        if (hostname.includes(variant.toLowerCase())) {
+          return {
+            score: 85,
+            reason: `Hostname matches a known typosquat variant of "${brand.name}".`,
+            triggered: true
+          };
+        }
+      }
+    }
   }
 
   return { score: 0, reason: null, triggered: false };

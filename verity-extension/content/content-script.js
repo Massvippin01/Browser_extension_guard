@@ -6,17 +6,111 @@
 let isBlocked = false;
 let blockObserver = null;
 
+// ─── Payment Field Detection ─────────────────────────────────────────────────
+
+/**
+ * Gets searchable metadata of an input — structural only, NEVER the value.
+ */
+function getInputMeta(input) {
+  const labelText = (() => {
+    if (input.id) {
+      const lbl = document.querySelector(`label[for="${CSS.escape(input.id)}"]`);
+      if (lbl) return lbl.innerText;
+    }
+    const parent = input.closest('label');
+    return parent ? parent.innerText : '';
+  })();
+  return [
+    input.type || '',
+    input.name || '',
+    input.id || '',
+    input.autocomplete || '',
+    input.placeholder || '',
+    input.getAttribute('aria-label') || '',
+    input.getAttribute('data-field') || '',
+    labelText,
+  ].join(' ').toLowerCase();
+}
+
+function detectPaymentFields() {
+  const inputs = Array.from(document.querySelectorAll('input'));
+  let card = false, cvv = false, expiry = false, upi = false,
+      otp = false, pin = false, accountNumber = false;
+
+  for (const input of inputs) {
+    const m = getInputMeta(input);
+
+    if (!card && (m.includes('cc-number') || m.includes('cardnumber') ||
+      m.includes('card_number') || m.includes('card number') ||
+      m.includes('card no') || m.includes('creditcard') || m.includes('debitcard') ||
+      (m.includes('card') && !m.includes('gift') && !m.includes('id card') && !m.includes('aadhar'))))
+      card = true;
+
+    if (!cvv && (m.includes('cc-csc') || m.includes('cvv') || m.includes('cvc') ||
+      m.includes('cvc2') || m.includes('security code') || m.includes('card code')))
+      cvv = true;
+
+    if (!expiry && (m.includes('cc-exp') || m.includes('expiry') ||
+      m.includes('expiration') || m.includes('exp date') ||
+      m.includes('valid thru') || m.includes('valid through')))
+      expiry = true;
+
+    if (!upi && (m.includes('upi') || m.includes('vpa') || m.includes('upi id')))
+      upi = true;
+
+    if (!otp && (m.includes('otp') || m.includes('one time') ||
+      m.includes('tpin') || m.includes('transaction code')))
+      otp = true;
+
+    if (!pin && (m.includes('mpin') || m.includes('payment pin') ||
+      m.includes('atm pin') || m.includes('debit pin') || m.includes('bank pin')))
+      pin = true;
+
+    if (!accountNumber && (m.includes('account number') || m.includes('account no') ||
+      m.includes('acct') || m.includes('ifsc') || m.includes('bank account')))
+      accountNumber = true;
+  }
+
+  return { card, cvv, expiry, upi, otp, pin, accountNumber };
+}
+
+function detectPaymentForm() {
+  const paymentKeywords = ['payment', 'pay', 'checkout', 'billing', 'card', 'upi', 'transaction'];
+  return Array.from(document.querySelectorAll('form')).some(form => {
+    const meta = ((form.action||'') + (form.id||'') + (form.className||'')).toLowerCase();
+    return paymentKeywords.some(k => meta.includes(k));
+  });
+}
+
+// Known payment brand aliases for claimed-provider detection
+const PAYMENT_BRAND_ALIASES = [
+  ['PayPal', ['paypal']], ['Stripe', ['stripe']], ['Razorpay', ['razorpay']],
+  ['PhonePe', ['phonepe', 'phone pe']], ['Google Pay', ['google pay', 'gpay']],
+  ['Paytm', ['paytm']], ['Amazon Pay', ['amazon pay']], ['PayU', ['payu', 'payumoney']],
+  ['CCAvenue', ['ccavenue']], ['BillDesk', ['billdesk']], ['Cashfree', ['cashfree']],
+  ['Instamojo', ['instamojo']], ['Square', ['squareup']], ['Klarna', ['klarna']],
+  ['Apple Pay', ['apple pay']], ['Mastercard', ['mastercard']], ['Visa', ['visa']],
+  ['RuPay', ['rupay']], ['BHIM', ['bhim']], ['MobiKwik', ['mobikwik']],
+];
+
+function scanClaimedProviders() {
+  const text = (document.body ? document.body.innerText : '').toLowerCase();
+  return PAYMENT_BRAND_ALIASES
+    .filter(([, aliases]) => aliases.some(a => text.includes(a)))
+    .map(([name]) => name);
+}
+
 // 1. Signal Collection (Stage 1)
 function collectSignals() {
   const text = document.body ? document.body.innerText.toLowerCase() : '';
-  
+
   const hasPasswordInput = document.querySelector('input[type="password"]') !== null;
   const loginForms = Array.from(document.querySelectorAll('form')).filter(form => {
-    return form.querySelector('input[type="password"]') !== null || 
+    return form.querySelector('input[type="password"]') !== null ||
            (form.action && form.action.toLowerCase().includes('login')) ||
            (form.id && form.id.toLowerCase().includes('login'));
   });
-  
+
   const formActions = loginForms.map(form => form.action).filter(Boolean);
 
   // Scam heuristics
@@ -33,7 +127,7 @@ function collectSignals() {
       break;
     }
   }
-  
+
   if (document.querySelectorAll('iframe[style*="opacity: 0"], iframe[style*="display: none"]').length > 3) {
     pupMatch = 'Excessive hidden iframes detected';
   }
@@ -48,16 +142,27 @@ function collectSignals() {
     return attr.includes('password') || attr.includes('card') || attr.includes('cvv') || attr.includes('otp') || attr.includes('pin') || attr.includes('upi') || attr.includes('account');
   });
 
+  // ── Payment-specific signals ──
+  const paymentFields    = detectPaymentFields();
+  const hasPaymentForm   = detectPaymentForm();
+  const claimedProviders = scanClaimedProviders();
+
   return {
-    hasPasswordInput: hasPasswordInput,
+    hasPasswordInput,
     loginFormCount: loginForms.length,
-    formActions: formActions,
+    formActions,
     scam: !!scamMatch,
     scamReason: scamMatch ? `Matches scam language: "${scamMatch}"` : null,
     pup: !!pupMatch,
     pupReason: pupMatch,
     financialMatches: financialMatch,
-    hasCredentialCollection: sensitiveInputs.length > 0
+    hasCredentialCollection: sensitiveInputs.length > 0,
+    // Payment Protection signals
+    paymentFields,
+    hasPaymentForm,
+    claimedProviders,
+    pageText:  text.substring(0, 3000), // First 3000 chars for provider detection (no sensitive values ever)
+    pageTitle: document.title || '',
   };
 }
 
@@ -87,7 +192,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     removeOverlay();
     triggerImmediateUrlScan();
     // For SPA, DOM is already loaded, but wait a tick for frameworks to render
-    setTimeout(triggerFullScan, 500); 
+    setTimeout(triggerFullScan, 500);
   }
 });
 
@@ -138,22 +243,24 @@ function injectOverlay(verdict) {
   host.style.setProperty('width', '100vw', 'important');
   host.style.setProperty('height', '100vh', 'important');
   host.style.setProperty('z-index', '2147483647', 'important');
-  host.style.setProperty('background-color', '#FAFAFA', 'important'); 
-  
+  host.style.setProperty('background-color', '#FAFAFA', 'important');
+
   const shadow = host.attachShadow({ mode: 'closed' });
 
   // Determine State
   const isDanger = verdict.action === 'block' || verdict.severity === 'danger';
+  const isPaymentPhishing = !!(verdict.paymentAnalysis && verdict.paymentAnalysis.isCriticalPaymentPhishing);
   const stateColor = isDanger ? '#D32F2F' : '#F57C00';
   const stateIconColor = isDanger ? '#EF5350' : '#FFCA28';
-  const stateTitle = isDanger ? 'Dangerous' : 'Suspicious';
-  
+  const stateTitle = isPaymentPhishing ? 'Payment Phishing Blocked' : (isDanger ? 'Dangerous' : 'Suspicious');
+
   // Extract primary threat category
   let primaryCategory = 'Suspicious Website';
-  if (verdict.categories) {
-    if (verdict.categories.phishing.flagged) primaryCategory = 'Phishing';
-    else if (verdict.categories.malware.flagged) primaryCategory = 'Malware';
-    else if (verdict.categories.scamFraud.flagged) primaryCategory = 'Scam / Fraud';
+  if (isPaymentPhishing) primaryCategory = 'Payment Phishing';
+  else if (verdict.categories) {
+    if (verdict.categories.phishing && verdict.categories.phishing.flagged) primaryCategory = 'Phishing';
+    else if (verdict.categories.malware && verdict.categories.malware.flagged) primaryCategory = 'Malware';
+    else if (verdict.categories.scamFraud && verdict.categories.scamFraud.flagged) primaryCategory = 'Scam / Fraud';
   }
 
   const hardcodedCSS = `
@@ -164,9 +271,7 @@ function injectOverlay(verdict) {
       margin: 0;
       padding: 0;
     }
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     .verity-overlay {
       width: 100%;
       height: 100%;
@@ -188,16 +293,8 @@ function injectOverlay(verdict) {
       align-items: center;
       letter-spacing: -0.02em;
     }
-    .verity-header-pipe {
-      color: #ccc;
-      margin: 0 12px;
-      font-weight: 300;
-    }
-    .verity-header-sub {
-      color: #444;
-      font-weight: 400;
-      font-size: 20px;
-    }
+    .verity-header-pipe { color: #ccc; margin: 0 12px; font-weight: 300; }
+    .verity-header-sub { color: #444; font-weight: 400; font-size: 20px; }
     .verity-card-container {
       flex: 1;
       display: flex;
@@ -217,10 +314,7 @@ function injectOverlay(verdict) {
       border: 1px solid #f0f0f0;
     }
     @media (max-width: 800px) {
-      .verity-card {
-        flex-direction: column;
-        padding: 40px;
-      }
+      .verity-card { flex-direction: column; padding: 40px; }
     }
     .verity-card-left {
       flex: 0 0 280px;
@@ -264,27 +358,10 @@ function injectOverlay(verdict) {
       color: #333;
       letter-spacing: -0.01em;
     }
-    .verity-status-highlight {
-      color: ${stateColor};
-    }
-    .verity-url {
-      color: #666;
-      font-size: 16px;
-      margin-bottom: 30px;
-      font-family: monospace;
-    }
-    .verity-message {
-      font-size: 17px;
-      line-height: 1.6;
-      color: #444;
-      margin-bottom: 30px;
-    }
-    .verity-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 40px;
-    }
+    .verity-status-highlight { color: ${stateColor}; }
+    .verity-url { color: #666; font-size: 16px; margin-bottom: 30px; font-family: monospace; }
+    .verity-message { font-size: 17px; line-height: 1.6; color: #444; margin-bottom: 30px; }
+    .verity-tags { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
     .verity-tag {
       background: #f1f3f4;
       color: #333;
@@ -311,9 +388,7 @@ function injectOverlay(verdict) {
       font-weight: 600;
       cursor: pointer;
     }
-    .verity-btn-secondary:hover {
-      text-decoration: underline;
-    }
+    .verity-btn-secondary:hover { text-decoration: underline; }
     .verity-btn-primary {
       background: #304FFE;
       color: white;
@@ -325,18 +400,9 @@ function injectOverlay(verdict) {
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
     }
-    .verity-btn-primary:hover {
-      background: #1A237E;
-    }
-    .verity-btn-primary:active {
-      transform: scale(0.98);
-    }
-    .verity-trust-msg {
-      font-size: 13px;
-      color: #888;
-      text-align: right;
-      margin: 0;
-    }
+    .verity-btn-primary:hover { background: #1A237E; }
+    .verity-btn-primary:active { transform: scale(0.98); }
+    .verity-trust-msg { font-size: 13px; color: #888; text-align: right; margin: 0; }
   `;
 
   const styleTag = document.createElement('style');
@@ -345,21 +411,31 @@ function injectOverlay(verdict) {
 
   const container = document.createElement('div');
   container.className = 'verity-overlay';
-  
-  // Extract tags from reasons
-  const tagsHtml = (verdict.reasons || ['High Risk Pattern Detected']).map(r => 
+
+  const allReasons = [
+    ...(verdict.reasons || []),
+    ...(verdict.paymentAnalysis ? verdict.paymentAnalysis.reasons : []),
+  ].filter(Boolean);
+
+  const tagsHtml = (allReasons.length > 0 ? allReasons : ['High Risk Pattern Detected']).map(r =>
     `<span class="verity-tag">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
       ${r}
     </span>`
   ).join('');
 
+  const paymentWarning = isPaymentPhishing
+    ? `<p style="background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;padding:12px 16px;color:#c62828;font-weight:600;margin-bottom:20px;">
+        💳 Your payment information is at risk. Do NOT enter any card, UPI, CVV or OTP details.
+       </p>`
+    : '';
+
   container.innerHTML = `
     <div class="verity-header">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       VERITY <span class="verity-header-pipe">|</span> <span class="verity-header-sub">Web Protection</span>
     </div>
-    
+
     <div class="verity-card-container" id="main-view">
       <div class="verity-card">
         <div class="verity-card-left">
@@ -367,27 +443,29 @@ function injectOverlay(verdict) {
             <div class="verity-alert-circle">!</div>
           </div>
         </div>
-        
+
         <div class="verity-card-right">
           <h1 class="verity-status">Website status: <span class="verity-status-highlight">${stateTitle}</span></h1>
           <div class="verity-url">${window.location.href}</div>
-          
+          ${paymentWarning}
           <p class="verity-message">
-            ${isDanger 
-              ? 'This site looks highly dangerous to us. It matches signatures of phishing, scams, or credential theft. We strongly recommend you do not proceed. Better safe than sorry!' : 
-              'This site looks a little risky to us, so we flagged it just in case. Make sure you trust this site if you choose to proceed. Better safe than sorry!'}
+            ${isPaymentPhishing
+              ? 'This page is impersonating a payment provider and attempting to collect your payment credentials. This is a payment phishing attack.'
+              : isDanger
+                ? 'This site looks highly dangerous to us. It matches signatures of phishing, scams, or credential theft. We strongly recommend you do not proceed.'
+                : 'This site looks a little risky to us, so we flagged it just in case. Make sure you trust this site if you choose to proceed.'}
           </p>
-          
+
           <div class="verity-tags">
             ${tagsHtml}
             <span class="verity-tag" style="color: ${stateColor}; background: ${isDanger ? '#ffebee' : '#fff8e1'}">Risk Score: ${verdict.score}/100</span>
           </div>
-          
+
           <div class="verity-actions">
             <button class="verity-btn-secondary" id="btn-proceed">Visit anyway</button>
             <button class="verity-btn-primary" id="btn-back">Go back</button>
           </div>
-          
+
           <p class="verity-trust-msg">
             Choosing to visit this site will add the URL to your list of trusted overrides.
           </p>
@@ -399,6 +477,7 @@ function injectOverlay(verdict) {
     <div class="verity-card-container" id="confirm-view" style="display: none;">
       <div class="verity-card" style="max-width: 600px; padding: 40px; flex-direction: column; gap: 20px;">
         <h1 class="verity-status" style="font-size: 28px;">Are you absolutely sure?</h1>
+        ${isPaymentPhishing ? '<p style="color:#c62828;font-weight:600;">⚠️ This page is attempting to steal your payment information (card number, CVV, OTP). Proceeding is extremely risky.</p>' : ''}
         <p class="verity-message" style="margin-bottom: 10px;">
           This website has been classified as <strong>${stateTitle}</strong>.<br><br>
           Proceeding may expose sensitive information such as passwords, financial details, or personal data.
@@ -416,7 +495,7 @@ function injectOverlay(verdict) {
   // Event Listeners
   const mainView = shadow.querySelector('#main-view');
   const confirmView = shadow.querySelector('#confirm-view');
-  
+
   shadow.querySelector('#btn-back').addEventListener('click', () => {
     if (window.history.length > 1) {
       window.history.back();
@@ -439,7 +518,7 @@ function injectOverlay(verdict) {
     chrome.runtime.sendMessage({ action: 'USER_OVERRIDE_ALLOW', url: window.location.href });
     removeOverlay();
   });
-  
+
   const parent = document.documentElement || document.body;
   if (parent) {
     parent.appendChild(host);

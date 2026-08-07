@@ -2,7 +2,7 @@
  * risk-engine.js - Adaptive Risk Engine aggregating multiple independent signals.
  */
 
-export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null) {
+export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null, paymentAnalysis = null) {
   let riskScore = 0;
   const signals = [];
   const categories = {
@@ -95,6 +95,48 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
   }
   if (redirectSignals && redirectSignals.suspicious && domSignals && domSignals.hasCredentialCollection) {
     addSignal('synergy_redirect_credentials', 30, 'High risk: Suspicious redirect routing to a credential collection page.');
+  }
+
+  // 8. Payment Protection (spec: VERITY_PAYMENT_PROTECTION_ANTIGRAVITY_SPEC-1.md)
+  if (paymentAnalysis && paymentAnalysis.isPaymentPage) {
+    const pa = paymentAnalysis;
+
+    // Fake payment brand impersonation
+    if (pa.claimedProvider && pa.domainMismatch) {
+      addSignal('payment_brand_impersonation', 30,
+        `Fake payment provider: page claims to be "${pa.claimedProvider}" but domain is not its official domain.`);
+    }
+
+    // Official domain mismatch (with claimed provider)
+    if (pa.domainMismatch && pa.claimedProvider) {
+      addSignal('payment_domain_mismatch', 25,
+        `Payment domain mismatch: "${pa.claimedProvider}" is not served from its verified domain.`);
+    }
+
+    // Card + CVV on suspicious (non-official) site
+    if ((pa.paymentFields.card || pa.paymentFields.cvv) && pa.domainMismatch) {
+      addSignal('payment_card_cvv_mismatch', 25,
+        'Card/CVV collection on unverified payment domain — high-confidence payment phishing signal.');
+    }
+
+    // OTP collection in payment context on unverified domain
+    if (pa.paymentFields.otp && pa.domainMismatch) {
+      addSignal('payment_otp_mismatch', 20,
+        'OTP/verification code requested on unverified payment domain.');
+    }
+
+    // Unknown provider + payment page
+    if (!pa.claimedProvider && !pa.isTrustedProvider) {
+      addSignal('payment_unknown_provider', 5,
+        'Payment page served from unrecognized payment provider.');
+    }
+
+    // Critical override: payment phishing → minimum score 80
+    if (pa.isCriticalPaymentPhishing) {
+      riskScore = Math.max(riskScore, 80);
+      categories.phishing.flagged = true;
+      categories.phishing.reason = 'High-confidence payment phishing detected.';
+    }
   }
 
   // 6. Threat Intelligence (0-50 points)

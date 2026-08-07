@@ -1,5 +1,79 @@
 [
   {
+    "name": "ICICI Bank",
+    "domains": [
+      "icicibank.com",
+      "icicidirect.com",
+      "icicicredit.com"
+    ],
+    "variants": ["icici", "icicibankl", "icicibanks", "iciicbank", "icicl"]
+  },
+  {
+    "name": "HDFC Bank",
+    "domains": [
+      "hdfcbank.com",
+      "hdfc.com",
+      "hdfcsec.com"
+    ],
+    "variants": ["hdfc", "hdfcbank", "hdfcbankl", "hdfcbanks"]
+  },
+  {
+    "name": "State Bank of India",
+    "domains": [
+      "sbi.co.in",
+      "onlinesbi.sbi",
+      "sbionline.com"
+    ],
+    "variants": ["sbi", "onlinesbi", "sbionline", "statebankofindia"]
+  },
+  {
+    "name": "Axis Bank",
+    "domains": [
+      "axisbank.com",
+      "axisbank.co.in"
+    ],
+    "variants": ["axisbank", "axis-bank", "axisbanks"]
+  },
+  {
+    "name": "Kotak Mahindra Bank",
+    "domains": [
+      "kotak.com",
+      "kotakbank.com"
+    ],
+    "variants": ["kotak", "kotakbank", "kotakmahindra"]
+  },
+  {
+    "name": "Punjab National Bank",
+    "domains": [
+      "pnbindia.in",
+      "pnb.co.in"
+    ],
+    "variants": ["pnb", "punjabbank", "pnbonline"]
+  },
+  {
+    "name": "PhonePe",
+    "domains": [
+      "phonepe.com"
+    ],
+    "variants": ["phonepe", "phone-pe", "phonepay"]
+  },
+  {
+    "name": "Paytm",
+    "domains": [
+      "paytm.com",
+      "paytmbank.com"
+    ],
+    "variants": ["paytm", "pay-tm", "paytmbank"]
+  },
+  {
+    "name": "Google Pay",
+    "domains": [
+      "pay.google.com",
+      "gpay.app"
+    ],
+    "variants": ["googlepay", "gpay", "google-pay"]
+  },
+  {
     "name": "PayPal",
     "domains": [
       "paypal.com"
@@ -1329,5 +1403,63 @@
       "meesho-secure",
       "meesho-support"
     ]
-  }
-]
+  },
+
+  { "name": "Binance", "domains": ["binance.com","binance.us"], "variants": ["binance","binnance","binanse","binancee","binance-login","binance-wallet"] },
+  { "name": "Coinbase", "domains": ["coinbase.com","pro.coinbase.com"], "variants": ["coinbase","coinbbase","coinbasee","coinbase-pro","coinbase-wallet"] },
+  { "name": "WazirX", "domains": ["wazirx.com"], "variants": ["wazirx","wazirx-trade","wazir-x"] },
+  { "name": "CoinDCX", "domains": ["coindcx.com"], "variants": ["coindcx","coin-dcx","coindcx-login"] },
+  { "name": "Kraken", "domains": ["kraken.com"], "variants": ["kraken","kraken-login","kraken-exchange"] },
+  { "name": "MetaMask", "domains": ["metamask.io"], "variants": ["metamask","meta-mask","metamask-wallet","metamaskio"] },
+  { "name": "Ledger", "domains": ["ledger.com"], "variants": ["ledger","ledger-wallet","ledger-live","ledger-secure"] },
+  { "name": "Trust Wallet", "domains": ["trustwallet.com"], "variants": ["trustwallet","trust-wallet","trustwallet-support"] },
+
+  { "name": "Income Tax India", "domains": ["incometax.gov.in","efiling.incometax.gov.in"], "variants": ["incometax","income-tax","efiling-tax","itr-efiling","incometaxindia"] },
+  { "name": "EPFO", "domains": ["epfindia.gov.in"], "variants": ["epfo","epfindia","pf-withdrawal","epf-online","providentfund"] },
+  { "name": "UIDAI Aadhaar", "domains": ["uidai.gov.in","myaadhaar.uidai.gov.in"], "variants": ["aadhaar","aadhar","uidai","aadhaar-update","aadhar-kyc","aadharcard"] },
+  { "name": "IRCTC", "domains": ["irctc.co.in"], "variants": ["irctc","irctc-login","irctc-booking","irctc-refund","irctcticket"] },
+  { "name": "DigiLocker", "domains": ["digilocker.gov.in"], "variants": ["digilocker","digi-locker","digilocker-login"] },
+  { "name": "GST Portal", "domains": ["gst.gov.in"], "variants": ["gst","gst-portal","gst-login","gstin","gstindia"] },
+  { "name": "PM Kisan", "domains": ["pmkisan.gov.in"], "variants": ["pmkisan","pm-kisan"] },
+
+  { "name": "Jio", "domains": ["jio.com","jiosaavn.com","jiocinema.com"], "variants": ["jio","jio-recharge","jiorecharge","jio-offer","myjio","jiopay"] },
+  { "name": "Airtel", "domains": ["airtel.in","airteldigital.com"], "variants": ["airtel","airtel-recharge","airtelrecharge","airtel-login","airtelblack"] },
+  { "name": "BSNL", "domains": ["bsnl.co.in"], "variants": ["bsnl","bsnl-selfcare","bsnl-recharge"] },
+  { "name": "Vi Vodafone Idea", "domains": ["myvi.in","vodafoneidea.com"], "variants": ["myvi","vodafone","vodafone-idea","vodafoneidea","viindia"] },
+
+  { "name": "HSBC", "domains": ["hsbc.com","hsbc.co.in","hsbc.co.uk"], "variants": ["hsbc","hsbc-online","hsbc-secure","hsbc-login","hsbcbank"] },
+  { "name": "Barclays", "domains": ["barclays.co.uk","barclays.com"], "variants": ["barclays","barclays-online","barclays-secure","barclay","barclays-bank"] },
+  { "name": "Standard Chartered", "domains": ["sc.com","standardchartered.com","standardchartered.co.in"], "variants": ["standardchartered","standard-chartered","stanchart","sc-bank"] },
+  { "name": "LIC", "domains": ["licindia.in","licindia.com"], "variants": ["lic","licindia","lic-india","lic-login","lic-portal","licpolicy"] },
+  { "name": "Yes Bank", "domains": ["yesbank.in"], "variants": ["yesbank","yes-bank","yesbanks"] },
+  { "name": "IndusInd Bank", "domains": ["indusind.com"], "variants": ["indusind","indusindbank","induslnd","indusind-bank"] },
+  { "name": "Federal Bank", "domains": ["federalbank.co.in"], "variants": ["federalbank","federal-bank","fedbank"] },
+  { "name": "RBL Bank", "domains": ["rblbank.com"], "variants": ["rblbank","rbl-bank"] },
+  { "name": "Canara Bank", "domains": ["canarabank.com","canarabank.in"], "variants": ["canarabank","canara-bank","canarabanks"] },
+  { "name": "Bank of Baroda", "domains": ["bankofbaroda.in"], "variants": ["bankofbaroda","bob","bank-of-baroda","bobonline"] },
+  { "name": "Union Bank of India", "domains": ["unionbankofindia.co.in"], "variants": ["unionbank","union-bank","unionbankofindia"] },
+
+  { "name": "FedEx", "domains": ["fedex.com"], "variants": ["fedex","fedex-delivery","fedex-tracking","fed-ex","fedexindia"] },
+  { "name": "DHL", "domains": ["dhl.com","dhl.in"], "variants": ["dhl","dhl-delivery","dhl-tracking","dhl-express","dhlindia"] },
+  { "name": "Blue Dart", "domains": ["bluedart.com"], "variants": ["bluedart","blue-dart","bluedart-tracking"] },
+  { "name": "India Post", "domains": ["indiapost.gov.in","cept.gov.in"], "variants": ["indiapost","india-post","speedpost","postoffice-india"] },
+  { "name": "Delhivery", "domains": ["delhivery.com"], "variants": ["delhivery","delhivery-track"] },
+  { "name": "Ekart", "domains": ["ekartlogistics.com"], "variants": ["ekart","ekart-logistics","ekart-tracking"] },
+
+  { "name": "Hotstar", "domains": ["hotstar.com","disneyplus.hotstar.com","jiohotstar.com"], "variants": ["hotstar","hot-star","hotstar-login","jiohotstar","disneyhotstar"] },
+  { "name": "Netflix", "domains": ["netflix.com"], "variants": ["netflix","netfIix","netlfix","netflix-login","netflix-account","netflixindia"] },
+  { "name": "WhatsApp", "domains": ["whatsapp.com","web.whatsapp.com"], "variants": ["whatsapp","whats-app","whatsapp-login","whatsappweb","whtsapp"] },
+  { "name": "Instagram", "domains": ["instagram.com"], "variants": ["instagram","instgram","instagram-login","insta-login","instagramm"] },
+  { "name": "Facebook", "domains": ["facebook.com","fb.com"], "variants": ["facebook","faceb00k","facebok","facebook-login","fblogin"] },
+
+  { "name": "eBay", "domains": ["ebay.com","ebay.co.uk","ebay.in"], "variants": ["ebay","ebaay","ebay-login","ebay-account"] },
+  { "name": "Alibaba", "domains": ["alibaba.com","aliexpress.com"], "variants": ["alibaba","aliexpress","alibaba-secure","aliexpress-login"] },
+
+  { "name": "HDFC Life", "domains": ["hdfclife.com"], "variants": ["hdfclife","hdfc-life"] },
+  { "name": "Bajaj Finserv", "domains": ["bajajfinserv.in","bajajfinance.in"], "variants": ["bajajfinserv","bajaj-finserv","bajajfinance","bajaj-finance","bajaj-emi"] },
+  { "name": "PolicyBazaar", "domains": ["policybazaar.com"], "variants": ["policybazaar","policy-bazaar","policybazar"] },
+  { "name": "Zerodha", "domains": ["zerodha.com","kite.zerodha.com"], "variants": ["zerodha","zerodha-login","zerodhas","kite-zerodha"] },
+  { "name": "Groww", "domains": ["groww.in"], "variants": ["groww","groww-invest","grow-app"] },
+  { "name": "Upstox", "domains": ["upstox.com"], "variants": ["upstox","upstox-login","up-stox"] },
+  { "name": "Angel One", "domains": ["angelone.in"], "variants": ["angelone","angel-one","angelbroking","angel-broking"] }
+]
