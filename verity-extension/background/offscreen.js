@@ -10,14 +10,16 @@ async function initModel() {
     if (typeof ort === 'undefined') {
       throw new Error('ORT not defined in offscreen document.');
     }
-    ort.env.wasm.wasmPaths = '../background/lib/';
+    ort.env.wasm.wasmPaths = '/background/lib/';
     ort.env.wasm.numThreads = 1;
+    // We only have ort-wasm.wasm in the lib directory, no SIMD version.
+    ort.env.wasm.simd = false;
 
-    const featureRes = await fetch('../background/model/feature_order.json');
+    const featureRes = await fetch('/background/model/feature_order.json');
     const featureData = await featureRes.json();
     featureOrder = featureData.features;
 
-    const modelRes = await fetch('../background/model/phishing_model.onnx');
+    const modelRes = await fetch('/background/model/phishing_model.onnx');
     const modelBuffer = await modelRes.arrayBuffer();
 
     session = await ort.InferenceSession.create(modelBuffer, { executionProviders: ['wasm'] });

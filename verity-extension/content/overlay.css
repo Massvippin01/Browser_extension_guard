@@ -1,8 +1,7 @@
-@import "chrome-extension://__MSG_@@extension_id__/shared/theme.css";
 
 #verity-security-host {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #0F172A; /* Fallbacks just in case theme variables fail */
+  color: #0F172A;
 }
 
 #verity-security-overlay {
@@ -11,81 +10,192 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(244, 248, 252, 0.85); /* Light blue blur */
-  backdrop-filter: blur(12px);
+  background-color: var(--bg-secondary); /* Opaque background to hide the underlying page */
   z-index: 2147483647;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-family);
   color: var(--text-primary);
+  overflow-y: auto;
 }
 
+/* Header Logo */
+#verity-security-overlay .verity-brand-header {
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  display: flex;
+  flex-direction: column;
+}
+#verity-security-overlay .verity-brand-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--primary-blue);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+#verity-security-overlay .verity-brand-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Main Card */
 #verity-security-overlay .verity-card {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-card);
-  padding: 48px 40px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: var(--shadow-lg);
+  padding: 48px 64px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05); /* Premium subtle shadow */
   text-align: center;
-  animation: slideUpFade 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpFade 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  margin: 40px 0;
 }
 
-#verity-security-overlay .verity-header {
+/* Status Banner */
+#verity-security-overlay .verity-status-banner {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+#verity-security-overlay .verity-status-banner.danger {
+  color: var(--color-danger);
+}
+
+#verity-security-overlay .verity-status-banner.warn {
+  color: var(--color-warning);
+}
+
+#verity-security-overlay .verity-url {
+  font-size: 18px;
+  color: var(--text-primary);
+  word-break: break-all;
+  margin-bottom: 32px;
+  font-weight: 500;
+}
+
+/* Description Text */
+#verity-security-overlay .verity-description {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+/* Circular Danger Indicator */
+#verity-security-overlay .verity-indicator-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   margin-bottom: 24px;
 }
 
-#verity-security-overlay .verity-icon {
-  width: 64px;
-  height: 64px;
+#verity-security-overlay .verity-indicator {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  font-weight: var(--font-weight-stat);
-  margin-bottom: 16px;
+  font-size: 40px;
+  font-weight: 800;
   box-shadow: var(--shadow-sm);
+  position: relative;
 }
 
-#verity-security-overlay .verity-icon.danger {
+#verity-security-overlay .verity-indicator::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: -10px; right: -10px; bottom: -10px;
+  border-radius: 50%;
+  z-index: -1;
+  animation: pulse 2s infinite;
+}
+
+#verity-security-overlay .verity-indicator.danger {
+  background-color: var(--color-danger);
+  color: #fff;
+}
+#verity-security-overlay .verity-indicator.danger::before {
   background-color: var(--color-danger-bg);
-  color: var(--color-danger);
 }
 
-#verity-security-overlay .verity-title {
-  font-size: 24px;
-  font-weight: var(--font-weight-heading);
-  color: var(--color-danger); /* McAfee style keeps headline in status color */
+#verity-security-overlay .verity-indicator.warn {
+  background-color: var(--color-warning);
+  color: #fff;
+}
+#verity-security-overlay .verity-indicator.warn::before {
+  background-color: #fef3c7; /* light amber */
+}
+
+/* Risk Score Box */
+#verity-security-overlay .verity-score-box {
+  margin-bottom: 24px;
+}
+#verity-security-overlay .verity-score-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
+#verity-security-overlay .verity-score-value {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+}
+#verity-security-overlay .verity-score-value.danger { color: var(--color-danger); }
+#verity-security-overlay .verity-score-value.warn { color: var(--color-warning); }
 
-#verity-security-overlay .verity-url {
-  font-size: 14px;
-  color: var(--text-secondary);
-  word-break: break-all;
-  margin-bottom: 24px;
+#verity-security-overlay .verity-threat-category {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+#verity-security-overlay .verity-threat-category.danger { color: var(--color-danger); }
+#verity-security-overlay .verity-threat-category.warn { color: var(--color-warning); }
+
+/* Reasons List */
+#verity-security-overlay .verity-reasons-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  text-align: left;
 }
 
 #verity-security-overlay .verity-reasons {
-  margin: 0 0 32px 0;
+  margin: 0 0 40px 0;
   padding: 0;
   list-style: none;
-  color: var(--text-primary);
-  font-size: 15px;
-  line-height: 1.6;
-  text-align: center;
+  text-align: left;
 }
 
 #verity-security-overlay .verity-reasons li {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.5;
 }
 
+#verity-security-overlay .verity-reasons li .icon {
+  font-weight: 800;
+  flex-shrink: 0;
+}
+#verity-security-overlay .verity-reasons li .icon.danger { color: var(--color-danger); }
+#verity-security-overlay .verity-reasons li .icon.warn { color: var(--color-warning); }
+
+/* Actions */
 #verity-security-overlay .verity-actions {
   display: flex;
   flex-direction: column;
@@ -96,11 +206,12 @@
 #verity-security-overlay .verity-btn {
   border: none;
   border-radius: var(--radius-button);
-  padding: 14px 24px;
+  padding: 16px 32px;
   font-size: 16px;
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s, color 0.2s;
+  transition: all 0.2s ease;
+  width: 100%;
 }
 
 #verity-security-overlay .verity-btn:active {
@@ -110,26 +221,43 @@
 #verity-security-overlay .verity-btn-primary {
   background-color: var(--primary-blue);
   color: #FFFFFF;
-  width: 100%;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
 }
 
 #verity-security-overlay .verity-btn-primary:hover {
   background-color: var(--primary-hover);
+  box-shadow: 0 6px 8px -2px rgba(59, 130, 246, 0.3);
 }
 
 #verity-security-overlay .verity-btn-secondary {
   background-color: transparent;
-  color: var(--text-secondary);
-  text-decoration: underline;
-  width: auto;
-  padding: 8px;
+  color: var(--primary-blue);
+  border: 1px solid var(--border-color);
 }
 
 #verity-security-overlay .verity-btn-secondary:hover {
+  background-color: var(--bg-secondary);
+}
+
+#verity-security-overlay .verity-btn-text {
+  background-color: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-decoration: underline;
+  padding: 8px;
+}
+#verity-security-overlay .verity-btn-text:hover {
   color: var(--text-primary);
 }
 
+/* Animations */
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 0.4; }
+  100% { transform: scale(0.95); opacity: 0.8; }
 }

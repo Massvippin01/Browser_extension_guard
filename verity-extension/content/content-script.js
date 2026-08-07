@@ -71,15 +71,6 @@ function triggerFullScan() {
   chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals });
 }
 
-// Start immediately
-triggerImmediateUrlScan();
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', triggerFullScan);
-} else {
-  triggerFullScan();
-}
-
 // 3. Listen for enforcement decisions from Background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'ENFORCEMENT_DECISION') {
@@ -99,6 +90,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     setTimeout(triggerFullScan, 500); 
   }
 });
+
+// Start immediately AFTER listener is registered to prevent race conditions
+triggerImmediateUrlScan();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', triggerFullScan);
+} else {
+  triggerFullScan();
+}
+
 
 // 4. Strong Overlay Enforcement
 function removeOverlay() {
@@ -120,88 +121,303 @@ function injectOverlay(verdict) {
     return; // Already blocked
   }
 
-  // Freeze scrolling on the document
+  // Freeze the underlying page
   if (document.documentElement) {
     document.documentElement.style.setProperty('overflow', 'hidden', 'important');
+  }
+  if (document.body) {
+    document.body.style.setProperty('overflow', 'hidden', 'important');
   }
 
   const host = document.createElement('div');
   host.id = 'verity-security-host';
+  // Use inline styles to guarantee full screen and solid background BEFORE shadow DOM
   host.style.setProperty('position', 'fixed', 'important');
   host.style.setProperty('top', '0', 'important');
   host.style.setProperty('left', '0', 'important');
   host.style.setProperty('width', '100vw', 'important');
   host.style.setProperty('height', '100vh', 'important');
-  host.style.setProperty('z-index', '2147483647', 'important'); // Maximum safe z-index
-  host.style.setProperty('background', 'rgba(0,0,0,0.5)', 'important');
+  host.style.setProperty('z-index', '2147483647', 'important');
+  host.style.setProperty('background-color', '#FAFAFA', 'important'); 
   
   const shadow = host.attachShadow({ mode: 'closed' });
 
-  // Inject Theme CSS
-  const themeUrl = chrome.runtime.getURL('shared/theme.css');
-  const themeLink = document.createElement('link');
-  themeLink.rel = 'stylesheet';
-  themeLink.type = 'text/css';
-  themeLink.href = themeUrl;
-  shadow.appendChild(themeLink);
-
-  // Inject Overlay CSS
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.type = 'text/css';
-  link.href = chrome.runtime.getURL('content/overlay.css');
-  shadow.appendChild(link);
-
-  const overlay = document.createElement('div');
-  overlay.id = 'verity-security-overlay';
+  // Determine State
+  const isDanger = verdict.action === 'block' || verdict.severity === 'danger';
+  const stateColor = isDanger ? '#D32F2F' : '#F57C00';
+  const stateIconColor = isDanger ? '#EF5350' : '#FFCA28';
+  const stateTitle = isDanger ? 'Dangerous' : 'Suspicious';
   
-  const card = document.createElement('div');
-  card.className = 'verity-card';
-
-  const header = document.createElement('div');
-  header.className = 'verity-header';
-  
-  const titleText = "Website blocked";
-
-  header.innerHTML = `
-    <div class="verity-icon danger">!</div>
-    <div class="verity-title">${titleText}</div>
-    <div style="margin-top: 12px; margin-bottom: 8px;">
-      <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: var(--font-weight-stat); letter-spacing: 0.05em;">Risk Score</div>
-      <div style="font-size: 36px; font-weight: 700; color: var(--color-danger);">${verdict.riskScore !== undefined ? verdict.riskScore : verdict.score} <span style="font-size: 18px; color: var(--text-secondary);">/ 100</span></div>
-    </div>
-    <div style="font-size: 16px; font-weight: var(--font-weight-heading); color: var(--color-danger); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">🔴 ${verdict.severity ? verdict.severity.toUpperCase() : 'DANGEROUS'}</div>
-    <div class="verity-url">${window.location.hostname}</div>
-  `;
-  card.appendChild(header);
-
-  if (verdict.reasons && verdict.reasons.length > 0) {
-    const reasonsTitle = document.createElement('div');
-    reasonsTitle.style.fontWeight = 'var(--font-weight-stat)';
-    reasonsTitle.style.marginBottom = '8px';
-    reasonsTitle.style.color = 'var(--text-primary)';
-    reasonsTitle.textContent = 'Verity detected characteristics commonly associated with phishing:';
-    card.appendChild(reasonsTitle);
-
-    const reasonsList = document.createElement('ul');
-    reasonsList.className = 'verity-reasons';
-    verdict.reasons.forEach(reason => {
-      const li = document.createElement('li');
-      li.textContent = reason;
-      reasonsList.appendChild(li);
-    });
-    card.appendChild(reasonsList);
+  // Extract primary threat category
+  let primaryCategory = 'Suspicious Website';
+  if (verdict.categories) {
+    if (verdict.categories.phishing.flagged) primaryCategory = 'Phishing';
+    else if (verdict.categories.malware.flagged) primaryCategory = 'Malware';
+    else if (verdict.categories.scamFraud.flagged) primaryCategory = 'Scam / Fraud';
   }
 
-  const actions = document.createElement('div');
-  actions.className = 'verity-actions';
-  
-  const backBtn = document.createElement('button');
-  backBtn.className = 'verity-btn verity-btn-primary';
-  backBtn.id = 'verity-btn-back';
-  backBtn.textContent = '← GO BACK';
+  const hardcodedCSS = `
+    :host {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    .verity-overlay {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      background-color: #FAFAFA;
+      background-image: radial-gradient(circle at bottom left, rgba(245,124,0,0.05) 0%, transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(211,47,47,0.05) 0%, transparent 40%);
+      color: #333;
+      overflow-y: auto;
+    }
+    .verity-header {
+      padding: 40px 60px;
+      font-size: 26px;
+      font-weight: 800;
+      color: #D32F2F;
+      display: flex;
+      align-items: center;
+      letter-spacing: -0.02em;
+    }
+    .verity-header-pipe {
+      color: #ccc;
+      margin: 0 12px;
+      font-weight: 300;
+    }
+    .verity-header-sub {
+      color: #444;
+      font-weight: 400;
+      font-size: 20px;
+    }
+    .verity-card-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .verity-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      display: flex;
+      max-width: 950px;
+      width: 100%;
+      padding: 60px;
+      gap: 60px;
+      border: 1px solid #f0f0f0;
+    }
+    @media (max-width: 800px) {
+      .verity-card {
+        flex-direction: column;
+        padding: 40px;
+      }
+    }
+    .verity-card-left {
+      flex: 0 0 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .verity-alert-wrapper {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: ${isDanger ? '#ffebee' : '#fff8e1'};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .verity-alert-circle {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: ${isDanger ? '#D32F2F' : '#FFA000'};
+      border: 6px solid ${stateIconColor};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 90px;
+      font-weight: bold;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .verity-card-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .verity-status {
+      margin: 0 0 10px 0;
+      font-size: 36px;
+      font-weight: 600;
+      color: #333;
+      letter-spacing: -0.01em;
+    }
+    .verity-status-highlight {
+      color: ${stateColor};
+    }
+    .verity-url {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 30px;
+      font-family: monospace;
+    }
+    .verity-message {
+      font-size: 17px;
+      line-height: 1.6;
+      color: #444;
+      margin-bottom: 30px;
+    }
+    .verity-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .verity-tag {
+      background: #f1f3f4;
+      color: #333;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .verity-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .verity-btn-secondary {
+      background: transparent;
+      border: none;
+      color: #2962FF;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .verity-btn-secondary:hover {
+      text-decoration: underline;
+    }
+    .verity-btn-primary {
+      background: #304FFE;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 14px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .verity-btn-primary:hover {
+      background: #1A237E;
+    }
+    .verity-btn-primary:active {
+      transform: scale(0.98);
+    }
+    .verity-trust-msg {
+      font-size: 13px;
+      color: #888;
+      text-align: right;
+      margin: 0;
+    }
+  `;
 
-  backBtn.addEventListener('click', () => {
+  const styleTag = document.createElement('style');
+  styleTag.textContent = hardcodedCSS;
+  shadow.appendChild(styleTag);
+
+  const container = document.createElement('div');
+  container.className = 'verity-overlay';
+  
+  // Extract tags from reasons
+  const tagsHtml = (verdict.reasons || ['High Risk Pattern Detected']).map(r => 
+    `<span class="verity-tag">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      ${r}
+    </span>`
+  ).join('');
+
+  container.innerHTML = `
+    <div class="verity-header">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      VERITY <span class="verity-header-pipe">|</span> <span class="verity-header-sub">Web Protection</span>
+    </div>
+    
+    <div class="verity-card-container" id="main-view">
+      <div class="verity-card">
+        <div class="verity-card-left">
+          <div class="verity-alert-wrapper">
+            <div class="verity-alert-circle">!</div>
+          </div>
+        </div>
+        
+        <div class="verity-card-right">
+          <h1 class="verity-status">Website status: <span class="verity-status-highlight">${stateTitle}</span></h1>
+          <div class="verity-url">${window.location.href}</div>
+          
+          <p class="verity-message">
+            ${isDanger 
+              ? 'This site looks highly dangerous to us. It matches signatures of phishing, scams, or credential theft. We strongly recommend you do not proceed. Better safe than sorry!' : 
+              'This site looks a little risky to us, so we flagged it just in case. Make sure you trust this site if you choose to proceed. Better safe than sorry!'}
+          </p>
+          
+          <div class="verity-tags">
+            ${tagsHtml}
+            <span class="verity-tag" style="color: ${stateColor}; background: ${isDanger ? '#ffebee' : '#fff8e1'}">Risk Score: ${verdict.score}/100</span>
+          </div>
+          
+          <div class="verity-actions">
+            <button class="verity-btn-secondary" id="btn-proceed">Visit anyway</button>
+            <button class="verity-btn-primary" id="btn-back">Go back</button>
+          </div>
+          
+          <p class="verity-trust-msg">
+            Choosing to visit this site will add the URL to your list of trusted overrides.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation View -->
+    <div class="verity-card-container" id="confirm-view" style="display: none;">
+      <div class="verity-card" style="max-width: 600px; padding: 40px; flex-direction: column; gap: 20px;">
+        <h1 class="verity-status" style="font-size: 28px;">Are you absolutely sure?</h1>
+        <p class="verity-message" style="margin-bottom: 10px;">
+          This website has been classified as <strong>${stateTitle}</strong>.<br><br>
+          Proceeding may expose sensitive information such as passwords, financial details, or personal data.
+        </p>
+        <div class="verity-actions" style="margin-top: 20px;">
+          <button class="verity-btn-secondary" id="btn-confirm-cancel">Cancel</button>
+          <button class="verity-btn-primary" id="btn-confirm-proceed" style="background: #D32F2F;">Continue Anyway</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  shadow.appendChild(container);
+
+  // Event Listeners
+  const mainView = shadow.querySelector('#main-view');
+  const confirmView = shadow.querySelector('#confirm-view');
+  
+  shadow.querySelector('#btn-back').addEventListener('click', () => {
     if (window.history.length > 1) {
       window.history.back();
     } else {
@@ -209,47 +425,26 @@ function injectOverlay(verdict) {
     }
   });
 
-  const reportBtn = document.createElement('button');
-  reportBtn.className = 'verity-btn verity-btn-secondary';
-  reportBtn.style.color = 'var(--primary-blue)';
-  reportBtn.style.textDecoration = 'none';
-  reportBtn.style.fontWeight = 'var(--font-weight-stat)';
-  reportBtn.textContent = 'VIEW SECURITY REPORT';
-  reportBtn.addEventListener('click', () => {
-    window.open(chrome.runtime.getURL('reports/report.html?url=' + encodeURIComponent(window.location.href)), '_blank');
+  shadow.querySelector('#btn-proceed').addEventListener('click', () => {
+    mainView.style.display = 'none';
+    confirmView.style.display = 'flex';
   });
 
-  const proceedBtn = document.createElement('button');
-  proceedBtn.className = 'verity-btn verity-btn-secondary';
-  proceedBtn.id = 'verity-btn-proceed';
-  proceedBtn.textContent = 'PROCEED ANYWAY';
-  
-  // Two-step confirmation for proceed anyway
-  proceedBtn.addEventListener('click', () => {
-    if (proceedBtn.textContent === 'PROCEED ANYWAY') {
-      proceedBtn.textContent = 'ARE YOU SURE?';
-      proceedBtn.style.color = 'var(--color-danger)';
-      proceedBtn.style.borderColor = 'var(--color-danger)';
-    } else {
-      chrome.runtime.sendMessage({ action: 'USER_OVERRIDE_ALLOW', url: window.location.href });
-      removeOverlay();
-    }
+  shadow.querySelector('#btn-confirm-cancel').addEventListener('click', () => {
+    confirmView.style.display = 'none';
+    mainView.style.display = 'flex';
   });
 
-  actions.appendChild(backBtn);
-  actions.appendChild(reportBtn);
-  actions.appendChild(proceedBtn);
-  card.appendChild(actions);
-
-  shadow.appendChild(overlay);
+  shadow.querySelector('#btn-confirm-proceed').addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: 'USER_OVERRIDE_ALLOW', url: window.location.href });
+    removeOverlay();
+  });
   
-  // Attach directly to Document Element (<html>) so it works even if body is missing
   const parent = document.documentElement || document.body;
   if (parent) {
     parent.appendChild(host);
   }
 
-  // Prevent circumvention by monitoring the DOM and re-injecting if the page deletes it
   if (!blockObserver && parent) {
     blockObserver = new MutationObserver((mutations) => {
       let removed = false;
@@ -261,7 +456,7 @@ function injectOverlay(verdict) {
         });
       });
       if (removed && isBlocked) {
-        parent.appendChild(host); // Force it back
+        parent.appendChild(host);
         document.documentElement.style.setProperty('overflow', 'hidden', 'important');
       }
     });

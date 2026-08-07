@@ -5,6 +5,7 @@
   "description": "Real-time, on-device evaluator for website authenticity. Protects against financial phishing and impersonation.",
   "permissions": [
     "webNavigation",
+    "webRequest",
     "storage",
     "activeTab",
     "scripting",
@@ -54,5 +55,18 @@
       "48": "icons/safe_48.png",
       "128": "icons/safe_128.png"
     }
-  }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "shared/theme.css",
+        "content/overlay.css",
+        "reports/report.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

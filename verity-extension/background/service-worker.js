@@ -148,10 +148,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     userOverrides.add(message.url);
     const urlObj = new URL(message.url);
     userOverrides.add(urlObj.origin);
+    
+    // Phase 2: Continuous Learning / Telemetry
+    // User explicitly overrode a block. This is a potential False Positive.
+    // Send anonymous feature vector to Verity Cloud for nightly model retraining.
     if (sender.tab) {
-       updateBadge(sender.tab.id, 'caution'); // Downgrade block badge to caution
+      chrome.storage.session.get(sender.tab.id.toString()).then(data => {
+        if (data && data[sender.tab.id.toString()]) {
+          const sessionData = data[sender.tab.id.toString()];
+          const telemetryPayload = {
+            event: 'FALSE_POSITIVE_OVERRIDE',
+            domainHash: btoa(urlObj.origin).substring(0, 16), // Pseudo-anonymized
+            originalScore: sessionData.score,
+            mlScore: sessionData.mlScore,
+            ruleScore: sessionData.ruleScore,
+            categories: sessionData.categories,
+            timestamp: new Date().toISOString()
+          };
+          
+          // Simulated endpoint for Enterprise Plan Phase 2.3
+          console.info('[Verity Telemetry] Dispatching override to Federated Learning Cloud:', telemetryPayload);
+          fetch('https://api.verity-security.local/telemetry/fp', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(telemetryPayload)
+          }).catch(() => {});
+        }
+      });
+      updateBadge(sender.tab.id, 'caution'); // Downgrade block badge to caution
     }
     sendResponse({ success: true });
+  } else if (message.action === 'GET_CSS') {
+    Promise.all([
+      fetch(chrome.runtime.getURL('shared/theme.css')).then(r => r.text()),
+      fetch(chrome.runtime.getURL('content/overlay.css')).then(r => r.text())
+    ]).then(([theme, overlay]) => {
+      sendResponse({ css: theme + '\n' + overlay });
+    }).catch(() => sendResponse({ css: '' }));
+    return true;
   } else if (message.action === 'run_inference') {
     // Benchmark mode proxy
     (async () => {
@@ -212,10 +247,10 @@ function updateBadge(tabId, state) {
   chrome.action.setIcon({
     tabId: tabId,
     path: {
-      "16": \`icons/\${stateName}_16.png\`,
-      "32": \`icons/\${stateName}_32.png\`,
-      "48": \`icons/\${stateName}_48.png\`,
-      "128": \`icons/\${stateName}_128.png\`
+      "16": `icons/${stateName}_16.png`,
+      "32": `icons/${stateName}_32.png`,
+      "48": `icons/${stateName}_48.png`,
+      "128": `icons/${stateName}_128.png`
     }
   });
 }

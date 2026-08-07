@@ -106,7 +106,16 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
   
   // 7. Redirect Intelligence
   if (redirectSignals && redirectSignals.suspicious) {
-    addSignal('redirect', 20, redirectSignals.reason);
+    let penalty = 0;
+    if (redirectSignals.multiplier && redirectSignals.multiplier > 1.0) {
+      penalty = Math.round(riskScore * (redirectSignals.multiplier - 1.0));
+      // Ensure a minimum penalty if the base score was low, but we caught a shortener
+      penalty = Math.max(penalty, 25); 
+    } else {
+      penalty = 15;
+    }
+    const reasonText = redirectSignals.reasons ? redirectSignals.reasons.join(' ') : 'Suspicious redirect chain detected.';
+    addSignal('redirect', penalty, reasonText);
   }
 
   riskScore = Math.min(Math.max(riskScore, 0), 100);
