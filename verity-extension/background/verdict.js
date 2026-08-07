@@ -1,66 +1,91 @@
 /**
- * verdict.js - Combines rule signals and ML score into a final risk verdict.
+ * verdict.js - Combines rule signals, ML score, DOM heuristics, and Threat Intel into a multi-category verdict.
  */
 
-/**
- * Normalizes a rule score, ensuring it does not exceed 100.
- * @param {Array} ruleSignals - Array of rule result objects: { score, reason, triggered }
- * @returns {number}
- */
 function calculateRuleScore(ruleSignals) {
   let totalScore = 0;
-  
   for (const signal of ruleSignals) {
     if (signal.triggered) {
       totalScore += signal.score;
     }
   }
-
   return Math.min(Math.max(totalScore, 0), 100);
 }
 
 /**
- * Calculates the final verdict.
- * @param {Array} ruleSignals - Array of rule result objects: { score, reason, triggered }
- * @param {number|null} mlScore - The optional machine learning score (0-100).
- * @returns {Object} { score: number, state: string, reasons: string[] }
+ * Calculates the final multi-category verdict.
  */
-export function calculateVerdict(ruleSignals, mlScore = null) {
+export function calculateVerdict(ruleSignals, mlScore = null, domSignals = null, threatIntel = null) {
   const ruleScore = calculateRuleScore(ruleSignals);
   
-  let finalScore = ruleScore;
-
-  // TODO: STAGE 2
-  // Replace this null value with the ONNX model inference result.
-  // The ONNX model should return a normalized 0-100 risk score.
-  // No changes to the rule engine or UI should be required.
+  let phishScore = ruleScore;
   if (mlScore !== null) {
-    // For Stage 2, we can decide how to weight the ML score vs Rule score.
-    // E.g., finalScore = Math.max(ruleScore, mlScore) or an average.
-    // For now, if provided, we'll just take the higher of the two.
-    finalScore = Math.max(ruleScore, mlScore);
+    phishScore = Math.max(ruleScore, mlScore);
   }
-
-  // Ensure final score is clamped between 0 and 100
-  finalScore = Math.min(Math.max(finalScore, 0), 100);
+  phishScore = Math.min(Math.max(phishScore, 0), 100);
   
-  // Extract human-readable reasons from triggered rules
-  const reasons = ruleSignals
+  const phishingReasons = ruleSignals
     .filter(signal => signal.triggered && signal.reason)
     .map(signal => signal.reason);
 
-  // Map score to state
+  const categories = {
+    phishing: { 
+      flagged: phishScore >= 60, 
+      confidence: phishScore, 
+      reason: phishingReasons.join(' ') || null 
+    },
+    malware: { 
+      flagged: false, 
+      source: null 
+    },
+    scamFraud: { 
+      flagged: false, 
+      reason: null 
+    },
+    suspicious: { 
+      flagged: false, 
+      reason: null 
+    }
+  };
+
+  if (threatIntel && threatIntel.malware) {
+    categories.malware.flagged = true;
+    categories.malware.source = threatIntel.source;
+  }
+
+  if (domSignals && domSignals.scam) {
+    categories.scamFraud.flagged = true;
+    categories.scamFraud.reason = domSignals.scamReason;
+  }
+
+  if (domSignals && domSignals.pup) {
+    categories.suspicious.flagged = true;
+    categories.suspicious.reason = domSignals.pupReason;
+  }
+
+  // Calculate overall state
   let state = "safe";
-  if (finalScore >= 60) {
+  
+  if (categories.phishing.flagged || categories.malware.flagged || categories.scamFraud.flagged || categories.suspicious.flagged) {
     state = "danger";
-  } else if (finalScore >= 30) {
+  } else if (phishScore >= 30) {
     state = "caution";
   }
 
+  let aggregatedReasons = [];
+  if (categories.phishing.flagged) aggregatedReasons.push(`Phishing detected. ${categories.phishing.reason || ''}`.trim());
+  else if (phishScore >= 30) aggregatedReasons.push(`Suspicious URL. ${categories.phishing.reason || ''}`.trim());
+  
+  if (categories.malware.flagged) aggregatedReasons.push(`Malware detected by ${categories.malware.source}`);
+  if (categories.scamFraud.flagged) aggregatedReasons.push(`Scam pattern detected: ${categories.scamFraud.reason}`);
+  if (categories.suspicious.flagged) aggregatedReasons.push(`Suspicious behavior detected: ${categories.suspicious.reason}`);
+
   return {
-    score: finalScore,
-    state: state,
-    reasons: reasons,
+    score: phishScore, // Legacy mapping for popup UI
+    overallState: state,
+    state: state,      // Legacy mapping
+    categories: categories,
+    reasons: aggregatedReasons,
     ruleScore: ruleScore
   };
 }

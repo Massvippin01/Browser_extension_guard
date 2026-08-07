@@ -6,8 +6,11 @@ import {
   hasSuspiciousUrlPattern 
 } from './rules.js';
 
-import { calculateVerdict } from './verdict.js';
+import { calculateRisk } from './risk-engine.js';
 import { initializeModel, getMlScore } from './ml-scorer.js';
+import { checkThreatIntel } from './threat-intel.js';
+import { getRedirectSignals } from './redirect-analyzer.js';
+import { saveToHistory } from './history.js';
 
 let brandsListCache = null;
 let trancoCache = null;
@@ -134,52 +137,60 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
     // Get ML Score (null if unavailable or failed)
     const mlScore = await getMlScore(url, domSignals);
 
-    // Calculate final verdict
-    const verdict = calculateVerdict(ruleSignals, mlScore);
+    // Get Redirect Signals
+    const redirectSignals = getRedirectSignals(tabId);
+
+    // Calculate initial verdict
+    const verdict = calculateRisk(url, ruleSignals, mlScore, domSignals, null, redirectSignals);
     
     const scoringTimeMs = performance.now() - startScoring;
     
-    // Capture screenshot if danger (best effort, requires active tab)
     let screenshotData = null;
     if (verdict.state === 'danger') {
       try {
         const tab = await chrome.tabs.get(tabId);
         screenshotData = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
-      } catch (err) {
-        console.warn('[Verity] Could not capture screenshot:', err);
-      }
+      } catch (err) { }
     }
     verdict.screenshot = screenshotData;
     
-    // Store verdict in session storage keyed by tab ID
-    await chrome.storage.session.set({
-      [tabId.toString()]: {
-        url: url,
-        score: verdict.score,
-        state: verdict.state,
-        reasons: verdict.reasons,
-        ruleScore: verdict.ruleScore,
-        mlScore: mlScore,
-        mlAvailable: mlScore !== null,
-        scoringTimeMs: scoringTimeMs,
-        timestamp: Date.now()
+    const saveVerdict = async (v, time) => {
+      await chrome.storage.session.set({
+        [tabId.toString()]: {
+          url: url,
+          score: v.score,
+          state: v.state,
+          categories: v.categories,
+          reasons: v.reasons,
+          ruleScore: v.ruleScore,
+          mlScore: mlScore,
+          mlAvailable: mlScore !== null,
+          scoringTimeMs: time,
+          timestamp: Date.now()
+        }
+      });
+      updateBadge(tabId, v.severity || v.state);
+      if (v.severity === 'danger' || v.state === 'danger') {
+        try {
+          await chrome.tabs.sendMessage(tabId, { action: 'show_danger_overlay', verdict: v });
+        } catch (err) {}
+      }
+      // Save to history on every processed navigation
+      await saveToHistory(v, url);
+    };
+
+    await saveVerdict(verdict, scoringTimeMs);
+
+    // Second Wave: Threat Intel
+    checkThreatIntel(url).then(async (threatIntel) => {
+      if (threatIntel && threatIntel.malware) {
+        const secondWaveTime = performance.now() - startScoring;
+        const newVerdict = calculateRisk(url, ruleSignals, mlScore, domSignals, threatIntel, redirectSignals);
+        newVerdict.screenshot = screenshotData;
+        await saveVerdict(newVerdict, secondWaveTime);
       }
     });
 
-    // Update extension badge
-    updateBadge(tabId, verdict.state);
-
-    // If danger, notify the content script to show overlay
-    if (verdict.state === 'danger') {
-      try {
-        await chrome.tabs.sendMessage(tabId, {
-          action: 'show_danger_overlay',
-          verdict: verdict
-        });
-      } catch (err) {
-        console.warn(`[Verity] Content script not ready in tab ${tabId} to receive danger overlay.`);
-      }
-    }
   } catch (err) {
     console.error('[Verity] Error processing navigation:', err);
   }
@@ -191,28 +202,37 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
 function updateBadge(tabId, state) {
   let text = '';
   let color = '#000000';
-  let iconName = 'safe.svg';
+  let stateName = 'safe';
 
   switch (state) {
     case 'safe':
       text = '✓';
       color = '#10b981'; // emerald
-      iconName = 'safe.svg';
+      stateName = 'safe';
       break;
     case 'caution':
       text = '!';
       color = '#f59e0b'; // amber
-      iconName = 'caution.svg';
+      stateName = 'caution';
       break;
     case 'danger':
       text = '!';
       color = '#ef4444'; // crimson
-      iconName = 'danger.svg';
+      stateName = 'danger';
       break;
   }
 
   chrome.action.setBadgeText({ text: text, tabId: tabId });
   chrome.action.setBadgeBackgroundColor({ color: color, tabId: tabId });
+  chrome.action.setIcon({
+    tabId: tabId,
+    path: {
+      "16": `icons/${stateName}_16.png`,
+      "32": `icons/${stateName}_32.png`,
+      "48": `icons/${stateName}_48.png`,
+      "128": `icons/${stateName}_128.png`
+    }
+  });
 }
 
 // Clean up session storage when a tab is closed
@@ -234,8 +254,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           hasSuspiciousUrlPattern(message.url)
         ];
         const mlScore = await getMlScore(message.url, null);
-        const verdict = calculateVerdict(ruleSignals, mlScore);
-        sendResponse({ score: verdict.score });
+        const verdict = calculateRisk(message.url, ruleSignals, mlScore, null, null, null);
+        sendResponse({ score: verdict.riskScore });
       } catch (err) {
         sendResponse({ score: null });
       }

@@ -13,18 +13,25 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ==========================================
 async function loadVerdict() {
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab) {
-      showError("Could not determine active tab.");
-      return;
-    }
-    const storageResult = await chrome.storage.session.get(tab.id.toString());
-    const verdictData = storageResult[tab.id.toString()];
-    if (verdictData) {
-      renderVerdict(verdictData);
-    } else {
-      showError("No analysis available for this page.");
-    }
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+      if (!tabs || tabs.length === 0) return;
+      const tabId = tabs[0].id;
+      const url = tabs[0].url || '';
+
+      try {
+        const urlObj = new URL(url);
+        document.getElementById('app-domain-text').textContent = urlObj.hostname;
+      } catch(e) {}
+
+      // Check if we have a verdict for this tab
+      const storageResult = await chrome.storage.session.get(tabId.toString());
+      const verdictData = storageResult[tabId.toString()];
+      if (verdictData) {
+        renderVerdict(verdictData);
+      } else {
+        showError("No data available for this page.");
+      }
+    });
   } catch (error) {
     showError("An error occurred while loading data.");
   }
@@ -36,28 +43,28 @@ function renderVerdict(data) {
 
   const titleEl = document.getElementById('verdict-title');
   const iconEl = document.getElementById('verdict-icon');
-  
-  document.getElementById('score-value').textContent = data.score;
-  document.getElementById('score-rule').textContent = (data.ruleScore !== undefined) ? data.ruleScore : data.score;
-  document.getElementById('score-ml').textContent = data.mlAvailable ? data.mlScore : 'Unavailable';
+  const scoreValEl = document.getElementById('risk-score-value');
+  const scoreTextEl = document.getElementById('risk-score-text');
 
-  iconEl.className = 'status-icon ' + data.state;
-  document.getElementById('score-value').className = 'score-value ' + data.state;
+  const state = data.severity || data.state;
+  iconEl.className = 'status-icon ' + state;
   
-  if (data.scoringTimeMs !== undefined) {
-    document.getElementById('scoring-time').textContent = `Scoring took ${data.scoringTimeMs.toFixed(1)} ms`;
-  }
-
-  if (data.state === 'safe') {
+  if (state === 'safe') {
     titleEl.textContent = 'SAFE';
     iconEl.textContent = '✓';
-  } else if (data.state === 'caution') {
-    titleEl.textContent = 'CAUTION';
+    scoreTextEl.textContent = '"Everything looks normal."';
+  } else if (state === 'caution') {
+    titleEl.textContent = 'SUSPICIOUS';
     iconEl.textContent = '!';
-  } else if (data.state === 'danger') {
-    titleEl.textContent = 'DANGER';
+    scoreTextEl.textContent = '"Suspicious indicators detected."';
+  } else if (state === 'danger') {
+    titleEl.textContent = 'DANGEROUS';
     iconEl.textContent = '!';
+    scoreTextEl.textContent = '"High-risk threats detected."';
   }
+
+  scoreValEl.innerHTML = `${data.riskScore !== undefined ? data.riskScore : data.score} <span style="font-size: 18px; color: var(--text-secondary);">/ 100</span>`;
+  scoreValEl.className = state; // can be used for CSS coloring if desired
 
   const reasonsListEl = document.getElementById('reasons-list');
   const noReasonsEl = document.getElementById('no-reasons-msg');
@@ -75,6 +82,14 @@ function renderVerdict(data) {
     reasonsListEl.classList.add('hidden');
     noReasonsEl.classList.remove('hidden');
   }
+
+  // Hook up buttons
+  document.getElementById('btn-report').onclick = () => {
+    window.open(chrome.runtime.getURL('reports/report.html?url=' + encodeURIComponent(data.url || document.getElementById('app-domain-text').textContent)));
+  };
+  document.getElementById('btn-history').onclick = () => {
+    window.open(chrome.runtime.getURL('dashboard/dashboard.html'));
+  };
 }
 
 function showError(msg) {
@@ -86,24 +101,47 @@ function showError(msg) {
 // ==========================================
 async function loadModelCard() {
   try {
-    const res = await fetch(chrome.runtime.getURL('training/model_metrics.json'));
-    if (!res.ok) throw new Error("Metrics file missing");
-    const data = await res.json();
-    
-    document.getElementById('mc-dataset-name').textContent = `${data.dataset.name} (${data.dataset.features} features)`;
-    document.getElementById('mc-accuracy').textContent = (data.metrics.accuracy * 100).toFixed(1) + '%';
-    document.getElementById('mc-precision').textContent = (data.metrics.precision * 100).toFixed(1) + '%';
-    document.getElementById('mc-recall').textContent = (data.metrics.recall * 100).toFixed(1) + '%';
-    document.getElementById('mc-f1').textContent = (data.metrics.f1 * 100).toFixed(1) + '%';
-    document.getElementById('mc-roc').textContent = (data.metrics.roc_auc * 100).toFixed(1) + '%';
-    
-    document.getElementById('cm-tn').textContent = data.confusion_matrix[0][0];
-    document.getElementById('cm-fp').textContent = data.confusion_matrix[0][1];
-    document.getElementById('cm-fn').textContent = data.confusion_matrix[1][0];
-    document.getElementById('cm-tp').textContent = data.confusion_matrix[1][1];
-    
-    document.getElementById('mc-test-size').textContent = data.split.test;
+    // Animate numbers
+    const animateValue = (id, end, isPercentage = false) => {
+      const el = document.getElementById(id);
+      if (!el || isNaN(end)) return;
+      const duration = 400;
+      const startTime = performance.now();
+      const animate = (time) => {
+        let progress = (time - startTime) / duration;
+        if (progress > 1) progress = 1;
+        const current = (progress * end).toFixed(1);
+        el.textContent = current + (isPercentage ? '%' : '');
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          el.textContent = end + (isPercentage ? '%' : '');
+        }
+      };
+      requestAnimationFrame(animate);
+    };
 
+    fetch(chrome.runtime.getURL('training/model_metrics.json'))
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('mc-dataset-name').textContent = 'Dataset: ' + data.dataset;
+        document.getElementById('mc-test-size').textContent = data.test_size_samples;
+
+        // Ensure stats format is e.g. 98.4%
+        animateValue('mc-accuracy', (data.accuracy * 100).toFixed(1), true);
+        animateValue('mc-precision', (data.precision * 100).toFixed(1), true);
+        animateValue('mc-recall', (data.recall * 100).toFixed(1), true);
+        animateValue('mc-f1', (data.f1 * 100).toFixed(1), true);
+        animateValue('mc-roc', (data.roc_auc * 100).toFixed(1), true);
+
+        document.getElementById('cm-tn').textContent = data.confusion_matrix.tn;
+        document.getElementById('cm-fp').textContent = data.confusion_matrix.fp;
+        document.getElementById('cm-fn').textContent = data.confusion_matrix.fn;
+        document.getElementById('cm-tp').textContent = data.confusion_matrix.tp;
+      })
+      .catch(() => {
+        document.getElementById('mc-dataset-name').textContent = 'Error loading metrics';
+      });
   } catch (err) {
     console.warn("Model metrics not generated yet. Run training script.");
   }

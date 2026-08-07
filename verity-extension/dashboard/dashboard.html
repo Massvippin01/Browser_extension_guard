@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verity Dashboard</title>
+  <link rel="stylesheet" href="../shared/theme.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dash-container">
+    <header class="dash-header">
+      <div class="logo">VERITY</div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="history">Threat History</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+      </div>
+    </header>
+
+    <div id="tab-history" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Scanned Today</div>
+          <div class="stat-value" id="statScanned">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Safe</div>
+          <div class="stat-value safe" id="statSafe">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Suspicious</div>
+          <div class="stat-value caution" id="statSuspicious">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Dangerous</div>
+          <div class="stat-value danger" id="statDangerous">0</div>
+        </div>
+      </div>
+      
+      <h2>Recent Detections</h2>
+      <div class="history-list" id="historyList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <div id="tab-settings" class="tab-content">
+      <div class="settings-card">
+        <h3>Protection Level</h3>
+        <label class="setting-row">
+          <input type="radio" name="level" value="standard" checked>
+          <span><b>Standard</b> (Recommended)</span>
+        </label>
+        <label class="setting-row">
+          <input type="radio" name="level" value="strict">
+          <span><b>Strict</b> (Block suspicious sites immediately)</span>
+        </label>
+        
+        <h3 style="margin-top:24px;">Protection Modules</h3>
+        <label class="setting-row"><input type="checkbox" checked> Phishing Protection</label>
+        <label class="setting-row"><input type="checkbox" checked> Financial Context Engine</label>
+        <label class="setting-row"><input type="checkbox" checked> Malicious URL Protection</label>
+        <label class="setting-row"><input type="checkbox" checked> Scam Detection</label>
+        <label class="setting-row"><input type="checkbox" checked> Redirect Protection</label>
+        <label class="setting-row"><input type="checkbox" checked> Search Result Protection</label>
+        
+        <h3 style="margin-top:24px;">Privacy</h3>
+        <label class="setting-row"><input type="checkbox" checked disabled> Local-first Analysis (Always On)</label>
+      </div>
+    </div>
+
+  </div>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

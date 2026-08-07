@@ -14,6 +14,12 @@
   "host_permissions": [
     "<all_urls>"
   ],
+  "icons": {
+    "16": "icons/safe_16.png",
+    "32": "icons/safe_32.png",
+    "48": "icons/safe_48.png",
+    "128": "icons/safe_128.png"
+  },
   "background": {
     "service_worker": "background/service-worker.js",
     "type": "module"
@@ -27,10 +33,26 @@
         "content/content-script.js"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.google.com/search*",
+        "*://*.bing.com/search*"
+      ],
+      "js": [
+        "content/search-protection.js"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Verity: Website Authenticity"
+    "default_title": "Verity: Website Authenticity",
+    "default_icon": {
+      "16": "icons/safe_16.png",
+      "32": "icons/safe_32.png",
+      "48": "icons/safe_48.png",
+      "128": "icons/safe_128.png"
+    }
   }
 }

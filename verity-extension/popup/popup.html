@@ -5,7 +5,10 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  
+  <div class="app-header">
+    <h1 class="app-title">Verity</h1>
+    <p class="app-domain" id="app-domain-text">Loading...</p>
+  </div>
   <div class="tabs">
     <button class="tab-btn active" data-tab="overview">Overview</button>
     <button class="tab-btn" data-tab="model-card">Model Card</button>
@@ -21,39 +24,30 @@
 
     <div id="verdict-state" class="state-container hidden">
       <div class="header">
-        <div id="verdict-icon" class="status-icon"></div>
+        <div id="verdict-icon" class="status-icon" style="font-size: 32px;"></div>
         <h1 id="verdict-title">State</h1>
       </div>
 
-      <div class="score-card">
-        <div class="score-breakdown">
-          <div class="score-col">
-            <span class="score-label">Rule Risk</span>
-            <span id="score-rule" class="score-small">--</span>
-          </div>
-          <div class="score-col">
-            <span class="score-label">ML Risk</span>
-            <span id="score-ml" class="score-small">--</span>
-          </div>
-        </div>
-        <hr>
-        <div class="score-label">Final Risk</div>
-        <div class="score-row">
-          <span id="score-value" class="score-value">--</span>
-          <span class="score-max">/ 100</span>
-        </div>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: var(--font-weight-stat); letter-spacing: 0.05em; margin-bottom: 8px;">Risk Score</div>
+        <div style="font-size: 48px; font-weight: 700; line-height: 1;" id="risk-score-value">-- <span style="font-size: 18px; color: var(--text-secondary);">/ 100</span></div>
+        <div id="risk-score-text" style="font-size: 14px; margin-top: 12px; font-style: italic; color: var(--text-secondary);">"Analyzing..."</div>
       </div>
-      <div id="scoring-time" style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 16px;"></div>
 
       <div id="reasons-container" class="reasons-container">
-        <h3>Findings</h3>
+        <h3 style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: var(--font-weight-stat); letter-spacing: 0.05em;">Signals</h3>
         <ul id="reasons-list">
           <!-- Reasons will be injected here -->
         </ul>
-        <p id="no-reasons-msg" class="hidden">No suspicious indicators found.</p>
+        <p id="no-reasons-msg" class="hidden">✓ Everything looks normal.</p>
       </div>
       
-      <hr style="margin: 20px 0; border-top: 1px solid #334155;">
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 24px;">
+        <button id="btn-report" class="verity-btn verity-btn-secondary" style="border-color: var(--primary-blue); color: var(--primary-blue);">Security Report</button>
+        <button id="btn-history" class="verity-btn verity-btn-secondary">History & Dashboard</button>
+      </div>
+
+      <hr style="margin: 20px 0; border-top: 1px solid var(--border-color);">
       
       <button id="open-simulator-btn" class="verity-btn verity-btn-danger" style="margin-top: 10px;">
         Open Attack Simulator
@@ -115,6 +109,17 @@
     <div class="model-desc">
       <p>This model was trained offline on a labeled phishing-website dataset and evaluated on a held-out test set (<span id="mc-test-size"></span> sites) that was not used during training.</p>
       <p><strong>Limitations:</strong> Dataset distribution may differ from modern attacks. The model is one signal among multiple Verity signals. Stage 2 does not guarantee perfect detection.</p>
+    </div>
+
+    <hr style="border-top: 1px solid #334155; margin: 24px 0;">
+
+    <div class="model-header">
+      <h2>Malware/Scam Detection</h2>
+      <p>Powered by Google Safe Browsing + URLhaus</p>
+    </div>
+    
+    <div class="model-desc" style="margin-top: 16px;">
+      <p><strong>Note:</strong> Accuracy and metrics for Malware categories are dictated by Google's published Safe Browsing coverage, not our local ML model, as we do not control the external threat feed.</p>
     </div>
   </div>
 

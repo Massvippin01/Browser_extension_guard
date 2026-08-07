@@ -19,22 +19,32 @@
     </p>
 
     <div class="control-group">
-      <label for="brand-select">Select a Brand to Impersonate</label>
-      <select id="brand-select">
-        <option value="" disabled selected>Loading brands...</option>
-      </select>
+      <h3>Select a Scenario to Demo:</h3>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+        <button class="verity-btn verity-btn-secondary demo-btn" data-url="http://localhost:8123/safe" style="border-color:var(--color-safe); color:var(--color-safe);">
+          Demo 1: Safe Website
+        </button>
+        <button class="verity-btn verity-btn-danger demo-btn" data-url="http://amazon-login-security.localhost:8123">
+          Demo 2: Brand Phishing (Amazon)
+        </button>
+        <button class="verity-btn verity-btn-danger demo-btn" data-url="http://localhost:8123/financial">
+          Demo 3: Financial Scam / Fake Bank
+        </button>
+        <button class="verity-btn verity-btn-danger demo-btn" data-url="http://localhost:8123/redirect-0">
+          Demo 4: Suspicious Redirect Chain
+        </button>
+        <button class="verity-btn verity-btn-primary demo-btn" data-url="http://localhost:8123/search">
+          Demo 5: Search Result Protection
+        </button>
+      </div>
     </div>
-
-    <button id="generate-btn" class="verity-btn verity-btn-danger" disabled>
-      Generate Fake Login Page
-    </button>
 
     <div id="result-box" class="result-box hidden">
       <h3>Attack URL Ready</h3>
       <p>Ensure the local simulator server is running first:</p>
       <div class="code-block">node simulator/serve.js</div>
       
-      <p>Then open this URL in a new tab. Watch the Verity extension badge turn red and display the danger overlay.</p>
+      <p>Then open this URL in a new tab. Watch Verity analyze it in real-time.</p>
       
       <div class="url-display-group">
         <input type="text" id="attack-url" readonly>

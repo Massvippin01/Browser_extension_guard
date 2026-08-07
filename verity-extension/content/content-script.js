@@ -22,10 +22,47 @@ function collectSignals() {
     console.log('[Verity] Detected login form(s). Action URLs:', formActions);
   }
 
+  // Scam heuristics
+  const text = document.body ? document.body.innerText.toLowerCase() : '';
+  const scamPhrases = ['act now', 'limited time', 'your account will be suspended', 'pay with gift card', 'click here to claim'];
+  let scamMatch = scamPhrases.find(p => text.includes(p));
+
+  // PUP heuristics
+  let pupMatch = null;
+  const scripts = document.scripts;
+  for (let i = 0; i < scripts.length; i++) {
+    const s = scripts[i].innerText || '';
+    if (s.includes('eval(') && s.includes('unescape(')) {
+      pupMatch = 'Obfuscated inline script detected';
+      break;
+    }
+  }
+  // Check for auto-download links or invisible iframes (lightweight PUP signals)
+  if (document.querySelectorAll('iframe[style*="opacity: 0"], iframe[style*="display: none"]').length > 3) {
+    pupMatch = 'Excessive hidden iframes detected';
+  }
+
+  // Financial Context Engine
+  const financialKeywords = ['upi', 'bank', 'banking', 'net banking', 'payment', 'checkout', 'wallet', 'credit card', 'debit card', 'cvv', 'otp', 'pin', 'kyc', 'refund', 'cashback', 'investment', 'crypto', 'trading'];
+  let financialMatch = financialKeywords.filter(k => text.includes(k));
+
+  // Credential Collection Detection
+  const sensitiveInputs = Array.from(document.querySelectorAll('input')).filter(input => {
+    const attr = (input.name + input.id + input.type + input.placeholder).toLowerCase();
+    return attr.includes('password') || attr.includes('card') || attr.includes('cvv') || attr.includes('otp') || attr.includes('pin') || attr.includes('upi') || attr.includes('account');
+  });
+  const hasCredentialCollection = sensitiveInputs.length > 0;
+
   return {
     hasPasswordInput: hasPasswordInput,
     loginFormCount: loginForms.length,
-    formActions: formActions
+    formActions: formActions,
+    scam: !!scamMatch,
+    scamReason: scamMatch ? `Matches scam language: "${scamMatch}"` : null,
+    pup: !!pupMatch,
+    pupReason: pupMatch,
+    financialMatches: financialMatch,
+    hasCredentialCollection: hasCredentialCollection
   };
 }
 
@@ -68,11 +105,19 @@ function injectOverlay(verdict) {
   
   const shadow = host.attachShadow({ mode: 'closed' });
 
-  // Inject CSS inside shadow root
+  // Inject Theme CSS
+  const themeUrl = chrome.runtime.getURL('shared/theme.css');
+  const themeLink = document.createElement('link');
+  themeLink.rel = 'stylesheet';
+  themeLink.type = 'text/css';
+  themeLink.href = themeUrl;
+  shadow.appendChild(themeLink);
+
+  // Inject Overlay CSS
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.type = 'text/css';
-  link.href = cssUrl;
+  link.href = chrome.runtime.getURL('content/overlay.css');
   shadow.appendChild(link);
 
   const overlay = document.createElement('div');
@@ -83,21 +128,38 @@ function injectOverlay(verdict) {
 
   const header = document.createElement('div');
   header.className = 'verity-header';
+  
+  // Dynamic Title based on categories
+  const flaggedCats = [];
+  if (verdict.categories) {
+    if (verdict.categories.phishing.flagged) flaggedCats.push("Phishing");
+    if (verdict.categories.malware.flagged) flaggedCats.push("Malware");
+    if (verdict.categories.scamFraud.flagged) flaggedCats.push("Scam/Fraud");
+    if (verdict.categories.suspicious.flagged) flaggedCats.push("Suspicious Software");
+  }
+  
+  const titleText = flaggedCats.length > 0 ? (flaggedCats.join(" + ") + " Detected") : "Security Warning";
+
   header.innerHTML = `
-    <div class="verity-icon">!</div>
-    <div class="verity-title">Potential phishing site</div>
+    <div class="verity-icon danger">!</div>
+    <div class="verity-title">Website blocked</div>
+    <div style="margin-top: 12px; margin-bottom: 8px;">
+      <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: var(--font-weight-stat); letter-spacing: 0.05em;">Risk Score</div>
+      <div style="font-size: 36px; font-weight: 700; color: var(--color-danger);">${verdict.riskScore !== undefined ? verdict.riskScore : verdict.score} <span style="font-size: 18px; color: var(--text-secondary);">/ 100</span></div>
+    </div>
+    <div style="font-size: 16px; font-weight: var(--font-weight-heading); color: var(--color-danger); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">${verdict.severity ? verdict.severity.toUpperCase() : 'DANGEROUS'}</div>
+    <div class="verity-url">${window.location.hostname}</div>
   `;
   card.appendChild(header);
 
-  const scoreContainer = document.createElement('div');
-  scoreContainer.className = 'verity-score-container';
-  scoreContainer.innerHTML = `
-    <div class="verity-score-label">Risk Score</div>
-    <div class="verity-score-value">${verdict.score} <span class="verity-score-max">/ 100</span></div>
-  `;
-  card.appendChild(scoreContainer);
-
   if (verdict.reasons && verdict.reasons.length > 0) {
+    const reasonsTitle = document.createElement('div');
+    reasonsTitle.style.fontWeight = 'var(--font-weight-stat)';
+    reasonsTitle.style.marginBottom = '8px';
+    reasonsTitle.style.color = 'var(--text-primary)';
+    reasonsTitle.textContent = 'Why?';
+    card.appendChild(reasonsTitle);
+
     const reasonsList = document.createElement('ul');
     reasonsList.className = 'verity-reasons';
     verdict.reasons.forEach(reason => {
@@ -114,7 +176,7 @@ function injectOverlay(verdict) {
   const backBtn = document.createElement('button');
   backBtn.className = 'verity-btn verity-btn-primary';
   backBtn.id = 'verity-btn-back';
-  backBtn.textContent = 'Go back';
+  backBtn.textContent = 'LEAVE SITE';
 
   backBtn.addEventListener('click', () => {
     if (window.history.length > 1) {
@@ -124,16 +186,27 @@ function injectOverlay(verdict) {
     }
   });
 
+  const reportBtn = document.createElement('button');
+  reportBtn.className = 'verity-btn verity-btn-secondary';
+  reportBtn.style.color = 'var(--primary-blue)';
+  reportBtn.style.textDecoration = 'none';
+  reportBtn.style.fontWeight = 'var(--font-weight-stat)';
+  reportBtn.textContent = 'VIEW SECURITY REPORT';
+  reportBtn.addEventListener('click', () => {
+    window.open(chrome.runtime.getURL('reports/report.html?url=' + encodeURIComponent(window.location.href)), '_blank');
+  });
+
   const proceedBtn = document.createElement('button');
   proceedBtn.className = 'verity-btn verity-btn-secondary';
   proceedBtn.id = 'verity-btn-proceed';
-  proceedBtn.textContent = 'Proceed anyway';
+  proceedBtn.textContent = 'PROCEED ANYWAY';
   
   proceedBtn.addEventListener('click', () => {
     host.style.display = 'none';
   });
 
   actions.appendChild(backBtn);
+  actions.appendChild(reportBtn);
   actions.appendChild(proceedBtn);
   card.appendChild(actions);
 
@@ -165,12 +238,12 @@ function injectOverlay(verdict) {
 
     visualContainer.innerHTML = `
       <div style="flex:1; text-align:center;">
-        <div style="font-size:12px; color:#10b981; margin-bottom:4px; font-weight:bold;">REAL SITE</div>
-        <img src="${mockRealSvg}" style="width:100%; max-width:200px; border:1px solid #e2e8f0; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px; font-weight:var(--font-weight-stat); text-transform:uppercase;">Real Site</div>
+        <img src="${mockRealSvg}" style="width:100%; max-width:200px; border:1px solid var(--border-color); border-radius:4px; box-shadow:var(--shadow-sm);">
       </div>
       <div style="flex:1; text-align:center;">
-        <div style="font-size:12px; color:#ef4444; margin-bottom:4px; font-weight:bold;">THIS PAGE (FAKE)</div>
-        <img src="${fakeSrc}" style="width:100%; max-width:200px; border:1px solid #e2e8f0; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px; font-weight:var(--font-weight-stat); text-transform:uppercase;">This Page (Fake)</div>
+        <img src="${fakeSrc}" style="width:100%; max-width:200px; border:1px solid var(--border-color); border-radius:4px; box-shadow:var(--shadow-sm);">
       </div>
     `;
     card.insertBefore(visualContainer, actions);

@@ -58,3 +58,17 @@ ENV/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# ML Models and Data
+*.onnx
+*.pkl
+*.pt
+*.h5
+*.csv
+*.tsv
+*.sqlite
+*.sqlite3
+
+# Agentic IDEs
+.gemini/
+.agents/

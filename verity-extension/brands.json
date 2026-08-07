@@ -1120,5 +1120,214 @@
       "max-secure",
       "hbomax-secure"
     ]
+  },
+  {
+    "name": "SBI",
+    "domains": [
+      "onlinesbi.sbi",
+      "sbi.co.in"
+    ],
+    "variants": [
+      "sbi",
+      "onlinesbi",
+      "sbi-secure",
+      "sbi-login"
+    ]
+  },
+  {
+    "name": "HDFC Bank",
+    "domains": [
+      "hdfcbank.com"
+    ],
+    "variants": [
+      "hdfc",
+      "hdfcbank",
+      "hdfc-secure",
+      "hdfc-login"
+    ]
+  },
+  {
+    "name": "ICICI Bank",
+    "domains": [
+      "icicibank.com"
+    ],
+    "variants": [
+      "icici",
+      "icicibank",
+      "icici-secure",
+      "icici-login"
+    ]
+  },
+  {
+    "name": "Axis Bank",
+    "domains": [
+      "axisbank.com"
+    ],
+    "variants": [
+      "axis",
+      "axisbank",
+      "axis-secure",
+      "axis-login"
+    ]
+  },
+  {
+    "name": "Kotak",
+    "domains": [
+      "kotak.com"
+    ],
+    "variants": [
+      "kotak",
+      "kotakbank",
+      "kotak-secure"
+    ]
+  },
+  {
+    "name": "IDFC FIRST Bank",
+    "domains": [
+      "idfcfirstbank.com"
+    ],
+    "variants": [
+      "idfc",
+      "idfcfirst",
+      "idfc-secure"
+    ]
+  },
+  {
+    "name": "Bank of Baroda",
+    "domains": [
+      "bankofbaroda.in"
+    ],
+    "variants": [
+      "bob",
+      "bankofbaroda",
+      "bob-secure"
+    ]
+  },
+  {
+    "name": "Canara Bank",
+    "domains": [
+      "canarabank.com"
+    ],
+    "variants": [
+      "canara",
+      "canarabank",
+      "canara-secure"
+    ]
+  },
+  {
+    "name": "Punjab National Bank",
+    "domains": [
+      "pnbindia.in"
+    ],
+    "variants": [
+      "pnb",
+      "pnbindia",
+      "pnb-secure"
+    ]
+  },
+  {
+    "name": "Union Bank",
+    "domains": [
+      "unionbankofindia.co.in"
+    ],
+    "variants": [
+      "unionbank",
+      "unionbankofindia"
+    ]
+  },
+  {
+    "name": "PhonePe",
+    "domains": [
+      "phonepe.com"
+    ],
+    "variants": [
+      "phonepe",
+      "phonepe-secure",
+      "phonepe-login"
+    ]
+  },
+  {
+    "name": "Paytm",
+    "domains": [
+      "paytm.com"
+    ],
+    "variants": [
+      "paytm",
+      "paytm-secure",
+      "paytm-login"
+    ]
+  },
+  {
+    "name": "Google Pay",
+    "domains": [
+      "pay.google.com"
+    ],
+    "variants": [
+      "gpay",
+      "googlepay",
+      "gpay-secure"
+    ]
+  },
+  {
+    "name": "Amazon Pay",
+    "domains": [
+      "amazon.in/amazonpay"
+    ],
+    "variants": [
+      "amazonpay",
+      "amazon-pay"
+    ]
+  },
+  {
+    "name": "BharatPe",
+    "domains": [
+      "bharatpe.com"
+    ],
+    "variants": [
+      "bharatpe",
+      "bharatpe-secure"
+    ]
+  },
+  {
+    "name": "Razorpay",
+    "domains": [
+      "razorpay.com"
+    ],
+    "variants": [
+      "razorpay",
+      "razorpay-secure"
+    ]
+  },
+  {
+    "name": "Flipkart",
+    "domains": [
+      "flipkart.com"
+    ],
+    "variants": [
+      "flipkart",
+      "flipkart-secure",
+      "flipkart-support"
+    ]
+  },
+  {
+    "name": "Myntra",
+    "domains": [
+      "myntra.com"
+    ],
+    "variants": [
+      "myntra",
+      "myntra-secure"
+    ]
+  },
+  {
+    "name": "Meesho",
+    "domains": [
+      "meesho.com"
+    ],
+    "variants": [
+      "meesho",
+      "meesho-secure",
+      "meesho-support"
+    ]
   }
 ]

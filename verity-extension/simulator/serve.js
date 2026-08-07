@@ -140,29 +140,102 @@ function generateLoginPage(brandName) {
   `;
 }
 
+// Demo 3: Financial Scam
+function generateFinancialPage() {
+  return generateLoginPage("Global Bank").replace(
+    '<label>Password</label>',
+    `<label>Account Number</label><input type="text" placeholder="Account Number"><br><br>
+     <label>Credit Card Number</label><input type="text" placeholder="Card Number"><br><br>
+     <label>CVV</label><input type="password" placeholder="CVV"><br><br>
+     <label>OTP / PIN</label><input type="password" placeholder="Enter OTP">
+     <div style="display:none;">UPI ID, KYC verification</div>`
+  );
+}
+
+// Demo 5: Search Page
+function generateSearchPage() {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Google Search Mock</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; }
+    .result { margin-bottom: 24px; max-width: 600px; }
+    h3 { margin: 0 0 4px 0; color: #1a0dab; font-size: 20px; font-weight: normal; }
+    .url { color: #006621; font-size: 14px; margin-bottom: 4px; }
+    a { text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body id="search">
+  <div style="margin-bottom: 30px; font-size: 24px; font-weight: bold;">Google Search: SBI Net Banking</div>
+  
+  <div class="result">
+    <a href="https://onlinesbi.sbi">
+      <div class="url">https://onlinesbi.sbi</div>
+      <h3>State Bank of India - Personal Banking</h3>
+    </a>
+    <div style="color: #4d5156; font-size: 14px;">Official online banking portal for State Bank of India.</div>
+  </div>
+
+  <div class="result">
+    <a href="http://sbi-login-verification.localhost:8123">
+      <div class="url">http://sbi-login-verification.localhost:8123</div>
+      <h3>SBI Secure Login - Verify KYC Now</h3>
+    </a>
+    <div style="color: #4d5156; font-size: 14px;">Urgent: Verify your SBI account KYC immediately to prevent block.</div>
+  </div>
+</body>
+</html>`;
+}
+
 const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
-  
-  // CORS for the simulator UI
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // Try to parse the host header
-  // e.g. "paypal-secure.localhost:8123"
-  const host = req.headers.host || '';
+  const urlPath = req.url;
+
+  if (urlPath === '/safe') {
+    res.writeHead(200);
+    res.end('<html><body><h1>Safe Website</h1><p>This is a completely normal, safe website running on localhost.</p></body></html>');
+    return;
+  }
   
+  if (urlPath === '/financial') {
+    res.writeHead(200);
+    res.end(generateFinancialPage());
+    return;
+  }
+
+  if (urlPath.startsWith('/redirect')) {
+    const step = parseInt(urlPath.split('-')[1] || '0');
+    if (step < 3) {
+      res.writeHead(302, { 'Location': `/redirect-${step + 1}` });
+      res.end();
+    } else {
+      res.writeHead(302, { 'Location': `http://fake-bank-login.localhost:${PORT}` });
+      res.end();
+    }
+    return;
+  }
+
+  if (urlPath === '/search') {
+    res.writeHead(200);
+    res.end(generateSearchPage());
+    return;
+  }
+
+  const host = req.headers.host || '';
   let subdomain = host.split('.')[0].toLowerCase();
   
-  // Find brand by subdomain
   let targetBrandName = 'Generic Service';
-  
   if (brandMap.has(subdomain)) {
     targetBrandName = brandMap.get(subdomain).name;
   } else if (subdomain.includes('localhost') || subdomain.includes('127') || !subdomain) {
-    // If just localhost:8123 or 127.0.0.1:8123, use default generic
     targetBrandName = 'Generic Bank';
   } else {
-    // We didn't explicitly find it, but we can just use the subdomain string as the brand name
-    // Capitalize first letter
     targetBrandName = subdomain.charAt(0).toUpperCase() + subdomain.slice(1);
   }
 
@@ -171,6 +244,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`[Verity Simulator] Fake phishing server running on http://127.0.0.1:${PORT}`);
-  console.log(`To simulate an attack, visit e.g. http://paypal-secure.localhost:${PORT}`);
+  console.log(`[Verity Simulator] Server running on http://127.0.0.1:${PORT}`);
 });

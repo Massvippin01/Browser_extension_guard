@@ -105,7 +105,26 @@ brands_data = [
     ("Spotify", ["spotify.com"], ["spotify", "spotify-secure"]),
     ("Hulu", ["hulu.com"], ["hulu", "hulu-secure"]),
     ("Disney+", ["disneyplus.com"], ["disneyplus", "disneyplus-secure"]),
-    ("HBO Max", ["hbomax.com", "max.com"], ["hbomax", "max-secure", "hbomax-secure"])
+    ("HBO Max", ["hbomax.com", "max.com"], ["hbomax", "max-secure", "hbomax-secure"]),
+    ("SBI", ["onlinesbi.sbi", "sbi.co.in"], ["sbi", "onlinesbi", "sbi-secure", "sbi-login"]),
+    ("HDFC Bank", ["hdfcbank.com"], ["hdfc", "hdfcbank", "hdfc-secure", "hdfc-login"]),
+    ("ICICI Bank", ["icicibank.com"], ["icici", "icicibank", "icici-secure", "icici-login"]),
+    ("Axis Bank", ["axisbank.com"], ["axis", "axisbank", "axis-secure", "axis-login"]),
+    ("Kotak", ["kotak.com"], ["kotak", "kotakbank", "kotak-secure"]),
+    ("IDFC FIRST Bank", ["idfcfirstbank.com"], ["idfc", "idfcfirst", "idfc-secure"]),
+    ("Bank of Baroda", ["bankofbaroda.in"], ["bob", "bankofbaroda", "bob-secure"]),
+    ("Canara Bank", ["canarabank.com"], ["canara", "canarabank", "canara-secure"]),
+    ("Punjab National Bank", ["pnbindia.in"], ["pnb", "pnbindia", "pnb-secure"]),
+    ("Union Bank", ["unionbankofindia.co.in"], ["unionbank", "unionbankofindia"]),
+    ("PhonePe", ["phonepe.com"], ["phonepe", "phonepe-secure", "phonepe-login"]),
+    ("Paytm", ["paytm.com"], ["paytm", "paytm-secure", "paytm-login"]),
+    ("Google Pay", ["pay.google.com"], ["gpay", "googlepay", "gpay-secure"]),
+    ("Amazon Pay", ["amazon.in/amazonpay"], ["amazonpay", "amazon-pay"]),
+    ("BharatPe", ["bharatpe.com"], ["bharatpe", "bharatpe-secure"]),
+    ("Razorpay", ["razorpay.com"], ["razorpay", "razorpay-secure"]),
+    ("Flipkart", ["flipkart.com"], ["flipkart", "flipkart-secure", "flipkart-support"]),
+    ("Myntra", ["myntra.com"], ["myntra", "myntra-secure"]),
+    ("Meesho", ["meesho.com"], ["meesho", "meesho-secure", "meesho-support"])
 ]
 
 json_data = []

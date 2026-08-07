@@ -1,0 +1,124 @@
+/**
+ * shared/theme.css
+ * Single source of truth for Verity Extension Design System
+ */
+
+:root {
+  /* Palette */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F4F8FC;
+  --bg-tertiary: #E8F1FA;
+  
+  --primary-blue: #1A56DB;
+  --primary-hover: #1544B0;
+  
+  --color-safe: #0E9F6E;
+  --color-safe-bg: rgba(14, 159, 110, 0.1);
+  --color-caution: #F59E0B;
+  --color-caution-bg: rgba(245, 158, 11, 0.1);
+  --color-danger: #DC2626;
+  --color-danger-bg: rgba(220, 38, 38, 0.1);
+  
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  
+  --border-color: #E2E8F0;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-weight-body: 400;
+  --font-weight-heading: 600;
+  --font-weight-stat: 700;
+  
+  /* Shapes & Spacing */
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Base resets */
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  margin: 0;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-content {
+  display: none;
+  animation: slideUpFade 150ms ease-out forwards;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Buttons */
+.verity-btn {
+  border: none;
+  border-radius: var(--radius-button);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verity-btn:active {
+  transform: scale(0.98);
+}
+
+.verity-btn-primary {
+  background-color: var(--primary-blue);
+  color: #FFFFFF;
+}
+
+.verity-btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.verity-btn-danger {
+  background-color: var(--color-danger);
+  color: #FFFFFF;
+}
+
+.verity-btn-danger:hover {
+  background-color: #B91C1C;
+}
+
+.verity-btn-text {
+  background-color: transparent;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  padding: 8px 16px;
+}
+
+.verity-btn-text:hover {
+  color: var(--text-primary);
+}

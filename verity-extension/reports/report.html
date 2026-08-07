@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verity Security Report</title>
+  <link rel="stylesheet" href="../shared/theme.css">
+  <link rel="stylesheet" href="report.css">
+</head>
+<body>
+  <div class="report-container">
+    <header class="report-header">
+      <div class="logo">VERITY</div>
+      <h1>Security Report</h1>
+    </header>
+
+    <div class="card summary-card" id="summaryCard">
+      <div class="domain" id="domainText">example.com</div>
+      <div class="risk-block">
+        <div class="risk-label">RISK SCORE</div>
+        <div class="risk-score"><span id="scoreText">0</span> <span class="max-score">/ 100</span></div>
+      </div>
+      <div class="verdict" id="verdictText">SAFE</div>
+      <div class="ai-explanation">
+        <h3 style="margin-bottom: 8px;">Why Verity Flagged This</h3>
+        <ul id="reasonsList">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+    </div>
+    
+    <h2>Detailed Signal Breakdown</h2>
+    <div id="signalsContainer" class="signals-grid">
+      <!-- Populated by JS -->
+    </div>
+    
+  </div>
+  <script src="report.js"></script>
+</body>
+</html>
