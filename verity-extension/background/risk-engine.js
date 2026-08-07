@@ -111,12 +111,16 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
 
   riskScore = Math.min(Math.max(riskScore, 0), 100);
 
-  // Determine Severity
+  // Determine Severity and Action
   let severity = "safe";
+  let action = "allow";
+  
   if (riskScore >= 70 || categories.malware.flagged) {
     severity = "danger";
+    action = "block";
   } else if (riskScore >= 35) {
     severity = "caution";
+    action = "warn";
   }
 
   // Generate aggregate reasons for legacy/overlay support
@@ -127,6 +131,7 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     riskScore: riskScore,
     severity: severity,
     state: severity, // Map to legacy state property
+    action: action, // ENFORCEMENT DECISION (allow, warn, block)
     signals: signals,
     categories: categories,
     reasons: reasons,
