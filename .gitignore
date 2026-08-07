@@ -72,3 +72,9 @@ ENV/
 # Agentic IDEs
 .gemini/
 .agents/
+
+# Temporary Scripts and Tests
+*.ps1
+test-*.html
+scratch/
+
