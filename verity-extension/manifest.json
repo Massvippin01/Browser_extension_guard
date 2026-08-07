@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Verity",
+  "version": "1.0",
+  "description": "Real-time, on-device evaluator for website authenticity. Protects against financial phishing and impersonation.",
+  "permissions": [
+    "webNavigation",
+    "storage",
+    "activeTab",
+    "scripting",
+    "offscreen",
+    "alarms"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content/content-script.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Verity: Website Authenticity"
+  }
+}

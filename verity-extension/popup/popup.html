@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="model-card">Model Card</button>
+    <button class="tab-btn" data-tab="benchmark">Benchmark</button>
+  </div>
+
+  <div class="tab-content active" id="tab-overview">
+    
+    <div id="loading-state" class="state-container">
+      <div class="spinner"></div>
+      <p>Analyzing page...</p>
+    </div>
+
+    <div id="verdict-state" class="state-container hidden">
+      <div class="header">
+        <div id="verdict-icon" class="status-icon"></div>
+        <h1 id="verdict-title">State</h1>
+      </div>
+
+      <div class="score-card">
+        <div class="score-breakdown">
+          <div class="score-col">
+            <span class="score-label">Rule Risk</span>
+            <span id="score-rule" class="score-small">--</span>
+          </div>
+          <div class="score-col">
+            <span class="score-label">ML Risk</span>
+            <span id="score-ml" class="score-small">--</span>
+          </div>
+        </div>
+        <hr>
+        <div class="score-label">Final Risk</div>
+        <div class="score-row">
+          <span id="score-value" class="score-value">--</span>
+          <span class="score-max">/ 100</span>
+        </div>
+      </div>
+      <div id="scoring-time" style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 16px;"></div>
+
+      <div id="reasons-container" class="reasons-container">
+        <h3>Findings</h3>
+        <ul id="reasons-list">
+          <!-- Reasons will be injected here -->
+        </ul>
+        <p id="no-reasons-msg" class="hidden">No suspicious indicators found.</p>
+      </div>
+      
+      <hr style="margin: 20px 0; border-top: 1px solid #334155;">
+      
+      <button id="open-simulator-btn" class="verity-btn verity-btn-danger" style="margin-top: 10px;">
+        Open Attack Simulator
+      </button>
+    </div>
+
+  </div>
+
+  <div class="tab-content" id="tab-model-card">
+    <div class="model-header">
+      <h2>Logistic Regression</h2>
+      <p id="mc-dataset-name">Loading dataset info...</p>
+    </div>
+    
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div class="metric-label">Accuracy</div>
+        <div class="metric-val" id="mc-accuracy">--</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Precision</div>
+        <div class="metric-val" id="mc-precision">--</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Recall</div>
+        <div class="metric-val" id="mc-recall">--</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">F1 Score</div>
+        <div class="metric-val" id="mc-f1">--</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">ROC-AUC</div>
+        <div class="metric-val" id="mc-roc">--</div>
+      </div>
+    </div>
+
+    <div class="cm-container">
+      <h3>Confusion Matrix</h3>
+      <table class="cm-table">
+        <tr>
+          <td></td>
+          <th>Pred Legit</th>
+          <th>Pred Phish</th>
+        </tr>
+        <tr>
+          <th>Act Legit</th>
+          <td id="cm-tn" class="cm-cell">--</td>
+          <td id="cm-fp" class="cm-cell">--</td>
+        </tr>
+        <tr>
+          <th>Act Phish</th>
+          <td id="cm-fn" class="cm-cell">--</td>
+          <td id="cm-tp" class="cm-cell">--</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="model-desc">
+      <p>This model was trained offline on a labeled phishing-website dataset and evaluated on a held-out test set (<span id="mc-test-size"></span> sites) that was not used during training.</p>
+      <p><strong>Limitations:</strong> Dataset distribution may differ from modern attacks. The model is one signal among multiple Verity signals. Stage 2 does not guarantee perfect detection.</p>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-benchmark">
+    <div class="benchmark-header">
+      <h2>Local ML Benchmark</h2>
+      <p>Scores URLs locally to test real-time latency and model accuracy against known cases.</p>
+    </div>
+
+    <button id="run-benchmark-btn" class="verity-btn verity-btn-primary">Run Benchmark</button>
+    
+    <div id="benchmark-progress" class="hidden">
+      <p id="bm-status-text">Running benchmark...</p>
+      <div class="progress-bar-container">
+        <div id="bm-progress-fill" class="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <div id="benchmark-results" class="hidden">
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">Accuracy</div>
+          <div class="metric-val" id="bm-accuracy">--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Correct</div>
+          <div class="metric-val" id="bm-correct">--</div>
+        </div>
+      </div>
+
+      <div class="latency-chart">
+        <div class="latency-row">
+          <span class="latency-label">Min</span>
+          <span class="latency-val" id="bm-min">--</span>
+        </div>
+        <div class="latency-row">
+          <span class="latency-label">Median</span>
+          <span class="latency-val" id="bm-median">--</span>
+        </div>
+        <div class="latency-row">
+          <span class="latency-label">Max</span>
+          <span class="latency-val" id="bm-max">--</span>
+        </div>
+      </div>
+      
+      <p id="bm-errors-text" class="model-desc error-text"></p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

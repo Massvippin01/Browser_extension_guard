@@ -1,0 +1,135 @@
+/* overlay.css - Styling for the security overlay */
+
+#verity-security-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.95); /* Deep charcoal/navy */
+  backdrop-filter: blur(8px);
+  z-index: 2147483647; /* Maximum z-index */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #f8fafc;
+}
+
+#verity-security-overlay .verity-card {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+#verity-security-overlay .verity-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+#verity-security-overlay .verity-icon {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444; /* Crimson accent */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+#verity-security-overlay .verity-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+#verity-security-overlay .verity-score-container {
+  background-color: #0f172a;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 24px;
+  border: 1px solid #ef4444; /* Danger accent */
+}
+
+#verity-security-overlay .verity-score-label {
+  font-size: 14px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+#verity-security-overlay .verity-score-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+#verity-security-overlay .verity-score-max {
+  font-size: 18px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+#verity-security-overlay .verity-reasons {
+  margin: 0 0 32px 0;
+  padding: 0 0 0 24px;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+#verity-security-overlay .verity-reasons li {
+  margin-bottom: 8px;
+}
+
+#verity-security-overlay .verity-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#verity-security-overlay .verity-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+#verity-security-overlay .verity-btn:active {
+  transform: scale(0.98);
+}
+
+#verity-security-overlay .verity-btn-primary {
+  background-color: #ef4444;
+  color: white;
+}
+
+#verity-security-overlay .verity-btn-primary:hover {
+  background-color: #dc2626;
+}
+
+#verity-security-overlay .verity-btn-secondary {
+  background-color: transparent;
+  color: #94a3b8;
+}
+
+#verity-security-overlay .verity-btn-secondary:hover {
+  color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.05);
+}

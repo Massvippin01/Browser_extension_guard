@@ -1,0 +1,1124 @@
+[
+  {
+    "name": "PayPal",
+    "domains": [
+      "paypal.com"
+    ],
+    "variants": [
+      "paypal",
+      "paypal-support",
+      "paypal-secure",
+      "paypal-login"
+    ]
+  },
+  {
+    "name": "Chase",
+    "domains": [
+      "chase.com"
+    ],
+    "variants": [
+      "chase",
+      "chase-secure",
+      "chase-online",
+      "chase-auth"
+    ]
+  },
+  {
+    "name": "Amazon",
+    "domains": [
+      "amazon.com",
+      "amazon.co.uk"
+    ],
+    "variants": [
+      "amazon",
+      "amazon-security",
+      "amazon-support",
+      "amazon-prime"
+    ]
+  },
+  {
+    "name": "Bank of America",
+    "domains": [
+      "bankofamerica.com",
+      "bofa.com"
+    ],
+    "variants": [
+      "bankofamerica",
+      "bofa",
+      "bofa-secure",
+      "bankofamerica-login"
+    ]
+  },
+  {
+    "name": "Wells Fargo",
+    "domains": [
+      "wellsfargo.com"
+    ],
+    "variants": [
+      "wellsfargo",
+      "wellsfargo-secure",
+      "wellsfargo-update"
+    ]
+  },
+  {
+    "name": "Stripe",
+    "domains": [
+      "stripe.com"
+    ],
+    "variants": [
+      "stripe",
+      "stripe-secure",
+      "stripe-dashboard"
+    ]
+  },
+  {
+    "name": "Square",
+    "domains": [
+      "squareup.com"
+    ],
+    "variants": [
+      "square",
+      "squareup",
+      "square-secure"
+    ]
+  },
+  {
+    "name": "Citibank",
+    "domains": [
+      "citi.com",
+      "citibank.com"
+    ],
+    "variants": [
+      "citi",
+      "citibank",
+      "citi-login"
+    ]
+  },
+  {
+    "name": "Apple",
+    "domains": [
+      "apple.com",
+      "icloud.com"
+    ],
+    "variants": [
+      "apple",
+      "icloud",
+      "apple-support",
+      "apple-id"
+    ]
+  },
+  {
+    "name": "Google",
+    "domains": [
+      "google.com",
+      "accounts.google.com"
+    ],
+    "variants": [
+      "google",
+      "google-security",
+      "gmail"
+    ]
+  },
+  {
+    "name": "Microsoft",
+    "domains": [
+      "microsoft.com",
+      "live.com",
+      "office.com"
+    ],
+    "variants": [
+      "microsoft",
+      "office365",
+      "microsoft-support",
+      "windows"
+    ]
+  },
+  {
+    "name": "Netflix",
+    "domains": [
+      "netflix.com"
+    ],
+    "variants": [
+      "netflix",
+      "netflix-support",
+      "netflix-update"
+    ]
+  },
+  {
+    "name": "Facebook",
+    "domains": [
+      "facebook.com"
+    ],
+    "variants": [
+      "facebook",
+      "fb-security",
+      "facebook-login"
+    ]
+  },
+  {
+    "name": "Instagram",
+    "domains": [
+      "instagram.com"
+    ],
+    "variants": [
+      "instagram",
+      "ig-support",
+      "instagram-security"
+    ]
+  },
+  {
+    "name": "Venmo",
+    "domains": [
+      "venmo.com"
+    ],
+    "variants": [
+      "venmo",
+      "venmo-secure",
+      "venmo-login"
+    ]
+  },
+  {
+    "name": "Visa",
+    "domains": [
+      "visa.com"
+    ],
+    "variants": [
+      "visa",
+      "visa-secure",
+      "visa-auth"
+    ]
+  },
+  {
+    "name": "Mastercard",
+    "domains": [
+      "mastercard.com",
+      "mastercard.us"
+    ],
+    "variants": [
+      "mastercard",
+      "mastercard-secure"
+    ]
+  },
+  {
+    "name": "American Express",
+    "domains": [
+      "americanexpress.com",
+      "amex.com"
+    ],
+    "variants": [
+      "americanexpress",
+      "amex",
+      "amex-secure"
+    ]
+  },
+  {
+    "name": "Cash App",
+    "domains": [
+      "cash.app"
+    ],
+    "variants": [
+      "cashapp",
+      "cash-app-secure",
+      "cashapp-support"
+    ]
+  },
+  {
+    "name": "Discover",
+    "domains": [
+      "discover.com"
+    ],
+    "variants": [
+      "discover",
+      "discover-card",
+      "discover-secure"
+    ]
+  },
+  {
+    "name": "Capital One",
+    "domains": [
+      "capitalone.com"
+    ],
+    "variants": [
+      "capitalone",
+      "capitalone-secure",
+      "capitalone-login"
+    ]
+  },
+  {
+    "name": "US Bank",
+    "domains": [
+      "usbank.com"
+    ],
+    "variants": [
+      "usbank",
+      "usbank-secure",
+      "usbank-login"
+    ]
+  },
+  {
+    "name": "Barclays",
+    "domains": [
+      "barclays.co.uk",
+      "barclays.com"
+    ],
+    "variants": [
+      "barclays",
+      "barclays-secure"
+    ]
+  },
+  {
+    "name": "HSBC",
+    "domains": [
+      "hsbc.com",
+      "hsbc.co.uk"
+    ],
+    "variants": [
+      "hsbc",
+      "hsbc-secure"
+    ]
+  },
+  {
+    "name": "PNC Bank",
+    "domains": [
+      "pnc.com"
+    ],
+    "variants": [
+      "pnc",
+      "pnc-secure"
+    ]
+  },
+  {
+    "name": "TD Bank",
+    "domains": [
+      "td.com",
+      "tdbank.com"
+    ],
+    "variants": [
+      "tdbank",
+      "tdbank-secure"
+    ]
+  },
+  {
+    "name": "Truist",
+    "domains": [
+      "truist.com"
+    ],
+    "variants": [
+      "truist",
+      "truist-secure"
+    ]
+  },
+  {
+    "name": "Schwab",
+    "domains": [
+      "schwab.com"
+    ],
+    "variants": [
+      "schwab",
+      "schwab-secure"
+    ]
+  },
+  {
+    "name": "Fidelity",
+    "domains": [
+      "fidelity.com"
+    ],
+    "variants": [
+      "fidelity",
+      "fidelity-secure"
+    ]
+  },
+  {
+    "name": "Robinhood",
+    "domains": [
+      "robinhood.com"
+    ],
+    "variants": [
+      "robinhood",
+      "robinhood-secure",
+      "robinhood-support"
+    ]
+  },
+  {
+    "name": "Coinbase",
+    "domains": [
+      "coinbase.com"
+    ],
+    "variants": [
+      "coinbase",
+      "coinbase-secure",
+      "coinbase-support"
+    ]
+  },
+  {
+    "name": "Binance",
+    "domains": [
+      "binance.com"
+    ],
+    "variants": [
+      "binance",
+      "binance-secure"
+    ]
+  },
+  {
+    "name": "Kraken",
+    "domains": [
+      "kraken.com"
+    ],
+    "variants": [
+      "kraken",
+      "kraken-secure"
+    ]
+  },
+  {
+    "name": "Gemini",
+    "domains": [
+      "gemini.com"
+    ],
+    "variants": [
+      "gemini",
+      "gemini-secure"
+    ]
+  },
+  {
+    "name": "Zelle",
+    "domains": [
+      "zellepay.com"
+    ],
+    "variants": [
+      "zelle",
+      "zellepay",
+      "zelle-secure"
+    ]
+  },
+  {
+    "name": "Webull",
+    "domains": [
+      "webull.com"
+    ],
+    "variants": [
+      "webull",
+      "webull-secure"
+    ]
+  },
+  {
+    "name": "E-Trade",
+    "domains": [
+      "etrade.com"
+    ],
+    "variants": [
+      "etrade",
+      "etrade-secure"
+    ]
+  },
+  {
+    "name": "Vanguard",
+    "domains": [
+      "vanguard.com"
+    ],
+    "variants": [
+      "vanguard",
+      "vanguard-secure"
+    ]
+  },
+  {
+    "name": "Merrill Edge",
+    "domains": [
+      "merrilledge.com"
+    ],
+    "variants": [
+      "merrilledge",
+      "merrill-secure"
+    ]
+  },
+  {
+    "name": "Ally Bank",
+    "domains": [
+      "ally.com"
+    ],
+    "variants": [
+      "ally",
+      "ally-secure"
+    ]
+  },
+  {
+    "name": "Chime",
+    "domains": [
+      "chime.com"
+    ],
+    "variants": [
+      "chime",
+      "chime-secure",
+      "chime-support"
+    ]
+  },
+  {
+    "name": "SoFi",
+    "domains": [
+      "sofi.com"
+    ],
+    "variants": [
+      "sofi",
+      "sofi-secure"
+    ]
+  },
+  {
+    "name": "First Republic",
+    "domains": [
+      "firstrepublic.com"
+    ],
+    "variants": [
+      "firstrepublic",
+      "firstrepublic-secure"
+    ]
+  },
+  {
+    "name": "Citizens Bank",
+    "domains": [
+      "citizensbank.com"
+    ],
+    "variants": [
+      "citizens",
+      "citizensbank",
+      "citizens-secure"
+    ]
+  },
+  {
+    "name": "KeyBank",
+    "domains": [
+      "key.com"
+    ],
+    "variants": [
+      "keybank",
+      "keybank-secure"
+    ]
+  },
+  {
+    "name": "SunTrust",
+    "domains": [
+      "suntrust.com"
+    ],
+    "variants": [
+      "suntrust",
+      "suntrust-secure"
+    ]
+  },
+  {
+    "name": "BB&T",
+    "domains": [
+      "bbt.com"
+    ],
+    "variants": [
+      "bbt",
+      "bbt-secure"
+    ]
+  },
+  {
+    "name": "M&T Bank",
+    "domains": [
+      "mtb.com"
+    ],
+    "variants": [
+      "mtb",
+      "mtb-secure"
+    ]
+  },
+  {
+    "name": "Fifth Third",
+    "domains": [
+      "53.com"
+    ],
+    "variants": [
+      "fifththird",
+      "53",
+      "fifththird-secure"
+    ]
+  },
+  {
+    "name": "Regions Bank",
+    "domains": [
+      "regions.com"
+    ],
+    "variants": [
+      "regions",
+      "regions-secure"
+    ]
+  },
+  {
+    "name": "Santander",
+    "domains": [
+      "santander.com",
+      "santander.co.uk"
+    ],
+    "variants": [
+      "santander",
+      "santander-secure"
+    ]
+  },
+  {
+    "name": "BMO Harris",
+    "domains": [
+      "bmoharris.com"
+    ],
+    "variants": [
+      "bmoharris",
+      "bmo",
+      "bmoharris-secure"
+    ]
+  },
+  {
+    "name": "Woodforest",
+    "domains": [
+      "woodforest.com"
+    ],
+    "variants": [
+      "woodforest",
+      "woodforest-secure"
+    ]
+  },
+  {
+    "name": "Huntington",
+    "domains": [
+      "huntington.com"
+    ],
+    "variants": [
+      "huntington",
+      "huntington-secure"
+    ]
+  },
+  {
+    "name": "Synchrony",
+    "domains": [
+      "synchrony.com",
+      "mysynchrony.com"
+    ],
+    "variants": [
+      "synchrony",
+      "synchrony-secure"
+    ]
+  },
+  {
+    "name": "Navy Federal",
+    "domains": [
+      "navyfederal.org"
+    ],
+    "variants": [
+      "navyfederal",
+      "navyfederal-secure"
+    ]
+  },
+  {
+    "name": "USAA",
+    "domains": [
+      "usaa.com"
+    ],
+    "variants": [
+      "usaa",
+      "usaa-secure"
+    ]
+  },
+  {
+    "name": "eBay",
+    "domains": [
+      "ebay.com"
+    ],
+    "variants": [
+      "ebay",
+      "ebay-secure",
+      "ebay-support"
+    ]
+  },
+  {
+    "name": "Walmart",
+    "domains": [
+      "walmart.com"
+    ],
+    "variants": [
+      "walmart",
+      "walmart-secure"
+    ]
+  },
+  {
+    "name": "Target",
+    "domains": [
+      "target.com"
+    ],
+    "variants": [
+      "target",
+      "target-secure"
+    ]
+  },
+  {
+    "name": "Best Buy",
+    "domains": [
+      "bestbuy.com"
+    ],
+    "variants": [
+      "bestbuy",
+      "bestbuy-secure"
+    ]
+  },
+  {
+    "name": "Home Depot",
+    "domains": [
+      "homedepot.com"
+    ],
+    "variants": [
+      "homedepot",
+      "homedepot-secure"
+    ]
+  },
+  {
+    "name": "Costco",
+    "domains": [
+      "costco.com"
+    ],
+    "variants": [
+      "costco",
+      "costco-secure"
+    ]
+  },
+  {
+    "name": "Macy's",
+    "domains": [
+      "macys.com"
+    ],
+    "variants": [
+      "macys",
+      "macys-secure"
+    ]
+  },
+  {
+    "name": "Shopify",
+    "domains": [
+      "shopify.com"
+    ],
+    "variants": [
+      "shopify",
+      "shopify-secure",
+      "shopify-support"
+    ]
+  },
+  {
+    "name": "Etsy",
+    "domains": [
+      "etsy.com"
+    ],
+    "variants": [
+      "etsy",
+      "etsy-secure"
+    ]
+  },
+  {
+    "name": "Alibaba",
+    "domains": [
+      "alibaba.com"
+    ],
+    "variants": [
+      "alibaba",
+      "alibaba-secure"
+    ]
+  },
+  {
+    "name": "AliExpress",
+    "domains": [
+      "aliexpress.com"
+    ],
+    "variants": [
+      "aliexpress",
+      "aliexpress-secure"
+    ]
+  },
+  {
+    "name": "DHL",
+    "domains": [
+      "dhl.com"
+    ],
+    "variants": [
+      "dhl",
+      "dhl-tracking",
+      "dhl-support"
+    ]
+  },
+  {
+    "name": "FedEx",
+    "domains": [
+      "fedex.com"
+    ],
+    "variants": [
+      "fedex",
+      "fedex-tracking",
+      "fedex-support"
+    ]
+  },
+  {
+    "name": "UPS",
+    "domains": [
+      "ups.com"
+    ],
+    "variants": [
+      "ups",
+      "ups-tracking",
+      "ups-support"
+    ]
+  },
+  {
+    "name": "USPS",
+    "domains": [
+      "usps.com"
+    ],
+    "variants": [
+      "usps",
+      "usps-tracking",
+      "usps-support"
+    ]
+  },
+  {
+    "name": "Royal Mail",
+    "domains": [
+      "royalmail.com"
+    ],
+    "variants": [
+      "royalmail",
+      "royalmail-tracking"
+    ]
+  },
+  {
+    "name": "Twitter",
+    "domains": [
+      "twitter.com",
+      "x.com"
+    ],
+    "variants": [
+      "twitter",
+      "twitter-support",
+      "x-support"
+    ]
+  },
+  {
+    "name": "LinkedIn",
+    "domains": [
+      "linkedin.com"
+    ],
+    "variants": [
+      "linkedin",
+      "linkedin-support",
+      "linkedin-security"
+    ]
+  },
+  {
+    "name": "Snapchat",
+    "domains": [
+      "snapchat.com"
+    ],
+    "variants": [
+      "snapchat",
+      "snapchat-support"
+    ]
+  },
+  {
+    "name": "TikTok",
+    "domains": [
+      "tiktok.com"
+    ],
+    "variants": [
+      "tiktok",
+      "tiktok-support"
+    ]
+  },
+  {
+    "name": "WhatsApp",
+    "domains": [
+      "whatsapp.com"
+    ],
+    "variants": [
+      "whatsapp",
+      "whatsapp-support",
+      "whatsapp-secure"
+    ]
+  },
+  {
+    "name": "Telegram",
+    "domains": [
+      "telegram.org"
+    ],
+    "variants": [
+      "telegram",
+      "telegram-support"
+    ]
+  },
+  {
+    "name": "Discord",
+    "domains": [
+      "discord.com"
+    ],
+    "variants": [
+      "discord",
+      "discord-support",
+      "discord-security"
+    ]
+  },
+  {
+    "name": "Adobe",
+    "domains": [
+      "adobe.com"
+    ],
+    "variants": [
+      "adobe",
+      "adobe-support",
+      "adobe-secure"
+    ]
+  },
+  {
+    "name": "DocuSign",
+    "domains": [
+      "docusign.com",
+      "docusign.net"
+    ],
+    "variants": [
+      "docusign",
+      "docusign-secure",
+      "docusign-auth"
+    ]
+  },
+  {
+    "name": "Dropbox",
+    "domains": [
+      "dropbox.com"
+    ],
+    "variants": [
+      "dropbox",
+      "dropbox-secure",
+      "dropbox-login"
+    ]
+  },
+  {
+    "name": "Box",
+    "domains": [
+      "box.com"
+    ],
+    "variants": [
+      "box",
+      "box-secure"
+    ]
+  },
+  {
+    "name": "Salesforce",
+    "domains": [
+      "salesforce.com"
+    ],
+    "variants": [
+      "salesforce",
+      "salesforce-secure"
+    ]
+  },
+  {
+    "name": "Slack",
+    "domains": [
+      "slack.com"
+    ],
+    "variants": [
+      "slack",
+      "slack-secure"
+    ]
+  },
+  {
+    "name": "Zoom",
+    "domains": [
+      "zoom.us"
+    ],
+    "variants": [
+      "zoom",
+      "zoom-secure",
+      "zoom-support"
+    ]
+  },
+  {
+    "name": "Webex",
+    "domains": [
+      "webex.com"
+    ],
+    "variants": [
+      "webex",
+      "webex-secure"
+    ]
+  },
+  {
+    "name": "IRS",
+    "domains": [
+      "irs.gov"
+    ],
+    "variants": [
+      "irs",
+      "irs-gov",
+      "irs-secure"
+    ]
+  },
+  {
+    "name": "Gov.UK",
+    "domains": [
+      "gov.uk"
+    ],
+    "variants": [
+      "gov-uk",
+      "govuk",
+      "hmrc"
+    ]
+  },
+  {
+    "name": "Medicare",
+    "domains": [
+      "medicare.gov"
+    ],
+    "variants": [
+      "medicare",
+      "medicare-secure"
+    ]
+  },
+  {
+    "name": "Social Security",
+    "domains": [
+      "ssa.gov"
+    ],
+    "variants": [
+      "ssa",
+      "socialsecurity",
+      "ssa-secure"
+    ]
+  },
+  {
+    "name": "AT&T",
+    "domains": [
+      "att.com"
+    ],
+    "variants": [
+      "att",
+      "att-secure",
+      "att-support"
+    ]
+  },
+  {
+    "name": "Verizon",
+    "domains": [
+      "verizon.com"
+    ],
+    "variants": [
+      "verizon",
+      "verizon-secure",
+      "verizon-support"
+    ]
+  },
+  {
+    "name": "T-Mobile",
+    "domains": [
+      "t-mobile.com"
+    ],
+    "variants": [
+      "tmobile",
+      "t-mobile-secure"
+    ]
+  },
+  {
+    "name": "Sprint",
+    "domains": [
+      "sprint.com"
+    ],
+    "variants": [
+      "sprint",
+      "sprint-secure"
+    ]
+  },
+  {
+    "name": "Comcast",
+    "domains": [
+      "comcast.net",
+      "xfinity.com"
+    ],
+    "variants": [
+      "comcast",
+      "comcast-secure"
+    ]
+  },
+  {
+    "name": "Xfinity",
+    "domains": [
+      "xfinity.com"
+    ],
+    "variants": [
+      "xfinity",
+      "xfinity-secure"
+    ]
+  },
+  {
+    "name": "Spectrum",
+    "domains": [
+      "spectrum.com"
+    ],
+    "variants": [
+      "spectrum",
+      "spectrum-secure"
+    ]
+  },
+  {
+    "name": "Cox",
+    "domains": [
+      "cox.com"
+    ],
+    "variants": [
+      "cox",
+      "cox-secure"
+    ]
+  },
+  {
+    "name": "Directv",
+    "domains": [
+      "directv.com"
+    ],
+    "variants": [
+      "directv",
+      "directv-secure"
+    ]
+  },
+  {
+    "name": "Spotify",
+    "domains": [
+      "spotify.com"
+    ],
+    "variants": [
+      "spotify",
+      "spotify-secure"
+    ]
+  },
+  {
+    "name": "Hulu",
+    "domains": [
+      "hulu.com"
+    ],
+    "variants": [
+      "hulu",
+      "hulu-secure"
+    ]
+  },
+  {
+    "name": "Disney+",
+    "domains": [
+      "disneyplus.com"
+    ],
+    "variants": [
+      "disneyplus",
+      "disneyplus-secure"
+    ]
+  },
+  {
+    "name": "HBO Max",
+    "domains": [
+      "hbomax.com",
+      "max.com"
+    ],
+    "variants": [
+      "hbomax",
+      "max-secure",
+      "hbomax-secure"
+    ]
+  }
+]

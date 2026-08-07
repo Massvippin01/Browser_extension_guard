@@ -1,0 +1,161 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0f172a;
+  color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.simulator-container {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.icon {
+  font-size: 28px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.description {
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.control-group {
+  margin-bottom: 24px;
+}
+
+.control-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+
+.verity-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.verity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verity-btn-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.verity-btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.verity-btn-primary {
+  background-color: #38bdf8;
+  color: #0f172a;
+}
+
+.verity-btn-primary:hover {
+  background-color: #0ea5e9;
+}
+
+.result-box {
+  margin-top: 24px;
+  padding: 20px;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+}
+
+.result-box h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #ef4444;
+}
+
+.result-box p {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.code-block {
+  background-color: #000;
+  color: #10b981;
+  font-family: monospace;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.url-display-group {
+  display: flex;
+  gap: 8px;
+}
+
+.url-display-group input {
+  flex: 1;
+  padding: 10px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #38bdf8;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.url-display-group button {
+  width: auto;
+  padding: 10px 16px;
+}

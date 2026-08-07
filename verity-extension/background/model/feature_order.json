@@ -1,0 +1,12 @@
+{
+  "features": [
+    "having_IP_Address",
+    "URL_Length",
+    "Shortining_Service",
+    "having_At_Symbol",
+    "double_slash_redirecting",
+    "Prefix_Suffix",
+    "having_Sub_Domain",
+    "HTTPS_token"
+  ]
+}

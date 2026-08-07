@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Verity ML Offscreen</title>
+</head>
+<body>
+  <!-- This offscreen document runs the WASM ML model -->
+  <!-- We load it natively as a classic script, avoiding all MV3 ES Module worker limitations -->
+  <script src="lib/ort.min.js"></script>
+  <script src="offscreen.js"></script>
+</body>
+</html>
