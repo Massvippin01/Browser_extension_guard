@@ -56,9 +56,14 @@ async function loadUrlShorteners() {
   }
 }
 
-// Trusted domains — never scan internal Chrome pages
+// Trusted internal browser schemes — never scan chrome:// or internal extension pages
 function isInternalUrl(url) {
-  return !url || url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('about:') || url.startsWith('data:') || url.startsWith('file://');
+  if (!url) return true;
+  return url.startsWith('chrome://') ||
+         url.startsWith('chrome-extension://') ||
+         url.startsWith('edge://') ||
+         url.startsWith('about:') ||
+         url.startsWith('data:');
 }
 
 // ---------------------------------------------------------------------------

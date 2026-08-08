@@ -101,15 +101,19 @@ function detectClaimedProvider(domSignals, paymentBrands) {
  * Returns: { officialDomainMatch, domainMismatch, isTrustedProvider }
  */
 function verifyProviderDomain(hostname, claimedProviderObj, paymentBrands) {
-  if (!hostname) return { officialDomainMatch: false, domainMismatch: false, isTrustedProvider: false };
+  if (!hostname) return { officialDomainMatch: false, domainMismatch: true, isTrustedProvider: false };
 
-  // Check if hostname is ANY trusted provider (for allow-redirect logic)
-  const isTrustedProvider = paymentBrands.some(brand =>
+  // Check if hostname is ANY trusted payment provider (e.g. paypal.com, stripe.com, razorpay.com)
+  const isTrustedProvider = (paymentBrands || []).some(brand =>
     (brand.domains || []).some(d => hostname === d || hostname.endsWith('.' + d))
   );
 
   if (!claimedProviderObj) {
-    return { officialDomainMatch: false, domainMismatch: false, isTrustedProvider };
+    return {
+      officialDomainMatch: isTrustedProvider,
+      domainMismatch: !isTrustedProvider,
+      isTrustedProvider
+    };
   }
 
   // Check if hostname matches the CLAIMED provider specifically
@@ -133,13 +137,33 @@ function verifyProviderDomain(hostname, claimedProviderObj, paymentBrands) {
  */
 export function analyzePaymentPage(url, domSignals, paymentBrands) {
   if (!url || !domSignals || !paymentBrands) return null;
+  if (url === 'http://localhost:3000/' || url === 'http://localhost:3000') return null;
 
   const hostname = safeHostname(url);
   const fields = domSignals.paymentFields || {};
 
   // 1. Payment intent
-  const intentResult = detectPaymentIntent(domSignals);
-  if (!intentResult.isPaymentPage) return null; // Not a payment page — skip
+  const intent = detectPaymentIntent(domSignals);
+
+  // 1b. UPI Debit Trap & Cashback Scam Detection
+  const pageText = (domSignals.pageText || '').toLowerCase();
+  const hasCashbackClaims = pageText.includes('cashback') || pageText.includes('claim refund') ||
+                            pageText.includes('receive money') || pageText.includes('claim payment') ||
+                            pageText.includes('prize winner') || pageText.includes('reward points');
+  
+  const hasUpiDebitLink = (domSignals.hasUpiLink || pageText.includes('upi://pay') || fields.upi);
+
+  let isUpiTrap = false;
+  if (hasCashbackClaims && hasUpiDebitLink) {
+    isUpiTrap = true;
+  }
+
+  // 1c. Digital Arrest / Utility Disconnection Scam Detection
+  const isDigitalScam = pageText.includes('electricity connection') || pageText.includes('will be disconnected') ||
+                        pageText.includes('digital arrest') || pageText.includes('trai SIM') ||
+                        pageText.includes('cbi notice') || pageText.includes('update kyc');
+
+  if (!intent.isPaymentPage && !isUpiTrap && !isDigitalScam) return null; // Not a payment page — skip
 
   // 2. Claimed provider detection
   const providerResult = detectClaimedProvider(domSignals, paymentBrands);
@@ -198,15 +222,26 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
 
   // 5. Critical override rule
   // Fake brand + domain mismatch + card/CVV → guaranteed HIGH RISK minimum
+  if (isUpiTrap) {
+    paymentScore += 85;
+    reasons.unshift('CRITICAL DIGITAL SCAM TRAP: Page claims to credit cashback/reward, but embeds a UPI DEBIT transaction (upi://pay) that will DEDUCT money from your account!');
+  }
+
+  if (isDigitalScam && !domainResult.officialDomainMatch) {
+    paymentScore += 75;
+    reasons.unshift('DIGITAL ARREST / BILL SCAM TRAP: Page uses high-pressure utility disconnection or digital arrest threats on an unverified domain.');
+  }
+
   const isCriticalPaymentPhishing = (
-    providerResult.claimedProvider &&
-    domainResult.domainMismatch &&
-    (fields.card || fields.cvv)
+    (!domainResult.officialDomainMatch && (fields.card || fields.cvv || fields.otp)) ||
+    (providerResult.claimedProvider && domainResult.domainMismatch) ||
+    isUpiTrap ||
+    isDigitalScam
   );
 
   if (isCriticalPaymentPhishing) {
-    paymentScore = Math.max(paymentScore, 80);
-    reasons.unshift('HIGH CONFIDENCE: Payment phishing — fake provider with credential collection.');
+    paymentScore = Math.max(paymentScore, 85);
+    reasons.unshift('HIGH CONFIDENCE: Payment Phishing — unverified domain requesting payment credentials (Card/CVV/OTP).');
   }
 
   paymentScore = Math.min(paymentScore, 100);
