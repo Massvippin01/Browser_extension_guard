@@ -150,7 +150,7 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
   
   const isSuspiciousRedirect = redirectSignals && (redirectSignals.suspicious || (redirectSignals.shortenerDetected && redirectSignals.chain && redirectSignals.chain.length > 2));
   if (isSuspiciousRedirect && domSignals && domSignals.hasCredentialCollection && !domSignals.isTrustedDomain) {
-    addSignal('synergy_redirect_credentials', 30, 'High risk: Suspicious or multi-hop redirect routing to a credential collection page.');
+    addSignal('synergy_redirect_credentials', 50, 'Critical risk: Suspicious or multi-hop redirect routing to a credential collection page.');
   }
 
   // 8. Payment Protection (spec: VERITY_PAYMENT_PROTECTION_ANTIGRAVITY_SPEC-1.md)
