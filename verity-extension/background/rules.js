@@ -117,10 +117,18 @@ export function hasBrandNameInWrongDomain(urlString, brandsList) {
   
   for (const brand of brandsList) {
     const brandNameLower = brand.name.toLowerCase();
+    let match = false;
     
-    // Check if the hostname contains the brand name as a substring
-    if (hostname.includes(brandNameLower)) {
-      
+    // For short brand names (e.g. UPS, SBI), require a token boundary to avoid matching inside other words.
+    // For longer names (e.g. netflix, paypal), a substring match is safe enough.
+    if (brandNameLower.length <= 4) {
+      const regex = new RegExp(`(^|[-.])${brandNameLower}([-.]|$)`, 'i');
+      match = regex.test(hostname);
+    } else {
+      match = hostname.includes(brandNameLower);
+    }
+    
+    if (match) {
       // Is the hostname actually one of the legitimate domains or a subdomain of it?
       const isLegit = brand.domains.some(legitDomain => {
         return hostname === legitDomain || hostname.endsWith('.' + legitDomain);
@@ -178,7 +186,8 @@ export function hasSuspiciousUrlPattern(urlString) {
     '.pw', '.cc', '.ws', '.biz',            // Known abuse-heavy TLDs
     '.icu', '.fun', '.vip', '.club',        // Often used in scam campaigns
     '.cyou', '.sbs', '.uno', '.cfd',        // New-era phishing TLDs
-    '.monster', '.rest', '.skin', '.bar'    // Rare but seen in campaigns
+    '.monster', '.rest', '.skin', '.bar',   // Rare but seen in campaigns
+    '.qpon', '.world'                       // Commonly abused in ad-redirects
   ];
   if (suspiciousTlds.some(tld => url.hostname.endsWith(tld))) {
     return {
@@ -258,6 +267,80 @@ export function hasMalvertisingPattern(urlString) {
 }
 
 /**
+ * Rule 5d: Affiliate Tracker / Ad Tracker URL Pattern Detection
+ * Catches links like track.laros.world/<uuid>?source=...&campaign_id=...
+ * @param {string} urlString
+ */
+export function hasAffiliateTrackerPattern(urlString) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  let score = 0;
+  const reasons = [];
+
+  const queryKeys = Array.from(url.searchParams.keys()).map(k => k.toLowerCase());
+  const queryValues = Array.from(url.searchParams.values());
+  
+  // 1. Explicit affiliate/ad tracker keys
+  const trackerKeywords = ['campaign_id', 'click_id', 'creative_id', 'aff_id', 'source', 'utm_source'];
+  const presentTrackers = trackerKeywords.filter(k => queryKeys.includes(k));
+  
+  // 2. Generic/Obfuscated ad network keys (ymid, var, z, sz)
+  const genericTrackers = ['ymid', 'var', 'var_1', 'var_2', 'var_3', 'z', 'sz', 'zoneid'];
+  const presentGenericTrackers = genericTrackers.filter(k => queryKeys.includes(k));
+
+  // 3. UUID or Hash detection in query values or path
+  const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+  const hashRegex = /^[a-f0-9]{32,64}$/i;
+  
+  const hasUuidOrHashValue = queryValues.some(v => uuidRegex.test(v) || hashRegex.test(v));
+  
+  const path = url.pathname.replace(/^\/|\/$/g, '');
+  const pathIsUuid = uuidRegex.test(path);
+
+  // Scoring Logic
+  if (presentTrackers.length >= 2) {
+    score += 35;
+    reasons.push(`URL matches explicit tracking pattern (${presentTrackers.join(', ')}).`);
+  }
+  
+  if (presentGenericTrackers.length >= 2) {
+    score += 30;
+    reasons.push(`URL uses generic ad-network tracking variables (${presentGenericTrackers.join(', ')}).`);
+  }
+
+  if (hasUuidOrHashValue) {
+    score += 25;
+    reasons.push('URL contains a unique identifier (UUID/Hash) for tracking.');
+  } else if (pathIsUuid) {
+    score += 20;
+    reasons.push('URL path is a unique tracking identifier.');
+  }
+
+  // If score is high enough to be purely a tracker, classify it as malvertising context
+  if (score >= 45) {
+    // Return a high score that feeds directly into the malvertising bucket uncapped
+    return {
+      score: score + 15, // boost to ensure block threshold if standalone
+      reason: `High-confidence Ad/Affiliate Tracking Network detected: ${reasons.join(' ')}`,
+      triggered: true
+    };
+  } else if (score > 0) {
+    return {
+      score: score,
+      reason: reasons.join(' '),
+      triggered: true
+    };
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+
+/**
  * Rule 5c: Random-looking hostname detection
  * Catches hostnames like: wb.omegatootler.rest, random-abc123.xyz, etc.
  * These are common in ad-redirect networks, malware C2, and malvertising.
@@ -308,7 +391,7 @@ export function hasRandomLookingHostname(urlString) {
   // Detect if it's a nonsense portmanteau or gibberish over 10 chars
   if (domainLabel.length > 10 && !/^(google|amazon|microsoft|facebook|youtube|twitter|instagram|netflix|apple|adobe|paypal|stripe|shopify|cloudflare|github|linkedin|reddit|discord|zoom|slack|notion|atlassian)/.test(domainLabel)) {
     // No known brand prefix — check if it's in a suspicious TLD
-    const suspTLDs = ['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.click', '.online', '.site', '.fun', '.live', '.vip', '.club', '.icu', '.sbs', '.uno', '.cfd', '.bar', '.monster', '.skin'];
+    const suspTLDs = ['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.click', '.online', '.site', '.fun', '.live', '.vip', '.club', '.icu', '.sbs', '.uno', '.cfd', '.bar', '.monster', '.skin', '.qpon', '.world'];
     if (suspTLDs.some(tld => hostname.endsWith(tld))) {
       return {
         score: 50,
@@ -447,7 +530,18 @@ export function hasBrandVariantMatch(urlString, brandsList) {
     // Check variants array
     if (brand.variants && Array.isArray(brand.variants)) {
       for (const variant of brand.variants) {
-        if (hostname.includes(variant.toLowerCase())) {
+        const variantLower = variant.toLowerCase();
+        let match = false;
+        
+        // Similar to the brand name rule, require token boundaries for very short variants
+        if (variantLower.length <= 4) {
+          const regex = new RegExp(`(^|[-.])${variantLower}([-.]|$)`, 'i');
+          match = regex.test(hostname);
+        } else {
+          match = hostname.includes(variantLower);
+        }
+
+        if (match) {
           return {
             score: 85,
             reason: `Hostname matches a known typosquat variant of "${brand.name}".`,

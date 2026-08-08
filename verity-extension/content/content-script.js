@@ -104,6 +104,28 @@ function scanClaimedProviders() {
 // 1. Signal Collection (Stage 1)
 function collectSignals() {
   const text = document.body ? document.body.innerText.toLowerCase() : '';
+  const currentHostname = window.location.hostname.toLowerCase().replace(/^www\./, '');
+
+  // Major trusted domains — skip aggressive credential/financial synergy scoring.
+  // These sites legitimately have login forms and financial terminology.
+  const TRUSTED_DOMAINS = new Set([
+    'github.com', 'google.com', 'microsoft.com', 'apple.com', 'amazon.com',
+    'youtube.com', 'facebook.com', 'instagram.com', 'twitter.com', 'x.com',
+    'linkedin.com', 'reddit.com', 'stackoverflow.com', 'wikipedia.org',
+    'netflix.com', 'spotify.com', 'discord.com', 'slack.com', 'notion.so',
+    'dropbox.com', 'zoom.us', 'atlassian.com', 'gitlab.com', 'bitbucket.org',
+    'cloudflare.com', 'npmjs.com', 'pypi.org', 'docker.com', 'vercel.com',
+    'netlify.com', 'heroku.com', 'digitalocean.com', 'aws.amazon.com',
+    'portal.azure.com', 'console.cloud.google.com', 'firebase.google.com',
+    'accounts.google.com', 'login.microsoftonline.com',
+    // Indian government & major services
+    'irctc.co.in', 'incometax.gov.in', 'mca.gov.in', 'uidai.gov.in',
+    'epfindia.gov.in', 'onlinesbi.sbi', 'hdfcbank.com', 'icicibank.com',
+    'axisbank.com', 'kotak.com', 'paytm.com', 'phonepe.com', 'razorpay.com'
+  ]);
+
+  const isTrustedDomain = TRUSTED_DOMAINS.has(currentHostname) ||
+    [...TRUSTED_DOMAINS].some(d => currentHostname.endsWith('.' + d));
 
   const hasPasswordInput = document.querySelector('input[type="password"]') !== null;
   const loginForms = Array.from(document.querySelectorAll('form')).filter(form => {
@@ -134,13 +156,23 @@ function collectSignals() {
   }
 
   // Financial Context Engine
-  const financialKeywords = ['upi', 'bank', 'banking', 'net banking', 'payment', 'checkout', 'wallet', 'credit card', 'debit card', 'cvv', 'otp', 'pin', 'kyc', 'refund', 'cashback', 'investment', 'crypto', 'trading'];
-  let financialMatch = financialKeywords.filter(k => text.includes(k));
+  // IMPORTANT: 'pin' removed — matches 'pinned' on GitHub/social sites.
+  // Only specific, unambiguous financial terms are included.
+  const financialKeywords = [
+    'upi', 'net banking', 'credit card', 'debit card', 'cvv', 'otp',
+    'kyc', 'atm pin', 'mpin', 'bank account', 'ifsc',
+    'cashback', 'crypto', 'wallet'
+  ];
+  let financialMatch = isTrustedDomain ? [] : financialKeywords.filter(k => text.includes(k));
 
   // Credential Collection Detection
-  const sensitiveInputs = Array.from(document.querySelectorAll('input')).filter(input => {
+  // IMPORTANT: 'pin' and 'account' removed — too generic, causes false positives
+  // on GitHub (search box name attribute), Stack Overflow, etc.
+  const sensitiveInputs = isTrustedDomain ? [] : Array.from(document.querySelectorAll('input')).filter(input => {
     const attr = ((input.name||'') + (input.id||'') + (input.type||'') + (input.placeholder||'')).toLowerCase();
-    return attr.includes('password') || attr.includes('card') || attr.includes('cvv') || attr.includes('otp') || attr.includes('pin') || attr.includes('upi') || attr.includes('account');
+    return attr.includes('password') || attr.includes('cardnumber') || 
+           attr.includes('cc-number') || attr.includes('cvv') || 
+           attr.includes('cc-csc') || attr.includes('otp') || attr.includes('upi');
   });
 
   // ── Payment-specific signals ──
@@ -149,8 +181,8 @@ function collectSignals() {
   const claimedProviders = scanClaimedProviders();
 
   return {
-    hasPasswordInput,
-    loginFormCount: loginForms.length,
+    hasPasswordInput: isTrustedDomain ? false : hasPasswordInput,
+    loginFormCount: isTrustedDomain ? 0 : loginForms.length,
     formActions,
     scam: !!scamMatch,
     scamReason: scamMatch ? `Matches scam language: "${scamMatch}"` : null,
@@ -158,11 +190,12 @@ function collectSignals() {
     pupReason: pupMatch,
     financialMatches: financialMatch,
     hasCredentialCollection: sensitiveInputs.length > 0,
+    isTrustedDomain,
     // Payment Protection signals
-    paymentFields,
-    hasPaymentForm,
+    paymentFields: isTrustedDomain ? {} : paymentFields,
+    hasPaymentForm: isTrustedDomain ? false : hasPaymentForm,
     claimedProviders,
-    pageText:  text.substring(0, 3000), // First 3000 chars for provider detection (no sensitive values ever)
+    pageText:  text.substring(0, 3000),
     pageTitle: document.title || '',
   };
 }
@@ -365,6 +398,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     triggerImmediateUrlScan();
     setTimeout(triggerFullScan, 500);
+  } else if (message.action === 'DOWNLOAD_VERDICT') {
+    injectDownloadWarning(message.payload);
   }
 });
 
@@ -377,6 +412,114 @@ if (document.readyState === 'loading') {
   triggerFullScan();
 }
 
+// ─── Download Warning UI ────────────────────────────────────────────────────
+let downloadWarningHost = null;
+
+function injectDownloadWarning(payload) {
+  removeDownloadWarning();
+
+  const { filename, sourceHostname, signals, riskScore, severity, action, cancelled, chromeSaysDangerous } = payload;
+
+  const isDanger = severity === 'danger' || action === 'block';
+
+  const color   = isDanger ? '#ef4444' : '#f59e0b';
+  const bgColor = isDanger ? 'rgba(30,10,10,0.97)' : 'rgba(30,25,10,0.97)';
+  const icon    = isDanger ? '🛑' : '⚠️';
+  const title   = isDanger
+    ? (chromeSaysDangerous ? 'DANGEROUS DOWNLOAD' : 'HIGH-RISK DOWNLOAD BLOCKED')
+    : 'SUSPICIOUS DOWNLOAD DETECTED';
+
+  const signalsHtml = (signals || []).map(s =>
+    `<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;">
+      <span style="color:${color};font-size:13px;flex-shrink:0;">✓</span>
+      <span>${s}</span>
+    </div>`
+  ).join('');
+
+  const cancelledNote = cancelled
+    ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.15);border-radius:6px;font-size:11px;color:#fca5a5;">Download cancelled by Verity.</div>`
+    : (isDanger ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:11px;color:#fca5a5;">Verity recommends cancelling this download manually.</div>` : '');
+
+  const host = document.createElement('div');
+  host.id = 'verity-download-warning-host';
+  host.style.cssText = 'position:fixed;top:60px;right:16px;z-index:2147483645;pointer-events:auto;max-width:380px;width:380px;';
+  downloadWarningHost = host;
+
+  const shadow = host.attachShadow({ mode: 'closed' });
+  shadow.innerHTML = `
+    <style>
+      .dw-panel {
+        background: ${bgColor};
+        border: 1.5px solid ${color};
+        border-radius: 14px;
+        padding: 18px 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 12px;
+        color: #f1f5f9;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+        animation: slideIn 0.25s ease;
+      }
+      @keyframes slideIn {
+        from { transform: translateX(110%); opacity: 0; }
+        to   { transform: translateX(0); opacity: 1; }
+      }
+      .dw-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+      .dw-icon { font-size:22px; }
+      .dw-title { font-size:13px; font-weight:700; color:${color}; letter-spacing:0.5px; }
+      .dw-meta { background:rgba(255,255,255,0.05); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+      .dw-meta-row { display:flex; gap:6px; margin-bottom:5px; font-size:11px; }
+      .dw-meta-label { color:#94a3b8; min-width:60px; flex-shrink:0; }
+      .dw-meta-value { color:#e2e8f0; word-break:break-all; font-weight:500; }
+      .dw-signals { margin-bottom:12px; font-size:11px; line-height:1.5; color:#cbd5e1; }
+      .dw-score { display:flex; justify-content:space-between; align-items:center; }
+      .dw-score-label { font-size:11px; color:#94a3b8; }
+      .dw-score-value { font-size:15px; font-weight:700; color:${color}; }
+      .dw-actions { display:flex; gap:10px; margin-top:14px; }
+      .dw-btn { flex:1; padding:9px; border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; transition: opacity 0.15s; }
+      .dw-btn-dismiss { background:rgba(255,255,255,0.08); color:#e2e8f0; }
+      .dw-btn-dismiss:hover { background:rgba(255,255,255,0.15); }
+      .dw-btn-action { background:${color}; color:white; font-weight:700; }
+      .dw-btn-action:hover { opacity:0.85; }
+    </style>
+    <div class="dw-panel">
+      <div class="dw-header">
+        <div class="dw-icon">${icon}</div>
+        <div class="dw-title">${title}</div>
+      </div>
+      <div class="dw-meta">
+        <div class="dw-meta-row"><div class="dw-meta-label">File:</div><div class="dw-meta-value">${filename || 'Unknown'}</div></div>
+        <div class="dw-meta-row"><div class="dw-meta-label">Source:</div><div class="dw-meta-value">${sourceHostname || 'Unknown'}</div></div>
+      </div>
+      ${signalsHtml ? `<div class="dw-signals">${signalsHtml}</div>` : ''}
+      <div class="dw-score">
+        <span class="dw-score-label">Risk Score</span>
+        <span class="dw-score-value">${riskScore} / 100</span>
+      </div>
+      ${cancelledNote}
+      <div class="dw-actions">
+        <button class="dw-btn dw-btn-dismiss" id="dw-dismiss">Dismiss</button>
+        ${!cancelled ? `<button class="dw-btn dw-btn-action" id="dw-open-dl">↓ View Downloads</button>` : ''}
+      </div>
+    </div>
+  `;
+
+  shadow.getElementById('dw-dismiss')?.addEventListener('click', removeDownloadWarning);
+  shadow.getElementById('dw-open-dl')?.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: 'OPEN_DOWNLOADS_PAGE' });
+  });
+
+  document.documentElement.appendChild(host);
+
+  // Auto-dismiss warn after 15s; danger stays until dismissed
+  if (!isDanger) setTimeout(removeDownloadWarning, 15000);
+}
+
+function removeDownloadWarning() {
+  if (downloadWarningHost) {
+    downloadWarningHost.remove();
+    downloadWarningHost = null;
+  }
+}
 
 // 4. Strong Overlay Enforcement
 function removeOverlay() {

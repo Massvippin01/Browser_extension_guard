@@ -6,13 +6,14 @@
  *   → Reputation → ML → Risk Engine → Enforcement Decision
  */
 
-import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname } from './background/rules.js';
+import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
 import { getRedirectSignals, updateShorteners } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
 import { getMlScore, initializeModel } from './background/ml-scorer.js';
 import { checkReputation } from './background/reputation.js';
 import { analyzePaymentPage } from './background/payment-detector.js';
+import { initDownloadMonitor } from './background/download/downloadMonitor.js';
 
 // ---------------------------------------------------------------------------
 // Load brands list + payment brands at startup
@@ -78,9 +79,32 @@ async function analyzeUrl(url) {
     hasBrandVariantMatch(url, brandsList),
     hasMalvertisingPattern(url),
     hasRandomLookingHostname(url),
+    hasAffiliateTrackerPattern(url),
   ];
 
   return ruleSignals;
+}
+
+/**
+ * Exported helper — computes URL rule signals for any URL.
+ * Used by downloadMonitor to analyze the download source URL.
+ */
+function buildRuleSignals(url) {
+  if (!url || isInternalUrl(url)) return [];
+  return [
+    isIpBasedUrl(url),
+    hasMissingHttps(url),
+    hasExcessiveSubdomains(url),
+    hasBrandNameInWrongDomain(url, brandsList),
+    hasSuspiciousUrlPattern(url),
+    hasPunycodeOrKeywords(url),
+    detectTyposquatting(url, brandsList),
+    hasFinancialKeywordInHostname(url, brandsList),
+    hasBrandVariantMatch(url, brandsList),
+    hasMalvertisingPattern(url),
+    hasRandomLookingHostname(url),
+    hasAffiliateTrackerPattern(url),
+  ];
 }
 
 async function runFullAnalysis(tabId, url, domSignals) {
@@ -270,6 +294,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   // Popup asks for current verdict
+  if (message.action === 'OPEN_DOWNLOADS_PAGE') {
+    chrome.tabs.create({ url: 'chrome://downloads/' }).catch(() => {});
+    return false;
+  }
+
+  // Popup asks for current verdict
   if (message.action === 'GET_VERDICT') {
     const reqTabId = message.tabId;
     chrome.storage.session.get(reqTabId.toString()).then(result => {
@@ -312,3 +342,23 @@ chrome.runtime.onStartup.addListener(async () => {
 loadBrands().catch(() => {});
 loadPaymentBrands().catch(() => {});
 loadUrlShorteners().catch(() => {});
+
+// ---------------------------------------------------------------------------
+// Download Monitor Initialization
+// ---------------------------------------------------------------------------
+function initDownloadProtection() {
+  initDownloadMonitor({
+    brandsList,
+    calculateRisk,
+    buildRuleSignals,
+  });
+}
+
+// Initialize after brands are loaded so impersonation detection works
+Promise.all([
+  loadBrands(),
+  loadPaymentBrands(),
+  loadUrlShorteners(),
+]).then(() => {
+  initDownloadProtection();
+}).catch(() => {});

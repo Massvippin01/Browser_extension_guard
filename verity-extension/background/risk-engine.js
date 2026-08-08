@@ -2,7 +2,7 @@
  * risk-engine.js - Adaptive Risk Engine aggregating multiple independent signals.
  */
 
-export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null, paymentAnalysis = null) {
+export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null, paymentAnalysis = null, downloadSignals = null) {
   let riskScore = 0;
   const signals = [];
   const categories = {
@@ -30,7 +30,8 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
         s.reason.includes('Extremely long URL') || s.reason.includes('encoded payload') ||
         s.reason.includes('tracking fingerprint') || s.reason.includes('redirect routing') ||
         s.reason.includes('randomly generated') || s.reason.includes('high-risk TLD') ||
-        s.reason.includes('Unusually long URL')) {
+        s.reason.includes('Unusually long URL') || s.reason.includes('tracking pattern') ||
+        s.reason.includes('Tracking Network')) {
       malvertScore += Math.round(s.score * 0.65);
       malvertReasons.push(s.reason);
     } else if (!s.reason.includes('brand')) {
@@ -46,9 +47,9 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     addSignal('url', urlScore, urlReasons.join(' '));
   }
 
-  // Malvertising signals — uncapped up to 60 points independently
+  // Malvertising signals — uncapped up to 85 points independently
   if (malvertScore > 0) {
-    malvertScore = Math.min(malvertScore, 60);
+    malvertScore = Math.min(malvertScore, 85);
     addSignal('malvertising', malvertScore, malvertReasons.join(' '));
     categories.suspicious.flagged = true;
     categories.suspicious.reason = malvertReasons[0];
@@ -105,17 +106,25 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
   }
 
   // 5. Financial Context Engine (0-20 points)
-  if (domSignals && domSignals.financialMatches && domSignals.financialMatches.length > 0) {
+  // Require at least 2 specific financial terms to avoid false positives
+  // from common words like 'trading', 'wallet', 'payment' on legitimate sites.
+  const highConfidenceFinancialTerms = ['cvv', 'otp', 'upi', 'kyc', 'atm pin', 'mpin', 'bank account', 'ifsc', 'net banking', 'credit card', 'debit card'];
+  const hasHighConfidenceFinancialTerm = domSignals && domSignals.financialMatches &&
+    domSignals.financialMatches.some(m => highConfidenceFinancialTerms.includes(m));
+  
+  if (!domSignals?.isTrustedDomain && domSignals?.financialMatches?.length >= 2) {
     addSignal('financial_context', 20, `Financial terminology detected: ${domSignals.financialMatches.slice(0, 3).join(', ')}.`);
   }
   
-  // Synergy Penalties
-  if (brandSignal && domSignals && domSignals.hasCredentialCollection) {
+  // Synergy Penalties — require strong corroborating evidence
+  if (brandSignal && domSignals && domSignals.hasCredentialCollection && !domSignals.isTrustedDomain) {
     addSignal('synergy_impersonation_credentials', 30, 'High risk: Impersonating a trusted brand while requesting sensitive credentials.');
-  } else if (!brandSignal && domSignals && domSignals.hasCredentialCollection && domSignals.financialMatches && domSignals.financialMatches.length > 0) {
+  } else if (!brandSignal && domSignals && domSignals.hasCredentialCollection && !domSignals.isTrustedDomain &&
+             domSignals.financialMatches && domSignals.financialMatches.length >= 2 && hasHighConfidenceFinancialTerm) {
+    // Must have 2+ financial terms AND at least one high-confidence term (cvv, otp, upi...)
     addSignal('synergy_financial_credentials', 35, 'High risk: Unverified site requesting financial credentials.');
   }
-  if (redirectSignals && redirectSignals.suspicious && domSignals && domSignals.hasCredentialCollection) {
+  if (redirectSignals && redirectSignals.suspicious && domSignals && domSignals.hasCredentialCollection && !domSignals.isTrustedDomain) {
     addSignal('synergy_redirect_credentials', 30, 'High risk: Suspicious redirect routing to a credential collection page.');
   }
 
@@ -211,6 +220,78 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
 
     if (penalty > 0 || redirectReasons.length > 0) {
       addSignal('redirect', penalty, redirectReasons.join(' '));
+    }
+  }
+
+  // 8. Download Protection Signals
+  if (downloadSignals && downloadSignals.analysisContext === 'download') {
+    let dlScore = 0;
+    const dlReasons = [];
+
+    // Chrome-confirmed dangerous — highest priority signal
+    if (downloadSignals.chromeSaysDangerous) {
+      dlScore += 60;
+      dlReasons.push(`Chrome identified this download as dangerous (${downloadSignals.chromeDangerState}).`);
+    }
+
+    // Strong combo: executable/script from a suspicious or malicious source
+    if ((downloadSignals.executableDownload || downloadSignals.scriptDownload) && downloadSignals.sourceDomainSuspicious) {
+      dlScore += 35;
+      dlReasons.push('Executable or script download from a suspicious source domain.');
+    } else if (downloadSignals.executableDownload || downloadSignals.scriptDownload) {
+      dlScore += 10;
+      dlReasons.push(`High-risk file type downloaded (${downloadSignals.extension}).`);
+    }
+
+    // Installer download adds moderate risk
+    if (downloadSignals.installerDownload && downloadSignals.sourceDomainSuspicious) {
+      dlScore += 20;
+      dlReasons.push('Installer download from a suspicious source.');
+    } else if (downloadSignals.installerDownload) {
+      dlScore += 5;
+      dlReasons.push(`Installer file downloaded (${downloadSignals.extension}).`);
+    }
+
+    // Double extension — high risk regardless of source
+    if (downloadSignals.doubleExtension) {
+      dlScore += 30;
+      dlReasons.push(`Double extension: file appears to be "${downloadSignals.apparentExtension}" but is actually "${downloadSignals.extension}".`);
+    }
+
+    // Misleading filename keyword
+    if (downloadSignals.misleadingFilename && downloadSignals.suspiciousKeyword) {
+      dlScore += 15;
+      dlReasons.push(`Misleading filename pattern: "${downloadSignals.suspiciousKeyword}".`);
+    }
+
+    // Brand impersonation via filename (e.g. Chrome_Update.exe not from google.com)
+    if (downloadSignals.brandImpersonation) {
+      dlScore += 25;
+      dlReasons.push(`Filename impersonates "${downloadSignals.brandImpersonationName}" but download is not from their official domain.`);
+      categories.phishing.flagged = true;
+    }
+
+    // Source domain explicitly malicious
+    if (downloadSignals.sourceDomainMalicious) {
+      dlScore += 40;
+      dlReasons.push('Download source domain has been flagged as malicious.');
+      categories.malware.flagged = true;
+    }
+
+    // Archive — supporting signal only (not auto-malware)
+    if (downloadSignals.archiveDownload && downloadSignals.sourceDomainSuspicious) {
+      dlScore += 8;
+      dlReasons.push('Archive download from a suspicious source domain.');
+    }
+
+    // Redirect chain + executable combo
+    if (downloadSignals.shortenerDetected && (downloadSignals.executableDownload || downloadSignals.scriptDownload)) {
+      dlScore += 20;
+      dlReasons.push('Executable download routed through a URL shortener.');
+    }
+
+    if (dlScore > 0) {
+      addSignal('download_protection', Math.min(dlScore, 80), dlReasons.join(' '));
     }
   }
 
