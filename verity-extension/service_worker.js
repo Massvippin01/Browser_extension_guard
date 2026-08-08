@@ -279,7 +279,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const { tabId, url, frameId } = details;
   if (isInternalUrl(url)) return;
 
-  if (url === 'http://localhost:3000/' || url === 'http://localhost:3000') {
+  if (url === 'http://localhost:3000/' || url === 'http://localhost:3000' || url === 'http://localhost:8080/' || url === 'http://localhost:8080') {
     userOverrideTabs.delete(tabId);
     const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
     await storeAndEnforce(tabId, verdict, frameId);

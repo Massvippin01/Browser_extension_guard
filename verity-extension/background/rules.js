@@ -240,8 +240,8 @@ export function hasMalvertisingPattern(urlString) {
   // A. Extremely long URL path — classic ad-redirect obfuscation
   // Normal URLs rarely exceed 200 chars of path. 500+ is a strong signal.
   if (fullPath.length > 500) {
-    score += 45;
-    reasons.push(`Extremely long URL path (${fullPath.length} chars) — typical of ad-redirect obfuscation.`);
+    score += 55;
+    reasons.push(`Extremely long URL path (${fullPath.length} chars) — typical of malicious obfuscation.`);
   } else if (fullPath.length > 200) {
     score += 20;
     reasons.push('Unusually long URL path — possible redirect chain encoding.');
@@ -267,9 +267,10 @@ export function hasMalvertisingPattern(urlString) {
   }
 
   // D. Base64-like blob in path (long run of alphanumeric + _-* without word breaks)
-  const base64Blob = /[A-Za-z0-9_\-*]{80,}/.test(url.pathname);
+  // Include % because it's often url-encoded base64 padding (e.g. %3D%3D for ==)
+  const base64Blob = /[A-Za-z0-9_\-*%]{80,}/.test(url.pathname);
   if (base64Blob) {
-    score += 25;
+    score += 35;
     reasons.push('URL path contains a long encoded payload (base64-like blob).');
   }
 
