@@ -265,7 +265,8 @@ function isUserOverridden(tabId, url) {
   if (url) {
     try {
       const host = new URL(url).hostname.toLowerCase();
-      if (userOverrideDomains.has(host)) return true;
+      // Exclude localhost/127.0.0.1 from global domain override so test hub is not permanently muted
+      if (host !== 'localhost' && host !== '127.0.0.1' && userOverrideDomains.has(host)) return true;
     } catch (e) {}
   }
   return false;
@@ -277,6 +278,13 @@ function isUserOverridden(tabId, url) {
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const { tabId, url, frameId } = details;
   if (isInternalUrl(url)) return;
+
+  if (url === 'http://localhost:3000/' || url === 'http://localhost:3000') {
+    userOverrideTabs.delete(tabId);
+    const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
+    await storeAndEnforce(tabId, verdict, frameId);
+    return;
+  }
 
   if (isUserOverridden(tabId, url)) {
     const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
