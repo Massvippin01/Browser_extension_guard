@@ -3,6 +3,11 @@
  * Responsible for initiating early URL scans, collecting DOM signals, and enforcing blocks.
  */
 
+// Skip demo server pages entirely — they have self-contained overlays
+if (window.location.hostname === 'localhost' && window.location.port === '8080') {
+  // Do nothing — let the demo server's built-in overlays handle the UI
+} else {
+
 let isBlocked = false;
 let blockObserver = null;
 let statusBadgeHost = null;
@@ -1116,3 +1121,5 @@ function injectOverlay(verdict) {
     blockObserver.observe(parent, { childList: true });
   }
 }
+
+} // end of else block (skip localhost:8080)
