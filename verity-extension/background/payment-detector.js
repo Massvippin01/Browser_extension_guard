@@ -163,7 +163,7 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
                         pageText.includes('digital arrest') || pageText.includes('trai SIM') ||
                         pageText.includes('cbi notice') || pageText.includes('update kyc');
 
-  if (!intent.isPaymentPage && !isUpiTrap && !isDigitalScam) return null; // Not a payment page — skip
+  if (!intentResult.isPaymentPage && !isUpiTrap && !isDigitalScam) return null; // Not a payment page — skip
 
   // 2. Claimed provider detection
   const providerResult = detectClaimedProvider(domSignals, paymentBrands);

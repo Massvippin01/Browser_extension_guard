@@ -43,12 +43,19 @@ export async function applyDownloadPolicy(downloadId, verdict, downloadSignals) 
  * Returns true if successful, false if API does not support it.
  */
 async function tryCancelDownload(downloadId) {
-  if (!chrome.downloads || !chrome.downloads.cancel) return false;
+  if (!chrome.downloads) return false;
   try {
-    await chrome.downloads.cancel(downloadId);
-    return true;
+    if (chrome.downloads.cancel) {
+      await chrome.downloads.cancel(downloadId);
+      return true;
+    }
   } catch (e) {
-    // Chrome may throw if the download already completed or was removed
-    return false;
+    // Download finished before cancel — remove file from disk & erase from history
+    try {
+      if (chrome.downloads.removeFile) await chrome.downloads.removeFile(downloadId);
+      if (chrome.downloads.erase) await chrome.downloads.erase({ id: downloadId });
+      return true;
+    } catch (e2) {}
   }
+  return false;
 }
