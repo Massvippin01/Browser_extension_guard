@@ -6,9 +6,9 @@
  *   → Reputation → ML → Risk Engine → Enforcement Decision
  */
 
-import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch } from './background/rules.js';
+import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
-import { getRedirectSignals } from './background/redirect-analyzer.js';
+import { getRedirectSignals, updateShorteners } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
 import { getMlScore, initializeModel } from './background/ml-scorer.js';
 import { checkReputation } from './background/reputation.js';
@@ -19,6 +19,7 @@ import { analyzePaymentPage } from './background/payment-detector.js';
 // ---------------------------------------------------------------------------
 let brandsList = [];
 let paymentBrands = [];
+let urlShorteners = [];
 
 async function loadBrands() {
   try {
@@ -37,6 +38,20 @@ async function loadPaymentBrands() {
     if (res.ok) paymentBrands = await res.json();
   } catch (e) {
     console.warn('[Verity] Could not load payment-brands.json:', e);
+  }
+}
+
+async function loadUrlShorteners() {
+  try {
+    const url = chrome.runtime.getURL('config/urlShorteners.json');
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      urlShorteners = data.shorteners || [];
+      updateShorteners(urlShorteners);
+    }
+  } catch (e) {
+    console.warn('[Verity] Could not load urlShorteners.json:', e);
   }
 }
 
@@ -61,6 +76,8 @@ async function analyzeUrl(url) {
     detectTyposquatting(url, brandsList),
     hasFinancialKeywordInHostname(url, brandsList),
     hasBrandVariantMatch(url, brandsList),
+    hasMalvertisingPattern(url),
+    hasRandomLookingHostname(url),
   ];
 
   return ruleSignals;
@@ -278,6 +295,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.runtime.onInstalled.addListener(async () => {
   await loadBrands();
   await loadPaymentBrands();
+  await loadUrlShorteners();
   await initializeModel();
   console.log('[Verity] Extension installed and ready.');
 });
@@ -285,6 +303,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.runtime.onStartup.addListener(async () => {
   await loadBrands();
   await loadPaymentBrands();
+  await loadUrlShorteners();
   await initializeModel();
   console.log('[Verity] Extension started.');
 });
@@ -292,3 +311,4 @@ chrome.runtime.onStartup.addListener(async () => {
 // Also load brands on service worker wake (no event)
 loadBrands().catch(() => {});
 loadPaymentBrands().catch(() => {});
+loadUrlShorteners().catch(() => {});

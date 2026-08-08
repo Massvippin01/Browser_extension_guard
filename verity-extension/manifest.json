@@ -59,6 +59,7 @@
         "shared/theme.css",
         "content/overlay.css",
         "payment-brands.json",
+        "config/urlShorteners.json",
         "content/search/*"
       ],
       "matches": ["<all_urls>"]

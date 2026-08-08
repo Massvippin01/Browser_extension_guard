@@ -192,6 +192,136 @@ export function hasSuspiciousUrlPattern(urlString) {
 }
 
 /**
+ * Rule 5b: Ad-redirect / Malvertising URL Pattern Detection
+ * Catches real-world ad redirect networks: very long encoded paths, * chars, /cx/ prefixes.
+ * Example: wb.omegatootler.rest/cx/<1000-char-blob>
+ * @param {string} urlString
+ */
+export function hasMalvertisingPattern(urlString) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  const fullPath = url.pathname + url.search;
+  const reasons = [];
+  let score = 0;
+
+  // A. Extremely long URL path — classic ad-redirect obfuscation
+  // Normal URLs rarely exceed 200 chars of path. 500+ is a strong signal.
+  if (fullPath.length > 500) {
+    score += 45;
+    reasons.push(`Extremely long URL path (${fullPath.length} chars) — typical of ad-redirect obfuscation.`);
+  } else if (fullPath.length > 200) {
+    score += 20;
+    reasons.push('Unusually long URL path — possible redirect chain encoding.');
+  }
+
+  // B. Asterisk (*) characters in URL path — NOT valid URL chars, used by ad-redirect networks
+  if (url.pathname.includes('*') || url.search.includes('*')) {
+    score += 40;
+    reasons.push('URL contains asterisk (*) characters — characteristic of ad-redirect tracking networks.');
+  }
+
+  // C. Known ad-redirect path prefixes (/cx/, /click/, /go/, /rd/, /redir/, /track/)
+  const adPrefixes = ['/cx/', '/rd/', '/redir/', '/click/', '/go/', '/track/', '/redirect/', '/out/', '/r/'];
+  if (adPrefixes.some(p => url.pathname.startsWith(p) || url.pathname.includes(p))) {
+    score += 20;
+    reasons.push('URL path matches known ad-redirect routing pattern.');
+  }
+
+  // D. Base64-like blob in path (long run of alphanumeric + _-* without word breaks)
+  const base64Blob = /[A-Za-z0-9_\-*]{80,}/.test(url.pathname);
+  if (base64Blob) {
+    score += 25;
+    reasons.push('URL path contains a long encoded payload (base64-like blob).');
+  }
+
+  // E. Multiple tracking/fingerprint query params (md=, fc=, cd=, pr= all together)
+  const trackingParams = ['md=', 'fc=', 'cd=', 'pr=', 'cid=', 'uid=', 'tid=', 'rid='];
+  const presentTrackers = trackingParams.filter(p => url.search.includes(p));
+  if (presentTrackers.length >= 3) {
+    score += 25;
+    reasons.push(`URL contains multiple tracking fingerprint parameters (${presentTrackers.join(', ')}).`);
+  }
+
+  if (score > 0) {
+    return {
+      score: Math.min(score, 100),
+      reason: reasons.join(' '),
+      triggered: true
+    };
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+/**
+ * Rule 5c: Random-looking hostname detection
+ * Catches hostnames like: wb.omegatootler.rest, random-abc123.xyz, etc.
+ * These are common in ad-redirect networks, malware C2, and malvertising.
+ * @param {string} urlString
+ */
+export function hasRandomLookingHostname(urlString) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  const hostname = url.hostname.toLowerCase();
+
+  // Skip known-legitimate patterns
+  const safePrefixes = ['www.', 'mail.', 'api.', 'cdn.', 'static.', 'assets.', 'img.', 'media.'];
+  if (safePrefixes.some(p => hostname.startsWith(p))) {
+    const base = hostname.replace(/^[a-z]+\./, '');
+    // If the base part is a short recognizable word, skip
+    if (base.split('.')[0].length < 12) return { score: 0, reason: null, triggered: false };
+  }
+
+  // Get the registrable-domain part (second-level domain label)
+  const parts = hostname.split('.');
+  const domainLabel = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
+
+  // A: Long domain label that doesn't look like a real word
+  // Real brand domains are usually short and pronounceable
+  if (domainLabel.length > 12) {
+    // Check vowel ratio — real words have vowels. Random strings have very low or very high ratios.
+    const vowels = (domainLabel.match(/[aeiou]/g) || []).length;
+    const vowelRatio = vowels / domainLabel.length;
+    // Too few vowels (< 15%) or mixed with digits strongly suggests random generation
+    const hasDigitMix = /[0-9]/.test(domainLabel) && /[a-z]/.test(domainLabel);
+    const looksRandom = vowelRatio < 0.15 || (hasDigitMix && domainLabel.length > 10);
+    
+    if (looksRandom) {
+      return {
+        score: 55,
+        reason: `Hostname "${hostname}" appears to be randomly generated — common in ad-redirect and malware infrastructure.`,
+        triggered: true
+      };
+    }
+  }
+
+  // B: Domain label contains a suspicious pattern of consonants/digits (no vowel words)
+  // "omegatootler" — actually has vowels but is clearly not a real brand word.
+  // Detect if it's a nonsense portmanteau or gibberish over 10 chars
+  if (domainLabel.length > 10 && !/^(google|amazon|microsoft|facebook|youtube|twitter|instagram|netflix|apple|adobe|paypal|stripe|shopify|cloudflare|github|linkedin|reddit|discord|zoom|slack|notion|atlassian)/.test(domainLabel)) {
+    // No known brand prefix — check if it's in a suspicious TLD
+    const suspTLDs = ['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.click', '.online', '.site', '.fun', '.live', '.vip', '.club', '.icu', '.sbs', '.uno', '.cfd', '.bar', '.monster', '.skin'];
+    if (suspTLDs.some(tld => hostname.endsWith(tld))) {
+      return {
+        score: 50,
+        reason: `Hostname "${hostname}" combines an unrecognized domain with a high-risk TLD.`,
+        triggered: true
+      };
+    }
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+/**
  * Rule 6: Punycode (homograph) and Suspicious Keywords
  * Detects xn-- domains and keywords like login, verify in the URL.
  * @param {string} urlString

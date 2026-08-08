@@ -5,6 +5,7 @@
 
 let isBlocked = false;
 let blockObserver = null;
+let statusBadgeHost = null;
 
 // ─── Payment Field Detection ─────────────────────────────────────────────────
 
@@ -176,22 +177,193 @@ function triggerFullScan() {
   chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals });
 }
 
+// ─── Live Status Badge ──────────────────────────────────────────────────────
+
+function injectStatusBadge() {
+  if (document.getElementById('verity-status-badge-host')) return;
+
+  const host = document.createElement('div');
+  host.id = 'verity-status-badge-host';
+  host.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2147483646;pointer-events:auto;';
+  statusBadgeHost = host;
+
+  const shadow = host.attachShadow({ mode: 'closed' });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .verity-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #94a3b8;
+      border: 2px solid rgba(255,255,255,0.7);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 rgba(148,163,184,0.5);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.4s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .verity-badge:hover {
+      transform: scale(1.15);
+    }
+    .verity-badge.pulse {
+      animation: badgePulse 1.8s ease-out;
+    }
+    @keyframes badgePulse {
+      0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 var(--pulse-color, rgba(148,163,184,0.6)); }
+      60%  { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 10px rgba(0,0,0,0); }
+      100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 rgba(0,0,0,0); }
+    }
+    .verity-badge-scanning {
+      background: conic-gradient(#94a3b8 0%, #cbd5e1 50%, #94a3b8 100%);
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .verity-tooltip {
+      position: absolute;
+      top: 28px;
+      right: 0;
+      background: rgba(15,23,42,0.95);
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      max-width: 240px;
+      white-space: normal;
+      text-align: left;
+    }
+    .verity-badge:hover .verity-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .verity-badge-icon {
+      font-size: 11px;
+      line-height: 1;
+      user-select: none;
+    }
+  `;
+  shadow.appendChild(style);
+
+  const badge = document.createElement('div');
+  badge.className = 'verity-badge verity-badge-scanning';
+  badge.innerHTML = `<div class="verity-tooltip">🛡️ Verity\nScanning…</div>`;
+  shadow.appendChild(badge);
+
+  // Append to documentElement immediately so it works at document_start
+  const parent = document.documentElement || document.body;
+  if (parent) parent.appendChild(host);
+
+  // Re-attach after body is available
+  if (!document.body) {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (host.parentElement !== document.documentElement && document.documentElement) {
+        document.documentElement.appendChild(host);
+      }
+    });
+  }
+
+  return shadow;
+}
+
+const badgeShadow = injectStatusBadge();
+
+function updateStatusBadge(verdict) {
+  if (!badgeShadow) return;
+  const badge = badgeShadow.querySelector('.verity-badge');
+  const tooltip = badgeShadow.querySelector('.verity-tooltip');
+  if (!badge || !tooltip) return;
+
+  // Stop scanning spin
+  badge.className = 'verity-badge';
+
+  const severity = verdict.severity || verdict.state || 'safe';
+  const score = verdict.score || verdict.riskScore || 0;
+  const shortener = verdict.shortenerDetected;
+  const chain = verdict.redirectChain;
+
+  let color, pulseColor, icon, label, detail;
+
+  if (severity === 'danger') {
+    color = '#ef4444';
+    pulseColor = 'rgba(239,68,68,0.5)';
+    icon = '🔴';
+    label = 'DANGEROUS';
+    detail = `Risk: ${score}/100`;
+  } else if (severity === 'caution') {
+    color = '#f59e0b';
+    pulseColor = 'rgba(245,158,11,0.5)';
+    icon = '🟡';
+    label = 'SUSPICIOUS';
+    detail = `Risk: ${score}/100`;
+  } else {
+    color = '#22c55e';
+    pulseColor = 'rgba(34,197,94,0.4)';
+    icon = '🟢';
+    label = 'SAFE';
+    detail = `Risk: ${score}/100`;
+  }
+
+  badge.style.background = color;
+  badge.style.setProperty('--pulse-color', pulseColor);
+  badge.classList.add('pulse');
+  badge.addEventListener('animationend', () => badge.classList.remove('pulse'), { once: true });
+
+  let chainHtml = '';
+  if (shortener && chain && chain.length > 1) {
+    const chainStr = chain.map(u => { try { return new URL(u).hostname; } catch(e) { return u; } }).join(' → ');
+    chainHtml = `<div style="margin-top:4px;opacity:0.8;font-size:10px;">🔗 ${chainStr}</div>`;
+  }
+
+  tooltip.innerHTML = `
+    <div><strong>🛡️ Verity</strong> — ${label}</div>
+    <div style="opacity:0.8">${detail}</div>
+    ${chainHtml}
+  `;
+}
+
 // 3. Listen for enforcement decisions from Background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'ENFORCEMENT_DECISION') {
+    const verdict = message.decision.verdict;
+    updateStatusBadge(verdict);
     if (message.decision.action === 'block') {
       isBlocked = true;
-      injectOverlay(message.decision.verdict);
+      // Hide badge when full block overlay is shown
+      if (statusBadgeHost) statusBadgeHost.style.display = 'none';
+      injectOverlay(verdict);
     } else if (message.decision.action === 'allow') {
       isBlocked = false;
+      if (statusBadgeHost) statusBadgeHost.style.display = 'block';
       removeOverlay();
+    } else if (message.decision.action === 'warn') {
+      // Warn = keep badge visible, no full block
+      if (statusBadgeHost) statusBadgeHost.style.display = 'block';
     }
   } else if (message.action === 'RE_ANALYZE') {
     // Fired on SPA client-side navigations
     isBlocked = false;
     removeOverlay();
+    if (statusBadgeHost) statusBadgeHost.style.display = 'block';
+    // Reset badge to scanning
+    if (badgeShadow) {
+      const badge = badgeShadow.querySelector('.verity-badge');
+      if (badge) badge.className = 'verity-badge verity-badge-scanning';
+    }
     triggerImmediateUrlScan();
-    // For SPA, DOM is already loaded, but wait a tick for frameworks to render
     setTimeout(triggerFullScan, 500);
   }
 });
@@ -430,6 +602,22 @@ function injectOverlay(verdict) {
        </p>`
     : '';
 
+  let redirectChainHtml = '';
+  if (verdict.shortenerDetected && verdict.redirectChain && verdict.redirectChain.length > 1) {
+    let chainItems = verdict.redirectChain.map((url, i) => {
+      let u;
+      try { u = new URL(url).hostname; } catch(e) { u = url; }
+      return `<div style="padding: 4px 0; font-family: monospace; font-size: 14px;">${i + 1}. ${u}</div>`;
+    });
+    let formattedChain = chainItems.join('<div style="color: #999; padding-left: 12px;">↓</div>');
+    redirectChainHtml = `
+      <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+        <div style="font-weight: 600; margin-bottom: 12px; font-size: 14px; color: #555;">🔗 REDIRECT ANALYSIS</div>
+        ${formattedChain}
+      </div>
+    `;
+  }
+
   container.innerHTML = `
     <div class="verity-header">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -448,6 +636,7 @@ function injectOverlay(verdict) {
           <h1 class="verity-status">Website status: <span class="verity-status-highlight">${stateTitle}</span></h1>
           <div class="verity-url">${window.location.href}</div>
           ${paymentWarning}
+          ${redirectChainHtml}
           <p class="verity-message">
             ${isPaymentPhishing
               ? 'This page is impersonating a payment provider and attempting to collect your payment credentials. This is a payment phishing attack.'

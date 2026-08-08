@@ -17,19 +17,41 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     signals.push({ category, score, reason });
   };
 
-  // 1. URL Signals (0-30 points)
+  // 1. URL Signals (0-30 points for normal rules)
   let urlScore = 0;
   let urlReasons = [];
+  let malvertScore = 0;
+  let malvertReasons = [];
+
   ruleSignals.forEach(s => {
-    if (s.triggered && s.reason && !s.reason.includes('brand')) { // exclude brand from raw URL score
+    if (!s.triggered || !s.reason) return;
+    // Malvertising / ad-redirect rules get their own high-confidence track
+    if (s.reason.includes('ad-redirect') || s.reason.includes('asterisk') || 
+        s.reason.includes('Extremely long URL') || s.reason.includes('encoded payload') ||
+        s.reason.includes('tracking fingerprint') || s.reason.includes('redirect routing') ||
+        s.reason.includes('randomly generated') || s.reason.includes('high-risk TLD') ||
+        s.reason.includes('Unusually long URL')) {
+      malvertScore += Math.round(s.score * 0.65);
+      malvertReasons.push(s.reason);
+    } else if (!s.reason.includes('brand')) {
+      // Normal URL signals (exclude brand — handled separately)
       const scaled = Math.min(Math.round(s.score * 0.3), 30);
       urlScore += scaled;
       urlReasons.push(s.reason);
     }
   });
+
   if (urlScore > 0) {
     urlScore = Math.min(urlScore, 30);
     addSignal('url', urlScore, urlReasons.join(' '));
+  }
+
+  // Malvertising signals — uncapped up to 60 points independently
+  if (malvertScore > 0) {
+    malvertScore = Math.min(malvertScore, 60);
+    addSignal('malvertising', malvertScore, malvertReasons.join(' '));
+    categories.suspicious.flagged = true;
+    categories.suspicious.reason = malvertReasons[0];
   }
 
   // 2. Local ML Signals (0-25 points)
@@ -147,17 +169,49 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
   }
   
   // 7. Redirect Intelligence
-  if (redirectSignals && redirectSignals.suspicious) {
+  if (redirectSignals && redirectSignals.analysisContext === 'redirect') {
     let penalty = 0;
-    if (redirectSignals.multiplier && redirectSignals.multiplier > 1.0) {
-      penalty = Math.round(riskScore * (redirectSignals.multiplier - 1.0));
-      // Ensure a minimum penalty if the base score was low, but we caught a shortener
-      penalty = Math.max(penalty, 25); 
-    } else {
-      penalty = 15;
+    const redirectReasons = [];
+    
+    if (redirectSignals.shortenerDetected) {
+      if (redirectSignals.crossDomainRedirectCount > 0) {
+         penalty += 15;
+         redirectReasons.push(`Shortened link redirects across ${redirectSignals.crossDomainRedirectCount} different domains.`);
+      }
     }
-    const reasonText = redirectSignals.reasons ? redirectSignals.reasons.join(' ') : 'Suspicious redirect chain detected.';
-    addSignal('redirect', penalty, reasonText);
+    
+    if (redirectSignals.excessiveRedirects) {
+      penalty += 15;
+      redirectReasons.push('Excessive redirects detected in the chain.');
+    }
+    
+    if (redirectSignals.suspiciousIntermediateDomain) {
+      penalty += 20;
+      redirectReasons.push('Redirect chain contains a suspicious intermediate domain.');
+    }
+    
+    if (redirectSignals.finalDomainSuspicious) {
+      penalty += 25;
+      redirectReasons.push('Final redirect destination is a suspicious domain.');
+    }
+    
+    if (redirectSignals.httpsDowngrade) {
+      penalty += 10;
+      redirectReasons.push('Redirected from a secure HTTPS connection to an insecure HTTP site.');
+    }
+    
+    if (redirectSignals.redirectLoop) {
+      redirectReasons.push('Redirect loop detected.');
+    }
+    
+    if (!redirectSignals.shortenerDetected && redirectSignals.crossDomainRedirectCount > 1) {
+      penalty += 10;
+      redirectReasons.push('Multiple cross-domain redirects detected.');
+    }
+
+    if (penalty > 0 || redirectReasons.length > 0) {
+      addSignal('redirect', penalty, redirectReasons.join(' '));
+    }
   }
 
   riskScore = Math.min(Math.max(riskScore, 0), 100);
@@ -186,6 +240,8 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     signals: signals,
     categories: categories,
     reasons: reasons,
-    ruleScore: urlScore // For metrics logging
+    ruleScore: urlScore, // For metrics logging
+    redirectChain: redirectSignals ? redirectSignals.chain : null,
+    shortenerDetected: redirectSignals ? redirectSignals.shortenerDetected : false
   };
 }
