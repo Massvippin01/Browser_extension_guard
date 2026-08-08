@@ -95,7 +95,9 @@ function detectPaymentForm() {
 
 // Known payment brand aliases for claimed-provider detection
 const PAYMENT_BRAND_ALIASES = [
-  ['HDFC Bank', ['hdfc', 'hdfcbank', 'hdfc netbanking']], ['SBI', ['sbi', 'onlinesbi', 'sbi yono']],
+  ['HDFC Bank', ['hdfc', 'hdfcbank', 'hdfc netbanking', 'hdfc bank']],
+  ['SBI', ['sbi', 'onlinesbi', 'sbi yono', 'state bank of india']],
+  ['ICICI Bank', ['icici', 'icicibank', 'icici bank', 'icici netbanking']],
   ['PayPal', ['paypal']], ['Stripe', ['stripe']], ['Razorpay', ['razorpay']],
   ['PhonePe', ['phonepe', 'phone pe']], ['Google Pay', ['google pay', 'gpay']],
   ['Paytm', ['paytm']], ['Amazon Pay', ['amazon pay']], ['PayU', ['payu', 'payumoney']],
@@ -191,6 +193,10 @@ function collectSignals() {
   const hasPaymentForm   = detectPaymentForm();
   const claimedProviders = scanClaimedProviders();
 
+  // UPI link detection
+  const allLinks = Array.from(document.querySelectorAll('a[href]'));
+  const hasUpiLink = allLinks.some(a => (a.href || '').toLowerCase().startsWith('upi://'));
+
   return {
     hasPasswordInput: isTrustedDomain ? false : hasPasswordInput,
     loginFormCount: isTrustedDomain ? 0 : loginForms.length,
@@ -206,25 +212,13 @@ function collectSignals() {
     paymentFields: isTrustedDomain ? {} : paymentFields,
     hasPaymentForm: isTrustedDomain ? false : hasPaymentForm,
     claimedProviders,
+    hasUpiLink,
     pageText:  text.substring(0, 3000),
     pageTitle: document.title || '',
   };
 }
 
 // 2. Early and Full Scans
-function handleEnforcementVerdict(verdict) {
-  if (!verdict) return;
-  updateStatusBadge(verdict);
-  if (verdict.action === 'block') {
-    isBlocked = true;
-    if (statusBadgeHost) statusBadgeHost.style.display = 'none';
-    injectOverlay(verdict);
-  } else if (verdict.action === 'allow') {
-    isBlocked = false;
-    if (statusBadgeHost) statusBadgeHost.style.display = 'block';
-    removeOverlay();
-  }
-}
 
 function triggerImmediateUrlScan() {
   chrome.runtime.sendMessage({ action: 'ANALYZE_URL_ONLY', url: window.location.href }, (response) => {

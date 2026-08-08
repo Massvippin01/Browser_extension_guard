@@ -1,6 +1,7 @@
 [
   { "name": "HDFC Bank",    "domains": ["hdfcbank.com", "netbanking.hdfcbank.com"],        "aliases": ["hdfc", "hdfc bank", "hdfc netbanking"] },
   { "name": "SBI",          "domains": ["onlinesbi.sbi", "sbi.co.in"],                      "aliases": ["sbi", "state bank of india", "sbi netbanking", "sbi yono"] },
+  { "name": "ICICI Bank",   "domains": ["icicibank.com", "infinity.icicibank.com"],          "aliases": ["icici", "icici bank", "icici netbanking"] },
   { "name": "PayPal",       "domains": ["paypal.com", "paypal.me"],                        "aliases": ["paypal", "pay pal", "paypal.com"] },
   { "name": "Stripe",       "domains": ["stripe.com", "dashboard.stripe.com"],             "aliases": ["stripe"] },
   { "name": "Razorpay",     "domains": ["razorpay.com", "api.razorpay.com", "checkout.razorpay.com"], "aliases": ["razorpay"] },

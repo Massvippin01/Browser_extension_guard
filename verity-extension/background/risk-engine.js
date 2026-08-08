@@ -101,8 +101,12 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
       { name: 'HDFC Bank', keywords: ['hdfc netbanking', 'hdfc bank', 'hdfcbank'] },
       { name: 'SBI', keywords: ['sbi netbanking', 'state bank of india', 'sbi yono', 'onlinesbi'] },
       { name: 'ICICI Bank', keywords: ['icici netbanking', 'icici bank', 'icicibank'] },
+      { name: 'Axis Bank', keywords: ['axis bank', 'axisbank'] },
+      { name: 'Kotak Bank', keywords: ['kotak bank', 'kotak mahindra'] },
       { name: 'PayPal', keywords: ['paypal'] },
-      { name: 'Paytm', keywords: ['paytm rewards', 'paytm cashback'] },
+      { name: 'Razorpay', keywords: ['razorpay'] },
+      { name: 'Stripe', keywords: ['stripe checkout', 'stripe.com'] },
+      { name: 'Paytm', keywords: ['paytm rewards', 'paytm cashback', 'paytm'] },
       { name: 'Netflix', keywords: ['netflix'] }
     ];
 
