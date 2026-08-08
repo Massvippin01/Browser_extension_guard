@@ -252,12 +252,32 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   }
 });
 
+const userOverrideTabs = new Set();
+const userOverrideDomains = new Set();
+
+function isUserOverridden(tabId, url) {
+  if (tabId && userOverrideTabs.has(tabId)) return true;
+  if (url) {
+    try {
+      const host = new URL(url).hostname.toLowerCase();
+      if (userOverrideDomains.has(host)) return true;
+    } catch (e) {}
+  }
+  return false;
+}
+
 // ---------------------------------------------------------------------------
 // Navigation Monitoring (Main Frame & Subframe / Iframe Scans)
 // ---------------------------------------------------------------------------
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const { tabId, url, frameId } = details;
   if (isInternalUrl(url)) return;
+
+  if (isUserOverridden(tabId, url)) {
+    const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
+    await storeAndEnforce(tabId, verdict, frameId);
+    return;
+  }
 
   const ruleSignals = await analyzeUrl(url);
   if (!ruleSignals) return;
@@ -341,6 +361,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return false;
     }
 
+    if (isUserOverridden(tabId, url)) {
+      const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [], url };
+      storeAndEnforce(tabId, verdict, frameId);
+      sendResponse({ verdict });
+      return false;
+    }
+
     analyzeUrl(url).then(ruleSignals => {
       if (!ruleSignals) {
         sendResponse({ verdict: null });
@@ -357,6 +384,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.action === 'ANALYZE_FULL') {
+    if (isUserOverridden(sender.tab.id, message.url)) {
+      const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [], url: message.url };
+      storeAndEnforce(sender.tab.id, verdict, frameId);
+      sendResponse({ verdict });
+      return false;
+    }
     runFullAnalysis(sender.tab.id, message.url, message.domSignals).then(verdict => {
       if (verdict) {
         storeAndEnforce(sender.tab.id, verdict, frameId);
@@ -379,8 +412,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.action === 'USER_OVERRIDE_ALLOW') {
-    // User chose to proceed past warning — clear the block
+    // User chose to proceed past warning — clear the block permanently for this tab and domain
     if (tabId) {
+      userOverrideTabs.add(tabId);
+      if (message.url) {
+        try {
+          const host = new URL(message.url).hostname.toLowerCase();
+          userOverrideDomains.add(host);
+        } catch (e) {}
+      }
+
       const entry = {};
       entry[tabId.toString()] = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
       chrome.storage.session.set(entry).then(() => {
