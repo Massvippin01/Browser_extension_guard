@@ -6,7 +6,7 @@
  *   → Reputation → ML → Risk Engine → Enforcement Decision
  */
 
-import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern } from './background/rules.js';
+import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
 import { getRedirectSignals, updateShorteners } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
@@ -80,6 +80,7 @@ async function analyzeUrl(url) {
     hasMalvertisingPattern(url),
     hasRandomLookingHostname(url),
     hasAffiliateTrackerPattern(url),
+    hasPiracyOrUnverifiedMediaPattern(url),
   ];
 
   return ruleSignals;
@@ -104,6 +105,7 @@ function buildRuleSignals(url) {
     hasMalvertisingPattern(url),
     hasRandomLookingHostname(url),
     hasAffiliateTrackerPattern(url),
+    hasPiracyOrUnverifiedMediaPattern(url),
   ];
 }
 
@@ -179,29 +181,31 @@ async function analyzeSearchResult(url, tabId) {
 // ---------------------------------------------------------------------------
 // Store & Broadcast Verdict
 // ---------------------------------------------------------------------------
-async function storeAndEnforce(tabId, verdict) {
+async function storeAndEnforce(tabId, verdict, frameId = 0) {
   if (!verdict) return;
 
-  // Persist for popup
-  const entry = {};
-  entry[tabId.toString()] = verdict;
-  await chrome.storage.session.set(entry).catch(() => {});
+  // Persist for main frame popup
+  if (frameId === 0) {
+    const entry = {};
+    entry[tabId.toString()] = verdict;
+    await chrome.storage.session.set(entry).catch(() => {});
+    updateBadge(tabId, verdict);
+  }
 
-  // Send enforcement decision to content script
+  // Send enforcement decision to content script (target frameId if subframe)
   try {
+    const options = frameId !== 0 ? { frameId } : {};
     await chrome.tabs.sendMessage(tabId, {
       action: 'ENFORCEMENT_DECISION',
       decision: {
         action: verdict.action,
         verdict: verdict,
+        isIframe: frameId !== 0
       },
-    });
+    }, options);
   } catch (e) {
-    // Tab may not have a content script yet — this is fine
+    // Tab/frame may not have a content script yet — this is fine
   }
-
-  // Update extension icon badge to reflect risk
-  updateBadge(tabId, verdict);
 }
 
 function updateBadge(tabId, verdict) {
@@ -214,21 +218,100 @@ function updateBadge(tabId, verdict) {
 }
 
 // ---------------------------------------------------------------------------
-// Navigation Monitoring (URL-only fast scan on navigation start)
+// Pop-up / Pop-under Automatic Interceptor & Killer
+// ---------------------------------------------------------------------------
+chrome.tabs.onCreated.addListener(async (tab) => {
+  if (!tab.openerTabId || !tab.id) return;
+  const openerTabId = tab.openerTabId;
+
+  const checkAndKillPopup = async (targetUrl) => {
+    if (!targetUrl || isInternalUrl(targetUrl)) return;
+    const ruleSignals = await analyzeUrl(targetUrl);
+    if (!ruleSignals) return;
+    const verdict = calculateRisk(targetUrl, ruleSignals);
+
+    if (verdict.action === 'block' || verdict.score >= 70) {
+      // 1. Instantly kill the pop-up window
+      chrome.tabs.remove(tab.id).catch(() => {});
+
+      // 2. Notify opener tab to render pop-up blocked notification toast
+      let host = targetUrl;
+      try { host = new URL(targetUrl).hostname; } catch (e) {}
+      chrome.tabs.sendMessage(openerTabId, {
+        action: 'POPUP_BLOCKED_TOAST',
+        blockedUrl: targetUrl,
+        hostname: host
+      }).catch(() => {});
+    }
+  };
+
+  if (tab.url && tab.url !== 'about:blank') {
+    checkAndKillPopup(tab.url);
+  } else if (tab.pendingUrl) {
+    checkAndKillPopup(tab.pendingUrl);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Navigation Monitoring (Main Frame & Subframe / Iframe Scans)
 // ---------------------------------------------------------------------------
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
-  if (details.frameId !== 0) return;
-  const { tabId, url } = details;
+  const { tabId, url, frameId } = details;
   if (isInternalUrl(url)) return;
 
   const ruleSignals = await analyzeUrl(url);
   if (!ruleSignals) return;
 
-  // Fast URL-only verdict (no DOM, no ML yet)
+  // Fast URL-only verdict
   const quickVerdict = calculateRisk(url, ruleSignals);
   quickVerdict.url = url;
 
-  await storeAndEnforce(tabId, quickVerdict);
+  // Subframe rule: only enforce if dangerous (block threshold) to avoid disturbing clean embeds
+  if (frameId !== 0 && quickVerdict.action !== 'block') {
+    return;
+  }
+
+  await storeAndEnforce(tabId, quickVerdict, frameId);
+});
+
+// ---------------------------------------------------------------------------
+// Network & Security Error Interceptor (SSL / Certificate / Connection Failures)
+// ---------------------------------------------------------------------------
+chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
+  const { tabId, url, error, frameId } = details;
+  if (isInternalUrl(url)) return;
+
+  const ruleSignals = await analyzeUrl(url);
+  const verdict = calculateRisk(url, ruleSignals || []);
+  
+  // Force high-risk verdict for security/network failures
+  verdict.riskScore = Math.max(verdict.riskScore || 0, 85);
+  verdict.score = verdict.riskScore;
+  verdict.severity = 'danger';
+  verdict.state = 'danger';
+  verdict.action = 'block';
+  verdict.url = url;
+  if (!verdict.reasons) verdict.reasons = [];
+  verdict.reasons.push(`Security Error (${error}): Connection terminated due to untrusted security certificate or network block.`);
+
+  // Subframe rule: only enforce if dangerous
+  if (frameId !== 0 && verdict.action !== 'block') {
+    return;
+  }
+
+  await storeAndEnforce(tabId, verdict, frameId);
+});
+
+// ---------------------------------------------------------------------------
+// Navigation Committed Listener (Ensures block overlay renders on fresh page load)
+// ---------------------------------------------------------------------------
+chrome.webNavigation.onCommitted.addListener(async (details) => {
+  const { tabId, frameId } = details;
+  const storageResult = await chrome.storage.session.get(tabId.toString()).catch(() => ({}));
+  const verdict = storageResult[tabId.toString()];
+  if (verdict && verdict.action === 'block') {
+    storeAndEnforce(tabId, verdict, frameId);
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -249,25 +332,38 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async (details) => {
 // ---------------------------------------------------------------------------
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const tabId = sender.tab ? sender.tab.id : null;
+  const frameId = sender.frameId || 0;
 
   if (message.action === 'ANALYZE_URL_ONLY') {
     const url = message.url;
-    if (isInternalUrl(url) || !tabId) return false;
+    if (isInternalUrl(url) || !tabId) {
+      sendResponse({ verdict: null });
+      return false;
+    }
 
     analyzeUrl(url).then(ruleSignals => {
-      if (!ruleSignals) return;
+      if (!ruleSignals) {
+        sendResponse({ verdict: null });
+        return;
+      }
       const verdict = calculateRisk(url, ruleSignals);
       verdict.url = url;
-      storeAndEnforce(tabId, verdict);
+      storeAndEnforce(tabId, verdict, frameId);
+      sendResponse({ verdict });
+    }).catch(() => {
+      sendResponse({ verdict: null });
     });
-    return false;
+    return true; // Keep message channel open for async response
   }
 
   if (message.action === 'ANALYZE_FULL') {
     runFullAnalysis(sender.tab.id, message.url, message.domSignals).then(verdict => {
       if (verdict) {
-        storeAndEnforce(sender.tab.id, verdict);
+        storeAndEnforce(sender.tab.id, verdict, frameId);
       }
+      sendResponse({ verdict });
+    }).catch(() => {
+      sendResponse({ verdict: null });
     });
     return true; // Keep channel open
   }
@@ -287,10 +383,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (tabId) {
       const entry = {};
       entry[tabId.toString()] = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
-      chrome.storage.session.set(entry).catch(() => {});
+      chrome.storage.session.set(entry).then(() => {
+        sendResponse({ success: true });
+      }).catch(() => {
+        sendResponse({ success: false });
+      });
       updateBadge(tabId, { severity: 'safe' });
     }
-    return false;
+    return true; // Keep channel open for async response
   }
 
   // Popup asks for current verdict

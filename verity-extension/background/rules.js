@@ -200,6 +200,21 @@ export function hasSuspiciousUrlPattern(urlString) {
   return { score: 0, reason: null, triggered: false };
 }
 
+export function isTrustedTopDomain(hostname) {
+  if (!hostname) return false;
+  const h = hostname.toLowerCase();
+  const trustedList = [
+    'google.com', 'youtube.com', 'gmail.com', 'microsoft.com', 'login.microsoftonline.com',
+    'live.com', 'office.com', 'apple.com', 'icloud.com', 'amazon.com',
+    'facebook.com', 'meta.com', 'instagram.com', 'github.com', 'linkedin.com',
+    'twitter.com', 'x.com', 'netflix.com', 'paypal.com', 'stripe.com',
+    'adobe.com', 'shopify.com', 'cloudflare.com', 'dropbox.com', 'zoom.us',
+    'slack.com', 'atlassian.com', 'notion.so', 'wikipedia.org', 'yahoo.com',
+    'bing.com', 'wordpress.com', 'reddit.com'
+  ];
+  return trustedList.some(d => h === d || h.endsWith('.' + d));
+}
+
 /**
  * Rule 5b: Ad-redirect / Malvertising URL Pattern Detection
  * Catches real-world ad redirect networks: very long encoded paths, * chars, /cx/ prefixes.
@@ -210,6 +225,11 @@ export function hasMalvertisingPattern(urlString) {
   const url = safeParseUrl(urlString);
   if (!url) return { score: 0, reason: null, triggered: false };
   if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  // Exempt official trusted top domains (OAuth flow parameters are expected)
+  if (isTrustedTopDomain(url.hostname)) {
     return { score: 0, reason: null, triggered: false };
   }
 
@@ -233,11 +253,17 @@ export function hasMalvertisingPattern(urlString) {
     reasons.push('URL contains asterisk (*) characters — characteristic of ad-redirect tracking networks.');
   }
 
-  // C. Known ad-redirect path prefixes (/cx/, /click/, /go/, /rd/, /redir/, /track/)
-  const adPrefixes = ['/cx/', '/rd/', '/redir/', '/click/', '/go/', '/track/', '/redirect/', '/out/', '/r/'];
+  // C. Known ad-redirect path prefixes (/cx/, /click/, /go/, /rd/, /redir/, /track/, /partitial/, /play/)
+  const adPrefixes = ['/cx/', '/rd/', '/redir/', '/click/', '/go/', '/track/', '/redirect/', '/out/', '/r/', '/partitial/', '/partial/', '/direct/', '/zone/', '/pop/', '/link2/', '/sl/', '/play/', '/watch/', '/stream/', '/embed/'];
   if (adPrefixes.some(p => url.pathname.startsWith(p) || url.pathname.includes(p))) {
-    score += 20;
-    reasons.push('URL path matches known ad-redirect routing pattern.');
+    score += 30;
+    reasons.push('URL path matches known ad-redirect / fake player routing pattern.');
+  }
+
+  // Check for numeric/alpha campaign/media ID in path (e.g. /partitial/5117867, /play/tt3930582)
+  if (/\/[a-z]{2,12}\/([a-z]{0,4}[0-9]{5,12})/i.test(url.pathname)) {
+    score += 30;
+    reasons.push('URL path contains an ad-network campaign/media identifier.');
   }
 
   // D. Base64-like blob in path (long run of alphanumeric + _-* without word breaks)
@@ -253,6 +279,18 @@ export function hasMalvertisingPattern(urlString) {
   if (presentTrackers.length >= 3) {
     score += 25;
     reasons.push(`URL contains multiple tracking fingerprint parameters (${presentTrackers.join(', ')}).`);
+  }
+
+  // F. Mixed-case alphanumeric tracking token in path (e.g. /bkNTV1YPIT4j)
+  const pathClean = url.pathname.replace(/^\/|\/$/g, '');
+  if (/^[A-Za-z0-9_-]{8,35}$/.test(pathClean)) {
+    const hasUpper = /[A-Z]/.test(pathClean);
+    const hasLower = /[a-z]/.test(pathClean);
+    const hasNum = /[0-9]/.test(pathClean);
+    if ((hasUpper && hasLower && hasNum) || (hasUpper && hasNum && pathClean.length >= 10)) {
+      score += 45;
+      reasons.push(`URL path contains an obfuscated tracking token ("/${pathClean}").`);
+    }
   }
 
   if (score > 0) {
@@ -288,11 +326,24 @@ export function hasAffiliateTrackerPattern(urlString) {
   const trackerKeywords = ['campaign_id', 'click_id', 'creative_id', 'aff_id', 'source', 'utm_source'];
   const presentTrackers = trackerKeywords.filter(k => queryKeys.includes(k));
   
-  // 2. Generic/Obfuscated ad network keys (ymid, var, z, sz)
-  const genericTrackers = ['ymid', 'var', 'var_1', 'var_2', 'var_3', 'z', 'sz', 'zoneid'];
+  // 2. Generic/Obfuscated ad network & fingerprinting keys
+  const genericTrackers = [
+    'ymid', 'var', 'var_1', 'var_2', 'var_3', 'z', 'sz', 'zoneid', 'zone', 'pop', 'cost', 'rev',
+    'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'pub_rfid', 'pubid', 'sub1', 'sub2', 'clickid', 'aff_sub',
+    's1', 's2', 's3', 'ab2r', 'rhd', 'sf', 'os_version', 'browser_version', 'platform', 'architecture'
+  ];
   const presentGenericTrackers = genericTrackers.filter(k => queryKeys.includes(k));
 
-  // 3. UUID or Hash detection in query values or path
+  // 3. Mixed letter-digit domain label check (e.g. ay267.com, wvdme.com)
+  const parts = url.hostname.toLowerCase().split('.');
+  const domainLabel = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
+  const isMixedDigitLabel = /^[a-z]{2,5}[0-9]{2,5}$/i.test(domainLabel);
+  if (isMixedDigitLabel) {
+    score += 25;
+    reasons.push(`Domain label "${domainLabel}" matches synthetic ad-network domain pattern.`);
+  }
+
+  // 4. UUID or Hash detection in query values or path
   const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
   const hashRegex = /^[a-f0-9]{32,64}$/i;
   
@@ -304,34 +355,36 @@ export function hasAffiliateTrackerPattern(urlString) {
   // Scoring Logic
   if (presentTrackers.length >= 2) {
     score += 35;
-    reasons.push(`URL matches explicit tracking pattern (${presentTrackers.join(', ')}).`);
+    reasons.push(`matches explicit tracking pattern (${presentTrackers.join(', ')})`);
   }
   
-  if (presentGenericTrackers.length >= 2) {
-    score += 30;
-    reasons.push(`URL uses generic ad-network tracking variables (${presentGenericTrackers.join(', ')}).`);
+  if (presentGenericTrackers.length >= 3) {
+    score += 45;
+    reasons.push(`uses ad-network & device fingerprinting parameters (${presentGenericTrackers.slice(0, 4).join(', ')})`);
+  } else if (presentGenericTrackers.length >= 1) {
+    score += 25;
+    reasons.push(`uses ad-network tracking variable (${presentGenericTrackers[0]})`);
   }
 
   if (hasUuidOrHashValue) {
-    score += 25;
-    reasons.push('URL contains a unique identifier (UUID/Hash) for tracking.');
+    score += 30;
+    reasons.push('contains a unique tracking identifier (UUID/Hash)');
   } else if (pathIsUuid) {
-    score += 20;
-    reasons.push('URL path is a unique tracking identifier.');
+    score += 25;
+    reasons.push('path is a unique tracking identifier');
   }
 
   // If score is high enough to be purely a tracker, classify it as malvertising context
-  if (score >= 45) {
-    // Return a high score that feeds directly into the malvertising bucket uncapped
+  if (score >= 40) {
     return {
-      score: score + 15, // boost to ensure block threshold if standalone
-      reason: `High-confidence Ad/Affiliate Tracking Network detected: ${reasons.join(' ')}`,
+      score: score + 25,
+      reason: `Ad/Affiliate tracking pattern detected: URL ${reasons.join(', ')}.`,
       triggered: true
     };
   } else if (score > 0) {
     return {
-      score: score,
-      reason: reasons.join(' '),
+      score: score + 15,
+      reason: `Ad/Affiliate tracking pattern detected: URL ${reasons.join(', ')}.`,
       triggered: true
     };
   }
@@ -355,43 +408,48 @@ export function hasRandomLookingHostname(urlString) {
 
   const hostname = url.hostname.toLowerCase();
 
-  // Skip known-legitimate patterns
-  const safePrefixes = ['www.', 'mail.', 'api.', 'cdn.', 'static.', 'assets.', 'img.', 'media.'];
-  if (safePrefixes.some(p => hostname.startsWith(p))) {
-    const base = hostname.replace(/^[a-z]+\./, '');
-    // If the base part is a short recognizable word, skip
-    if (base.split('.')[0].length < 12) return { score: 0, reason: null, triggered: false };
-  }
+  // Skip known-legitimate static prefixes
+  const safeLabels = new Set(['www', 'mail', 'api', 'cdn', 'static', 'assets', 'img', 'media', 'blog', 'shop', 'store', 'news', 'help', 'support', 'app', 'dev']);
 
-  // Get the registrable-domain part (second-level domain label)
   const parts = hostname.split('.');
-  const domainLabel = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
+  // Check subdomains and domain labels (excluding standard TLDs)
+  const labelsToCheck = parts.length > 1 ? parts.slice(0, -1) : parts;
 
-  // A: Long domain label that doesn't look like a real word
-  // Real brand domains are usually short and pronounceable
-  if (domainLabel.length > 12) {
-    // Check vowel ratio — real words have vowels. Random strings have very low or very high ratios.
-    const vowels = (domainLabel.match(/[aeiou]/g) || []).length;
-    const vowelRatio = vowels / domainLabel.length;
-    // Too few vowels (< 15%) or mixed with digits strongly suggests random generation
-    const hasDigitMix = /[0-9]/.test(domainLabel) && /[a-z]/.test(domainLabel);
-    const looksRandom = vowelRatio < 0.15 || (hasDigitMix && domainLabel.length > 10);
-    
-    if (looksRandom) {
-      return {
-        score: 55,
-        reason: `Hostname "${hostname}" appears to be randomly generated — common in ad-redirect and malware infrastructure.`,
-        triggered: true
-      };
+  for (const label of labelsToCheck) {
+    if (safeLabels.has(label)) continue;
+
+    if (label.length >= 10) {
+      const vowels = (label.match(/[aeiou]/g) || []).length;
+      const vowelRatio = vowels / label.length;
+      const hasLongConsonantCluster = /[bcdfghjklmnpqrstvwxyz]{5,}/i.test(label);
+      const hasDigitMix = /[0-9]/.test(label) && /[a-z]/.test(label);
+
+      if (vowelRatio < 0.20 || hasLongConsonantCluster || (hasDigitMix && label.length > 10)) {
+        return {
+          score: 65,
+          reason: `Hostname "${hostname}" contains a randomly generated label ("${label}") — signature of ad-redirect & malware DGA infrastructure.`,
+          triggered: true
+        };
+      }
+    }
+
+    // DGA / Nonsense label detection (e.g. dstimaariracon.org)
+    if (label.length >= 11 && !/^(google|amazon|microsoft|facebook|youtube|twitter|instagram|netflix|apple|adobe|paypal|stripe|shopify|cloudflare|github|linkedin|reddit|discord|zoom|slack|notion|atlassian)/.test(label)) {
+      const startsWithConsonantCluster = /^[bcdfghjklmnpqrstvwxyz]{3,}/i.test(label);
+      if (startsWithConsonantCluster || label.length >= 13) {
+        return {
+          score: 65,
+          reason: `Hostname "${hostname}" uses a synthetic DGA domain label ("${label}") — typical of malvertising & phishing infrastructure.`,
+          triggered: true
+        };
+      }
     }
   }
 
-  // B: Domain label contains a suspicious pattern of consonants/digits (no vowel words)
-  // "omegatootler" — actually has vowels but is clearly not a real brand word.
-  // Detect if it's a nonsense portmanteau or gibberish over 10 chars
+  // Check if domain label matches suspicious TLD pattern
+  const domainLabel = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
   if (domainLabel.length > 10 && !/^(google|amazon|microsoft|facebook|youtube|twitter|instagram|netflix|apple|adobe|paypal|stripe|shopify|cloudflare|github|linkedin|reddit|discord|zoom|slack|notion|atlassian)/.test(domainLabel)) {
-    // No known brand prefix — check if it's in a suspicious TLD
-    const suspTLDs = ['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.click', '.online', '.site', '.fun', '.live', '.vip', '.club', '.icu', '.sbs', '.uno', '.cfd', '.bar', '.monster', '.skin', '.qpon', '.world'];
+    const suspTLDs = ['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.click', '.online', '.site', '.fun', '.live', '.vip', '.club', '.icu', '.sbs', '.uno', '.cfd', '.bar', '.monster', '.skin', '.qpon', '.world', '.ninja', '.mov', '.film', '.download', '.com'];
     if (suspTLDs.some(tld => hostname.endsWith(tld))) {
       return {
         score: 50,
@@ -399,6 +457,57 @@ export function hasRandomLookingHostname(urlString) {
         triggered: true
       };
     }
+  }
+
+  return { score: 0, reason: null, triggered: false };
+}
+
+/**
+ * Rule 9: Piracy / Illegal Media Streaming & High-Risk TLD Rule
+ * Detects known piracy domain keywords (tamilgun, moviesda, isaimini, tamilyogi, movierulz, khatrimaza, filmywap, torrent)
+ * paired with high-risk streaming TLDs (.ninja, .mov, .xyz, .top, .click, .world, .site).
+ * @param {string} urlString
+ */
+export function hasPiracyOrUnverifiedMediaPattern(urlString) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  const hostname = url.hostname.toLowerCase();
+  
+  // Piracy / Untrusted Software & Media Domain Keywords
+  const piracyKeywords = [
+    'tamilgun', 'moviesda', 'isaimini', 'tamilyogi', 'movierulz', 'bolly4u',
+    'khatrimaza', 'filmywap', 'cinemavilla', '123movies', 'fmovies', 'putlocker',
+    'piratebay', 'yts', 'eztv', 'rarbg', 'torrent', 'getintopc', 'oceanofgames',
+    'crackpack', 'keygen', 'cracked', 'repack', 'fitgirl', 'skidrow'
+  ];
+
+  const highRiskMediaTLDs = ['.ninja', '.mov', '.film', '.video', '.download', '.xyz', '.top', '.click', '.world', '.site', '.work', '.rest', '.online'];
+
+  const matchedKeyword = piracyKeywords.find(k => hostname.includes(k));
+  const matchedTLD = highRiskMediaTLDs.find(tld => hostname.endsWith(tld));
+
+  if (matchedKeyword && matchedTLD) {
+    return {
+      score: 85,
+      reason: `Hostname "${hostname}" matches a known piracy/malvertising network signature ("${matchedKeyword}" on "${matchedTLD}").`,
+      triggered: true
+    };
+  } else if (matchedKeyword) {
+    return {
+      score: 60,
+      reason: `Hostname contains media piracy keyword "${matchedKeyword}" — frequently associated with malvertising pop-unders and dangerous downloads.`,
+      triggered: true
+    };
+  } else if (matchedTLD && (url.pathname.includes('download') || url.pathname.includes('play') || url.pathname.includes('watch'))) {
+    return {
+      score: 50,
+      reason: `Domain on "${matchedTLD}" offering media play/download — high malvertising risk.`,
+      triggered: true
+    };
   }
 
   return { score: 0, reason: null, triggered: false };
@@ -413,6 +522,11 @@ export function hasPunycodeOrKeywords(urlString) {
   const url = safeParseUrl(urlString);
   if (!url) return { score: 0, reason: null, triggered: false };
   if (!['http:', 'https:'].includes(url.protocol)) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  // Exempt official trusted top domains (Auth keywords on official domains are expected)
+  if (isTrustedTopDomain(url.hostname)) {
     return { score: 0, reason: null, triggered: false };
   }
 

@@ -1,8 +1,31 @@
-/**
- * risk-engine.js - Adaptive Risk Engine aggregating multiple independent signals.
- */
+import { isTrustedTopDomain } from './rules.js';
 
 export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null, paymentAnalysis = null, downloadSignals = null) {
+  let hostname = '';
+  try { hostname = new URL(url).hostname; } catch(e) {}
+
+  // Trusted Top Domain Protection Override (prevents false positives on official auth infrastructure)
+  if (isTrustedTopDomain(hostname) && (!threatIntel || !threatIntel.malware)) {
+    return {
+      url,
+      hostname,
+      score: 0,
+      riskScore: 0,
+      severity: 'safe',
+      state: 'safe',
+      action: 'allow',
+      reasons: [],
+      signals: [],
+      categories: {
+        phishing: { flagged: false, confidence: 0, reason: null },
+        malware: { flagged: false, source: null },
+        scamFraud: { flagged: false, reason: null },
+        suspicious: { flagged: false, reason: null }
+      },
+      paymentAnalysis: null
+    };
+  }
+
   let riskScore = 0;
   const signals = [];
   const categories = {
@@ -31,8 +54,8 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
         s.reason.includes('tracking fingerprint') || s.reason.includes('redirect routing') ||
         s.reason.includes('randomly generated') || s.reason.includes('high-risk TLD') ||
         s.reason.includes('Unusually long URL') || s.reason.includes('tracking pattern') ||
-        s.reason.includes('Tracking Network')) {
-      malvertScore += Math.round(s.score * 0.65);
+        s.reason.includes('Tracking Network') || s.reason.includes('piracy') || s.reason.includes('media')) {
+      malvertScore += Math.round(s.score * 0.85);
       malvertReasons.push(s.reason);
     } else if (!s.reason.includes('brand')) {
       // Normal URL signals (exclude brand — handled separately)
@@ -108,7 +131,7 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
   // 5. Financial Context Engine (0-20 points)
   // Require at least 2 specific financial terms to avoid false positives
   // from common words like 'trading', 'wallet', 'payment' on legitimate sites.
-  const highConfidenceFinancialTerms = ['cvv', 'otp', 'upi', 'kyc', 'atm pin', 'mpin', 'bank account', 'ifsc', 'net banking', 'credit card', 'debit card'];
+  const highConfidenceFinancialTerms = ['cvv', 'otp', 'upi', 'kyc', 'atm pin', 'mpin', 'bank account', 'account number', 'ifsc', 'net banking', 'netbanking', 'credit card', 'debit card'];
   const hasHighConfidenceFinancialTerm = domSignals && domSignals.financialMatches &&
     domSignals.financialMatches.some(m => highConfidenceFinancialTerms.includes(m));
   
@@ -124,8 +147,10 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     // Must have 2+ financial terms AND at least one high-confidence term (cvv, otp, upi...)
     addSignal('synergy_financial_credentials', 35, 'High risk: Unverified site requesting financial credentials.');
   }
-  if (redirectSignals && redirectSignals.suspicious && domSignals && domSignals.hasCredentialCollection && !domSignals.isTrustedDomain) {
-    addSignal('synergy_redirect_credentials', 30, 'High risk: Suspicious redirect routing to a credential collection page.');
+  
+  const isSuspiciousRedirect = redirectSignals && (redirectSignals.suspicious || (redirectSignals.shortenerDetected && redirectSignals.chain && redirectSignals.chain.length > 2));
+  if (isSuspiciousRedirect && domSignals && domSignals.hasCredentialCollection && !domSignals.isTrustedDomain) {
+    addSignal('synergy_redirect_credentials', 30, 'High risk: Suspicious or multi-hop redirect routing to a credential collection page.');
   }
 
   // 8. Payment Protection (spec: VERITY_PAYMENT_PROTECTION_ANTIGRAVITY_SPEC-1.md)

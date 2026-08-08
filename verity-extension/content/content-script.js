@@ -159,8 +159,8 @@ function collectSignals() {
   // IMPORTANT: 'pin' removed — matches 'pinned' on GitHub/social sites.
   // Only specific, unambiguous financial terms are included.
   const financialKeywords = [
-    'upi', 'net banking', 'credit card', 'debit card', 'cvv', 'otp',
-    'kyc', 'atm pin', 'mpin', 'bank account', 'ifsc',
+    'upi', 'net banking', 'netbanking', 'credit card', 'debit card', 'cvv', 'otp',
+    'kyc', 'atm pin', 'mpin', 'bank account', 'account number', 'ifsc',
     'cashback', 'crypto', 'wallet'
   ];
   let financialMatch = isTrustedDomain ? [] : financialKeywords.filter(k => text.includes(k));
@@ -201,18 +201,43 @@ function collectSignals() {
 }
 
 // 2. Early and Full Scans
+function handleEnforcementVerdict(verdict) {
+  if (!verdict) return;
+  updateStatusBadge(verdict);
+  if (verdict.action === 'block') {
+    isBlocked = true;
+    if (statusBadgeHost) statusBadgeHost.style.display = 'none';
+    injectOverlay(verdict);
+  } else if (verdict.action === 'allow') {
+    isBlocked = false;
+    if (statusBadgeHost) statusBadgeHost.style.display = 'block';
+    removeOverlay();
+  }
+}
+
 function triggerImmediateUrlScan() {
-  chrome.runtime.sendMessage({ action: 'ANALYZE_URL_ONLY', url: window.location.href });
+  chrome.runtime.sendMessage({ action: 'ANALYZE_URL_ONLY', url: window.location.href }, (response) => {
+    if (chrome.runtime.lastError) return;
+    if (response && response.verdict) {
+      handleEnforcementVerdict(response.verdict);
+    }
+  });
 }
 
 function triggerFullScan() {
   const domSignals = collectSignals();
-  chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals });
+  chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals }, (response) => {
+    if (chrome.runtime.lastError) return;
+    if (response && response.verdict) {
+      handleEnforcementVerdict(response.verdict);
+    }
+  });
 }
 
 // ─── Live Status Badge ──────────────────────────────────────────────────────
 
 function injectStatusBadge() {
+  if (window.self !== window.top) return null; // Skip floating status badge inside embedded iframes
   if (document.getElementById('verity-status-badge-host')) return;
 
   const host = document.createElement('div');
@@ -368,9 +393,78 @@ function updateStatusBadge(verdict) {
   `;
 }
 
+function showPopupBlockedToast(hostname) {
+  if (!badgeShadow) return;
+
+  // Pulse badge with red glow
+  const badge = badgeShadow.querySelector('.verity-badge');
+  if (badge) {
+    badge.style.setProperty('--pulse-color', 'rgba(239,68,68,0.7)');
+    badge.classList.add('pulse');
+    setTimeout(() => badge.classList.remove('pulse'), 2000);
+  }
+
+  let toast = badgeShadow.querySelector('#verity-popup-toast-box');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'verity-popup-toast-box';
+    badgeShadow.appendChild(toast);
+  }
+
+  toast.innerHTML = `
+    <style>
+      .verity-toast-panel {
+        position: fixed;
+        top: 46px;
+        right: 16px;
+        background: rgba(15, 23, 42, 0.95);
+        color: #f8fafc;
+        border: 1.5px solid #ef4444;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        z-index: 2147483647;
+        animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: auto;
+      }
+      @keyframes toastSlide {
+        from { transform: translateY(-12px); opacity: 0; }
+        to   { transform: translateY(0); opacity: 1; }
+      }
+    </style>
+    <div class="verity-toast-panel">
+      <span style="font-size:16px;">🚫</span>
+      <div>
+        <div style="font-weight:800;color:#ef4444;font-size:11px;letter-spacing:0.5px;">VERITY POP-UP BLOCKED</div>
+        <div style="color:#cbd5e1;font-size:11px;word-break:break-all;">Blocked pop-under to <strong>${hostname || 'Tracker'}</strong></div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    if (toast) toast.innerHTML = '';
+  }, 4500);
+}
+
+// Listen for window messages from main world
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'VERITY_POPUP_BLOCKED') {
+    let host = event.data.url;
+    try { host = new URL(host).hostname; } catch(e) {}
+    showPopupBlockedToast(host);
+  }
+});
+
 // 3. Listen for enforcement decisions from Background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'ENFORCEMENT_DECISION') {
+  if (message.action === 'POPUP_BLOCKED_TOAST') {
+    showPopupBlockedToast(message.hostname || message.blockedUrl);
+  } else if (message.action === 'ENFORCEMENT_DECISION') {
     const verdict = message.decision.verdict;
     updateStatusBadge(verdict);
     if (message.decision.action === 'block') {
@@ -523,6 +617,7 @@ function removeDownloadWarning() {
 
 // 4. Strong Overlay Enforcement
 function removeOverlay() {
+  isBlocked = false;
   if (blockObserver) {
     blockObserver.disconnect();
     blockObserver = null;
@@ -532,8 +627,14 @@ function removeOverlay() {
     existing.remove();
   }
   if (document.documentElement) {
-    document.documentElement.style.overflow = '';
+    document.documentElement.style.removeProperty('overflow');
   }
+  if (document.body) {
+    document.body.style.removeProperty('overflow');
+  }
+  try {
+    window.onbeforeunload = null;
+  } catch (e) {}
 }
 
 function injectOverlay(verdict) {
@@ -541,7 +642,114 @@ function injectOverlay(verdict) {
     return; // Already blocked
   }
 
-  // Freeze the underlying page
+  // 1. Immediately HALT all network loading, page downloads & pending client redirects
+  try {
+    window.stop();
+  } catch (e) {}
+
+  // 2. Clear all active timeouts & intervals to kill delayed JS redirects
+  try {
+    let maxId = window.setTimeout(() => {}, 0);
+    for (let i = 0; i <= maxId; i++) {
+      window.clearTimeout(i);
+      window.clearInterval(i);
+    }
+  } catch (e) {}
+
+  // 3. Remove any <meta http-equiv="refresh"> redirect tags
+  try {
+    document.querySelectorAll('meta[http-equiv="refresh"]').forEach(el => el.remove());
+  } catch (e) {}
+
+  // 4. Set onbeforeunload handler to warn/halt navigation attempts
+  try {
+    window.onbeforeunload = function() {
+      return "Navigation blocked by Verity Web Protection.";
+    };
+  } catch (e) {}
+
+  const isIframe = window.self !== window.top;
+
+  // 5. Special Handling for Subframes / Embedded iFrames
+  if (isIframe) {
+    const iframeHost = document.createElement('div');
+    iframeHost.id = 'verity-security-host';
+    iframeHost.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483647;background:#ffffff;box-sizing:border-box;display:flex;align-items:center;justify-content:center;padding:16px;';
+
+    const iframeShadow = iframeHost.attachShadow({ mode: 'closed' });
+    iframeShadow.innerHTML = `
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .iframe-block-card {
+          width: 100%;
+          height: 100%;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 24px 28px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+          color: #1e293b;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          overflow-y: auto;
+        }
+        .header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .logo-box {
+          width: 36px; height: 36px; border-radius: 6px; background: #d32f2f; color: white;
+          display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; flex-shrink: 0;
+        }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-title { font-size: 13px; color: #64748b; font-weight: 500; }
+        .brand-name { font-size: 20px; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
+        .title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 8px; line-height: 1.3; }
+        .url-box { font-family: monospace; font-size: 12px; color: #64748b; margin-bottom: 12px; word-break: break-all; }
+        .message { font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 20px; }
+        .btn-safety {
+          background: #1a56db; color: white; border: none; padding: 12px 24px; border-radius: 6px;
+          font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+          display: inline-block; transition: background 0.15s;
+        }
+        .btn-safety:hover { background: #1e40af; }
+        .badge { display: inline-block; background: #ffebee; color: #d32f2f; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; margin-top: 12px; }
+      </style>
+      <div class="iframe-block-card">
+        <div class="header">
+          <div class="logo-box">V</div>
+          <div class="brand-text">
+            <span class="brand-title">Web Protection by</span>
+            <span class="brand-name">VERITY</span>
+          </div>
+        </div>
+        <div class="title">Suspicious page blocked for your protection</div>
+        <div class="url-box">${window.location.href}</div>
+        <div class="message">
+          ${(verdict.reasons && verdict.reasons[0]) ? verdict.reasons[0] : 'Verity prevented this embedded frame from loading due to phishing, scam, or security risks.'}
+        </div>
+        <div>
+          <button class="btn-safety" id="btn-iframe-safety">TAKE ME BACK TO SAFETY</button>
+        </div>
+        <div>
+          <span class="badge">Risk Score: ${verdict.score || 85}/100</span>
+        </div>
+      </div>
+    `;
+
+    iframeShadow.getElementById('btn-iframe-safety')?.addEventListener('click', () => {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: 'VERITY_REMOVE_IFRAME' }, '*');
+        }
+      } catch(e) {}
+      iframeHost.style.display = 'none';
+    });
+
+    const parentEl = document.documentElement || document.body;
+    if (parentEl) parentEl.appendChild(iframeHost);
+    return;
+  }
+
+  // Freeze the underlying page scroll for main frame
   if (document.documentElement) {
     document.documentElement.style.setProperty('overflow', 'hidden', 'important');
   }
@@ -593,23 +801,59 @@ function injectOverlay(verdict) {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      background-color: #FAFAFA;
-      background-image: radial-gradient(circle at bottom left, rgba(245,124,0,0.05) 0%, transparent 40%),
-                        radial-gradient(circle at bottom right, rgba(211,47,47,0.05) 0%, transparent 40%);
-      color: #333;
+      background-color: #F8FAFC;
+      background-image: radial-gradient(circle at 10% 10%, rgba(239, 68, 68, 0.07), transparent 45%),
+                        radial-gradient(circle at 90% 90%, rgba(37, 99, 235, 0.05), transparent 45%);
+      color: #0F172A;
       overflow-y: auto;
     }
     .verity-header {
-      padding: 40px 60px;
-      font-size: 26px;
+      padding: 32px 50px;
+      font-size: 22px;
       font-weight: 800;
-      color: #D32F2F;
+      color: #0F172A;
       display: flex;
       align-items: center;
-      letter-spacing: -0.02em;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
     }
-    .verity-header-pipe { color: #ccc; margin: 0 12px; font-weight: 300; }
-    .verity-header-sub { color: #444; font-weight: 400; font-size: 20px; }
+    .verity-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .verity-header-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    .verity-header-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+    }
+    .verity-header-pipe { color: #CBD5E1; margin: 0 8px; font-weight: 300; }
+    .verity-header-sub { color: #64748B; font-weight: 500; font-size: 15px; }
+    .verity-header-badge {
+      background: #FFEBEE;
+      color: #DC2626;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
     .verity-card-container {
       flex: 1;
       display: flex;
@@ -618,106 +862,150 @@ function injectOverlay(verdict) {
       padding: 40px;
     }
     .verity-card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      background: #FFFFFF;
+      border-radius: 24px;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.9);
       display: flex;
-      max-width: 950px;
+      max-width: 960px;
       width: 100%;
-      padding: 60px;
-      gap: 60px;
-      border: 1px solid #f0f0f0;
+      padding: 56px;
+      gap: 50px;
+      transition: transform 0.3s ease;
     }
-    @media (max-width: 800px) {
-      .verity-card { flex-direction: column; padding: 40px; }
+    @media (max-width: 850px) {
+      .verity-card { flex-direction: column; padding: 36px; gap: 30px; }
     }
     .verity-card-left {
-      flex: 0 0 280px;
+      flex: 0 0 240px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .verity-alert-wrapper {
-      width: 280px;
-      height: 280px;
+      width: 220px;
+      height: 220px;
       border-radius: 50%;
-      background: ${isDanger ? '#ffebee' : '#fff8e1'};
+      background: ${isDanger ? 'rgba(254, 226, 226, 0.7)' : 'rgba(254, 243, 199, 0.7)'};
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      animation: pulseGlow 2.5s infinite ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 ${isDanger ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'}; }
+      50% { transform: scale(1.03); box-shadow: 0 0 0 16px rgba(0,0,0,0); }
     }
     .verity-alert-circle {
-      width: 180px;
-      height: 180px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
-      background: ${isDanger ? '#D32F2F' : '#FFA000'};
-      border: 6px solid ${stateIconColor};
+      background: ${isDanger ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'linear-gradient(135deg, #F59E0B, #D97706)'};
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 90px;
-      font-weight: bold;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      font-size: 72px;
+      font-weight: 900;
+      box-shadow: 0 10px 25px ${isDanger ? 'rgba(220, 38, 38, 0.4)' : 'rgba(217, 119, 6, 0.4)'};
     }
     .verity-card-right {
       flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
     .verity-status {
-      margin: 0 0 10px 0;
-      font-size: 36px;
-      font-weight: 600;
-      color: #333;
-      letter-spacing: -0.01em;
+      margin: 0 0 8px 0;
+      font-size: 32px;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.02em;
     }
     .verity-status-highlight { color: ${stateColor}; }
-    .verity-url { color: #666; font-size: 16px; margin-bottom: 30px; font-family: monospace; }
-    .verity-message { font-size: 17px; line-height: 1.6; color: #444; margin-bottom: 30px; }
-    .verity-tags { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
+    .verity-url {
+      color: #475569;
+      font-size: 13px;
+      margin-bottom: 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      max-height: 85px;
+      overflow-y: auto;
+      background: #F8FAFC;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .verity-message { font-size: 16px; line-height: 1.6; color: #334155; margin-bottom: 24px; font-weight: 400; }
+    .verity-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
     .verity-tag {
-      background: #f1f3f4;
-      color: #333;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 14px;
+      background: #F1F5F9;
+      color: #334155;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
+      max-width: 100%;
+      word-break: break-word;
+      line-height: 1.4;
+      border: 1px solid #E2E8F0;
     }
     .verity-actions {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 20px;
-      margin-bottom: 24px;
+      gap: 14px;
+      margin-bottom: 16px;
     }
     .verity-btn-secondary {
-      background: transparent;
-      border: none;
-      color: #2962FF;
-      font-size: 15px;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      color: #475569;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .verity-btn-secondary:hover { text-decoration: underline; }
+    .verity-btn-secondary:hover {
+      background: #F8FAFC;
+      color: #0F172A;
+      border-color: #94A3B8;
+    }
     .verity-btn-primary {
-      background: #304FFE;
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
       color: white;
       border: none;
-      border-radius: 30px;
-      padding: 14px 40px;
-      font-size: 16px;
-      font-weight: 600;
+      border-radius: 12px;
+      padding: 13px 32px;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-    .verity-btn-primary:hover { background: #1A237E; }
-    .verity-btn-primary:active { transform: scale(0.98); }
-    .verity-trust-msg { font-size: 13px; color: #888; text-align: right; margin: 0; }
+    .verity-btn-primary:hover {
+      background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    }
+    .verity-btn-primary:active { transform: translateY(0); }
+    .verity-trust-msg { font-size: 12px; color: #94A3B8; text-align: right; margin: 0; }
   `;
 
   const styleTag = document.createElement('style');
@@ -734,14 +1022,14 @@ function injectOverlay(verdict) {
 
   const tagsHtml = (allReasons.length > 0 ? allReasons : ['High Risk Pattern Detected']).map(r =>
     `<span class="verity-tag">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
       ${r}
     </span>`
   ).join('');
 
   const paymentWarning = isPaymentPhishing
-    ? `<p style="background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;padding:12px 16px;color:#c62828;font-weight:600;margin-bottom:20px;">
-        💳 Your payment information is at risk. Do NOT enter any card, UPI, CVV or OTP details.
+    ? `<p style="background:#FFEBEE;border:1px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-weight:600;margin-bottom:20px;font-size:14px;">
+        💳 <strong>Critical Payment Risk:</strong> Do NOT enter any card, UPI, CVV or OTP details on this website.
        </p>`
     : '';
 
@@ -750,12 +1038,12 @@ function injectOverlay(verdict) {
     let chainItems = verdict.redirectChain.map((url, i) => {
       let u;
       try { u = new URL(url).hostname; } catch(e) { u = url; }
-      return `<div style="padding: 4px 0; font-family: monospace; font-size: 14px;">${i + 1}. ${u}</div>`;
+      return `<div style="padding: 4px 0; font-family: monospace; font-size: 13px;">${i + 1}. ${u}</div>`;
     });
-    let formattedChain = chainItems.join('<div style="color: #999; padding-left: 12px;">↓</div>');
+    let formattedChain = chainItems.join('<div style="color: #94A3B8; padding-left: 12px;">↓</div>');
     redirectChainHtml = `
-      <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-        <div style="font-weight: 600; margin-bottom: 12px; font-size: 14px; color: #555;">🔗 REDIRECT ANALYSIS</div>
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+        <div style="font-weight: 700; margin-bottom: 10px; font-size: 13px; color: #475569; letter-spacing: 0.5px;">🔗 REDIRECT CHAIN ANALYSIS</div>
         ${formattedChain}
       </div>
     `;
@@ -763,8 +1051,11 @@ function injectOverlay(verdict) {
 
   container.innerHTML = `
     <div class="verity-header">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-      VERITY <span class="verity-header-pipe">|</span> <span class="verity-header-sub">Web Protection</span>
+      <div class="verity-header-brand">
+        <div class="verity-header-logo">V</div>
+        <div class="verity-header-title">VERITY <span class="verity-header-pipe">|</span> <span class="verity-header-sub">Web Protection</span></div>
+      </div>
+      <div class="verity-header-badge">${isDanger ? '🛑 Threat Blocked' : '⚠️ Warning'}</div>
     </div>
 
     <div class="verity-card-container" id="main-view">
@@ -777,29 +1068,31 @@ function injectOverlay(verdict) {
 
         <div class="verity-card-right">
           <h1 class="verity-status">Website status: <span class="verity-status-highlight">${stateTitle}</span></h1>
-          <div class="verity-url">${window.location.href}</div>
+          <div class="verity-url">🌐 <span>${window.location.href}</span></div>
           ${paymentWarning}
           ${redirectChainHtml}
           <p class="verity-message">
             ${isPaymentPhishing
-              ? 'This page is impersonating a payment provider and attempting to collect your payment credentials. This is a payment phishing attack.'
+              ? 'This website is attempting to impersonate a payment gateway to steal your payment credentials. We strongly recommend you do not proceed.'
               : isDanger
-                ? 'This site looks highly dangerous to us. It matches signatures of phishing, scams, or credential theft. We strongly recommend you do not proceed.'
-                : 'This site looks a little risky to us, so we flagged it just in case. Make sure you trust this site if you choose to proceed.'}
+                ? 'This site matches signatures of phishing, scams, malvertising, or credential harvesting. Verity recommends returning to safety.'
+                : 'This site exhibits suspicious patterns. Please make sure you trust the domain before proceeding.'}
           </p>
 
           <div class="verity-tags">
             ${tagsHtml}
-            <span class="verity-tag" style="color: ${stateColor}; background: ${isDanger ? '#ffebee' : '#fff8e1'}">Risk Score: ${verdict.score}/100</span>
+            <span class="verity-tag" style="color: ${stateColor}; background: ${isDanger ? '#FFEBEE' : '#FEF3C7'}; border-color: rgba(239,68,68,0.2);">
+              Risk Score: ${verdict.score}/100
+            </span>
           </div>
 
           <div class="verity-actions">
-            <button class="verity-btn-secondary" id="btn-proceed">Visit anyway</button>
-            <button class="verity-btn-primary" id="btn-back">Go back</button>
+            <button class="verity-btn-secondary" id="btn-proceed">⚠️ Visit Anyway</button>
+            <button class="verity-btn-primary" id="btn-back">🛡️ Go Back to Safety</button>
           </div>
 
           <p class="verity-trust-msg">
-            Choosing to visit this site will add the URL to your list of trusted overrides.
+            Choosing to visit this site will bypass protection for this tab.
           </p>
         </div>
       </div>
@@ -807,16 +1100,16 @@ function injectOverlay(verdict) {
 
     <!-- Confirmation View -->
     <div class="verity-card-container" id="confirm-view" style="display: none;">
-      <div class="verity-card" style="max-width: 600px; padding: 40px; flex-direction: column; gap: 20px;">
-        <h1 class="verity-status" style="font-size: 28px;">Are you absolutely sure?</h1>
-        ${isPaymentPhishing ? '<p style="color:#c62828;font-weight:600;">⚠️ This page is attempting to steal your payment information (card number, CVV, OTP). Proceeding is extremely risky.</p>' : ''}
-        <p class="verity-message" style="margin-bottom: 10px;">
+      <div class="verity-card" style="max-width: 620px; padding: 48px; flex-direction: column; gap: 20px;">
+        <h1 class="verity-status" style="font-size: 26px; color: #DC2626;">⚠️ Are you sure you want to proceed?</h1>
+        ${isPaymentPhishing ? '<p style="color:#BE123C;font-weight:600;font-size:14px;">💳 Danger: Entering passwords, OTPs, or card details on this site puts your financial account at risk.</p>' : ''}
+        <p class="verity-message" style="margin-bottom: 10px; font-size: 15px;">
           This website has been classified as <strong>${stateTitle}</strong>.<br><br>
-          Proceeding may expose sensitive information such as passwords, financial details, or personal data.
+          Bypassing protection exposes you to potential credential theft, phishing, or malvertising pop-unders.
         </p>
-        <div class="verity-actions" style="margin-top: 20px;">
-          <button class="verity-btn-secondary" id="btn-confirm-cancel">Cancel</button>
-          <button class="verity-btn-primary" id="btn-confirm-proceed" style="background: #D32F2F;">Continue Anyway</button>
+        <div class="verity-actions" style="margin-top: 20px; justify-content: space-between; gap: 12px;">
+          <button class="verity-btn-primary" id="btn-confirm-cancel" style="flex: 1;">🛡️ Return to Safety</button>
+          <button class="verity-btn-secondary" id="btn-confirm-proceed" style="background: #DC2626; color: white; border: none; font-weight: 700;">Proceed to Unsafe Site</button>
         </div>
       </div>
     </div>
@@ -847,8 +1140,11 @@ function injectOverlay(verdict) {
   });
 
   shadow.querySelector('#btn-confirm-proceed').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ action: 'USER_OVERRIDE_ALLOW', url: window.location.href });
-    removeOverlay();
+    isBlocked = false;
+    chrome.runtime.sendMessage({ action: 'USER_OVERRIDE_ALLOW', url: window.location.href }, () => {
+      removeOverlay();
+      window.location.reload();
+    });
   });
 
   const parent = document.documentElement || document.body;
