@@ -143,7 +143,7 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
   const fields = domSignals.paymentFields || {};
 
   // 1. Payment intent
-  const intent = detectPaymentIntent(domSignals);
+  const intentResult = detectPaymentIntent(domSignals);
 
   // 1b. UPI Debit Trap & Cashback Scam Detection
   const pageText = (domSignals.pageText || '').toLowerCase();

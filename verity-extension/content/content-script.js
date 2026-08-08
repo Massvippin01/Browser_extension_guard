@@ -546,34 +546,42 @@ function injectDownloadWarning(payload) {
     <style>
       .dw-panel {
         background: ${bgColor};
-        border: 1.5px solid ${color};
-        border-radius: 14px;
+        border: 2px solid ${color};
+        border-radius: 16px;
         padding: 18px 20px;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         font-size: 12px;
         color: #f1f5f9;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-        animation: slideIn 0.25s ease;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px ${isDanger ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'};
+        transform-origin: top right;
+        animation: expandAndShrink 5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
-      @keyframes slideIn {
-        from { transform: translateX(110%); opacity: 0; }
-        to   { transform: translateX(0); opacity: 1; }
+      @keyframes expandAndShrink {
+        0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
+        12%  { transform: scale(1.06) translateY(0); opacity: 1; }
+        18%  { transform: scale(1) translateY(0); opacity: 1; }
+        85%  { transform: scale(1) translateY(0); opacity: 1; }
+        100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
       }
       .dw-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-      .dw-icon { font-size:22px; }
-      .dw-title { font-size:13px; font-weight:700; color:${color}; letter-spacing:0.5px; }
-      .dw-meta { background:rgba(255,255,255,0.05); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+      .dw-icon { font-size:24px; animation: pulseIcon 1.5s infinite; }
+      @keyframes pulseIcon {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+      }
+      .dw-title { font-size:13px; font-weight:800; color:${color}; letter-spacing:0.5px; }
+      .dw-meta { background:rgba(255,255,255,0.06); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
       .dw-meta-row { display:flex; gap:6px; margin-bottom:5px; font-size:11px; }
       .dw-meta-label { color:#94a3b8; min-width:60px; flex-shrink:0; }
-      .dw-meta-value { color:#e2e8f0; word-break:break-all; font-weight:500; }
+      .dw-meta-value { color:#e2e8f0; word-break:break-all; font-weight:600; }
       .dw-signals { margin-bottom:12px; font-size:11px; line-height:1.5; color:#cbd5e1; }
       .dw-score { display:flex; justify-content:space-between; align-items:center; }
       .dw-score-label { font-size:11px; color:#94a3b8; }
-      .dw-score-value { font-size:15px; font-weight:700; color:${color}; }
+      .dw-score-value { font-size:16px; font-weight:900; color:${color}; }
       .dw-actions { display:flex; gap:10px; margin-top:14px; }
       .dw-btn { flex:1; padding:9px; border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; transition: opacity 0.15s; }
-      .dw-btn-dismiss { background:rgba(255,255,255,0.08); color:#e2e8f0; }
-      .dw-btn-dismiss:hover { background:rgba(255,255,255,0.15); }
+      .dw-btn-dismiss { background:rgba(255,255,255,0.1); color:#e2e8f0; }
+      .dw-btn-dismiss:hover { background:rgba(255,255,255,0.2); }
       .dw-btn-action { background:${color}; color:white; font-weight:700; }
       .dw-btn-action:hover { opacity:0.85; }
     </style>
@@ -598,6 +606,10 @@ function injectDownloadWarning(payload) {
       </div>
     </div>
   `;
+
+  setTimeout(() => {
+    removeDownloadWarning();
+  }, 5100);
 
   shadow.getElementById('dw-dismiss')?.addEventListener('click', removeDownloadWarning);
   shadow.getElementById('dw-open-dl')?.addEventListener('click', () => {
