@@ -460,26 +460,28 @@ window.addEventListener('message', (event) => {
   }
 });
 
+function handleEnforcementVerdict(verdict) {
+  if (!verdict) return;
+  updateStatusBadge(verdict);
+  if (verdict.action === 'block') {
+    isBlocked = true;
+    if (statusBadgeHost) statusBadgeHost.style.display = 'none';
+    injectOverlay(verdict);
+  } else if (verdict.action === 'allow') {
+    isBlocked = false;
+    if (statusBadgeHost) statusBadgeHost.style.display = 'block';
+    removeOverlay();
+  } else if (verdict.action === 'warn') {
+    if (statusBadgeHost) statusBadgeHost.style.display = 'block';
+  }
+}
+
 // 3. Listen for enforcement decisions from Background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'POPUP_BLOCKED_TOAST') {
     showPopupBlockedToast(message.hostname || message.blockedUrl);
   } else if (message.action === 'ENFORCEMENT_DECISION') {
-    const verdict = message.decision.verdict;
-    updateStatusBadge(verdict);
-    if (message.decision.action === 'block') {
-      isBlocked = true;
-      // Hide badge when full block overlay is shown
-      if (statusBadgeHost) statusBadgeHost.style.display = 'none';
-      injectOverlay(verdict);
-    } else if (message.decision.action === 'allow') {
-      isBlocked = false;
-      if (statusBadgeHost) statusBadgeHost.style.display = 'block';
-      removeOverlay();
-    } else if (message.decision.action === 'warn') {
-      // Warn = keep badge visible, no full block
-      if (statusBadgeHost) statusBadgeHost.style.display = 'block';
-    }
+    handleEnforcementVerdict(message.decision.verdict);
   } else if (message.action === 'RE_ANALYZE') {
     // Fired on SPA client-side navigations
     isBlocked = false;
