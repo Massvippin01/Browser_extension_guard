@@ -13,24 +13,34 @@ let statusBadgeHost = null;
  * Gets searchable metadata of an input — structural only, NEVER the value.
  */
 function getInputMeta(input) {
+  if (!input) return '';
   const labelText = (() => {
-    if (input.id) {
-      const lbl = document.querySelector(`label[for="${CSS.escape(input.id)}"]`);
-      if (lbl) return lbl.innerText;
+    try {
+      if (input.id && typeof input.id === 'string' && input.id.trim()) {
+        const escapedId = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(input.id) : input.id;
+        const lbl = document.querySelector(`label[for="${escapedId}"]`);
+        if (lbl) return lbl.innerText || '';
+      }
+      const parent = input.closest ? input.closest('label') : null;
+      return parent ? (parent.innerText || '') : '';
+    } catch (e) {
+      return '';
     }
-    const parent = input.closest('label');
-    return parent ? parent.innerText : '';
   })();
-  return [
-    input.type || '',
-    input.name || '',
-    input.id || '',
-    input.autocomplete || '',
-    input.placeholder || '',
-    input.getAttribute('aria-label') || '',
-    input.getAttribute('data-field') || '',
-    labelText,
-  ].join(' ').toLowerCase();
+  try {
+    return [
+      input.type || '',
+      input.name || '',
+      input.id || '',
+      input.autocomplete || '',
+      input.placeholder || '',
+      input.getAttribute('aria-label') || '',
+      input.getAttribute('data-field') || '',
+      labelText,
+    ].join(' ').toLowerCase();
+  } catch (e) {
+    return '';
+  }
 }
 
 function detectPaymentFields() {
@@ -226,13 +236,17 @@ function triggerImmediateUrlScan() {
 }
 
 function triggerFullScan() {
-  const domSignals = collectSignals();
-  chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals }, (response) => {
-    if (chrome.runtime.lastError) return;
-    if (response && response.verdict) {
-      handleEnforcementVerdict(response.verdict);
-    }
-  });
+  try {
+    const domSignals = collectSignals();
+    chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals }, (response) => {
+      if (chrome.runtime.lastError) return;
+      if (response && response.verdict) {
+        handleEnforcementVerdict(response.verdict);
+      }
+    });
+  } catch (e) {
+    console.error('[Verity] Error in triggerFullScan:', e);
+  }
 }
 
 // ─── Live Status Badge ──────────────────────────────────────────────────────
