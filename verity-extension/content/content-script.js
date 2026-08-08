@@ -417,24 +417,28 @@ function showPopupBlockedToast(hostname) {
         position: fixed;
         top: 46px;
         right: 16px;
-        background: rgba(15, 23, 42, 0.95);
+        background: rgba(15, 23, 42, 0.96);
         color: #f8fafc;
-        border: 1.5px solid #ef4444;
-        border-radius: 10px;
-        padding: 10px 14px;
+        border: 2px solid #ef4444;
+        border-radius: 12px;
+        padding: 12px 16px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 12px;
         display: flex;
         align-items: center;
-        gap: 10px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(239,68,68,0.4);
         z-index: 2147483647;
-        animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-origin: top right;
+        animation: toastExpandShrink 4.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         pointer-events: auto;
       }
-      @keyframes toastSlide {
-        from { transform: translateY(-12px); opacity: 0; }
-        to   { transform: translateY(0); opacity: 1; }
+      @keyframes toastExpandShrink {
+        0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
+        12%  { transform: scale(1.08) translateY(0); opacity: 1; }
+        18%  { transform: scale(1) translateY(0); opacity: 1; }
+        85%  { transform: scale(1) translateY(0); opacity: 1; }
+        100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
       }
     </style>
     <div class="verity-toast-panel">
