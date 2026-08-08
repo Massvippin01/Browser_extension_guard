@@ -85,6 +85,7 @@ function detectPaymentForm() {
 
 // Known payment brand aliases for claimed-provider detection
 const PAYMENT_BRAND_ALIASES = [
+  ['HDFC Bank', ['hdfc', 'hdfcbank', 'hdfc netbanking']], ['SBI', ['sbi', 'onlinesbi', 'sbi yono']],
   ['PayPal', ['paypal']], ['Stripe', ['stripe']], ['Razorpay', ['razorpay']],
   ['PhonePe', ['phonepe', 'phone pe']], ['Google Pay', ['google pay', 'gpay']],
   ['Paytm', ['paytm']], ['Amazon Pay', ['amazon pay']], ['PayU', ['payu', 'payumoney']],

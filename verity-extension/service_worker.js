@@ -261,12 +261,17 @@ const userOverrideTabs = new Set();
 const userOverrideDomains = new Set();
 
 function isUserOverridden(tabId, url) {
+  if (url) {
+    try {
+      const host = new URL(url).hostname.toLowerCase();
+      if (host === 'localhost' || host === '127.0.0.1') return false;
+    } catch (e) {}
+  }
   if (tabId && userOverrideTabs.has(tabId)) return true;
   if (url) {
     try {
       const host = new URL(url).hostname.toLowerCase();
-      // Exclude localhost/127.0.0.1 from global domain override so test hub is not permanently muted
-      if (host !== 'localhost' && host !== '127.0.0.1' && userOverrideDomains.has(host)) return true;
+      if (userOverrideDomains.has(host)) return true;
     } catch (e) {}
   }
   return false;

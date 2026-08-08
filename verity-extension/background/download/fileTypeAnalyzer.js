@@ -43,6 +43,10 @@ const EXTENSION_MAP = {
   '.deb': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
   '.rpm': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
   '.dmg': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
+  '.apk': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
+  '.xapk': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
+  '.apkm': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
+  '.ipa': FILE_CATEGORIES.HIGH_RISK_INSTALLER,
 
   // Archives
   '.zip': FILE_CATEGORIES.ARCHIVE,
@@ -98,6 +102,7 @@ const DANGEROUS_MIME_PREFIXES = [
   'application/x-sh',
   'application/x-shellscript',
   'application/vnd.microsoft.portable-executable',
+  'application/vnd.android.package-archive',
 ];
 
 /**

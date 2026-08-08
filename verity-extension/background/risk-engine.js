@@ -86,12 +86,36 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     categories.phishing.confidence = mlScore;
   }
 
-  // 3. Brand Impersonation (0-40 points)
+  // 3. Brand Impersonation (0-60 points)
   const brandSignal = ruleSignals.find(s => s.triggered && s.reason && s.reason.includes('name'));
   if (brandSignal) {
     addSignal('brand_impersonation', 40, brandSignal.reason);
     categories.phishing.flagged = true;
     categories.phishing.reason = brandSignal.reason;
+  }
+
+  // 3b. Content-based Brand Impersonation (detects fake bank logins like HDFC NetBanking)
+  if (domSignals && !domSignals.isTrustedDomain) {
+    const textAndTitle = ((domSignals.pageTitle || '') + ' ' + (domSignals.pageText || '')).toLowerCase();
+    const brandKeywords = [
+      { name: 'HDFC Bank', keywords: ['hdfc netbanking', 'hdfc bank', 'hdfcbank'] },
+      { name: 'SBI', keywords: ['sbi netbanking', 'state bank of india', 'sbi yono', 'onlinesbi'] },
+      { name: 'ICICI Bank', keywords: ['icici netbanking', 'icici bank', 'icicibank'] },
+      { name: 'PayPal', keywords: ['paypal'] },
+      { name: 'Paytm', keywords: ['paytm rewards', 'paytm cashback'] },
+      { name: 'Netflix', keywords: ['netflix'] }
+    ];
+
+    for (const b of brandKeywords) {
+      if (b.keywords.some(k => textAndTitle.includes(k))) {
+        if (domSignals.hasCredentialCollection || domSignals.hasPasswordInput) {
+          addSignal('content_brand_impersonation', 60, `Page claims to be "${b.name}" while requesting login credentials on an unverified domain.`);
+          categories.phishing.flagged = true;
+          categories.phishing.reason = `Page claims to be "${b.name}" while requesting credentials on an unverified domain.`;
+          break;
+        }
+      }
+    }
   }
 
   // 4. DOM / Page Analysis (0-20 points) & Fake Login Detection
@@ -268,30 +292,30 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
       dlReasons.push(`High-risk file type downloaded (${downloadSignals.extension}).`);
     }
 
-    // Installer download adds moderate risk
+    // Installer download (APK, EXE, MSI) adds substantial risk when unverified
     if (downloadSignals.installerDownload && downloadSignals.sourceDomainSuspicious) {
-      dlScore += 20;
-      dlReasons.push('Installer download from a suspicious source.');
+      dlScore += 45;
+      dlReasons.push('Installer/APK download from a suspicious source domain.');
     } else if (downloadSignals.installerDownload) {
-      dlScore += 5;
-      dlReasons.push(`Installer file downloaded (${downloadSignals.extension}).`);
+      dlScore += 35;
+      dlReasons.push(`Installer/APK file downloaded (${downloadSignals.extension}).`);
     }
 
     // Double extension — high risk regardless of source
     if (downloadSignals.doubleExtension) {
-      dlScore += 30;
+      dlScore += 50;
       dlReasons.push(`Double extension: file appears to be "${downloadSignals.apparentExtension}" but is actually "${downloadSignals.extension}".`);
     }
 
     // Misleading filename keyword
     if (downloadSignals.misleadingFilename && downloadSignals.suspiciousKeyword) {
-      dlScore += 15;
+      dlScore += 25;
       dlReasons.push(`Misleading filename pattern: "${downloadSignals.suspiciousKeyword}".`);
     }
 
-    // Brand impersonation via filename (e.g. Chrome_Update.exe not from google.com)
+    // Brand impersonation via filename (e.g. sbi_yono_rewards.apk not from sbi.co.in)
     if (downloadSignals.brandImpersonation) {
-      dlScore += 25;
+      dlScore += 65;
       dlReasons.push(`Filename impersonates "${downloadSignals.brandImpersonationName}" but download is not from their official domain.`);
       categories.phishing.flagged = true;
     }
