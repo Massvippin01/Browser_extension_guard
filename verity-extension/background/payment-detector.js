@@ -181,23 +181,23 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
 
   // Card + CVV collection on suspicious (non-official) site
   if ((fields.card || fields.cvv) && domainResult.domainMismatch) {
-    paymentScore += 25;
+    paymentScore += 50;
     reasons.push('Card/CVV information requested on unverified payment domain.');
   } else if (fields.card && fields.cvv) {
     // Card + CVV even on unknown domain (no claimed provider)
-    paymentScore += 15;
+    paymentScore += 30;
     reasons.push('Card number and CVV fields detected.');
   }
 
   // OTP in payment context + mismatch
   if (fields.otp && domainResult.domainMismatch) {
-    paymentScore += 20;
+    paymentScore += 30;
     reasons.push('OTP collection on unverified payment domain.');
   }
 
   // Fake payment brand impersonation
   if (providerResult.claimedProvider && domainResult.domainMismatch) {
-    paymentScore += 30;
+    paymentScore += 50;
     reasons.push(
       `Page claims to be "${providerResult.claimedProvider}" but domain "${hostname}" is not its official domain.`
     );
