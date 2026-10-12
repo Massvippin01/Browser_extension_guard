@@ -1,5 +1,5 @@
-scikit-learn
-pandas
-numpy
-skl2onnx
-onnx
+scikit-learn==1.4.1.post1
+pandas==2.2.1
+numpy==1.26.4
+skl2onnx==1.16.0
+onnx==1.15.0

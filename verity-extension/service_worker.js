@@ -14,6 +14,8 @@ import { getMlScore, initializeModel } from './background/ml-scorer.js';
 import { checkReputation } from './background/reputation.js';
 import { analyzePaymentPage } from './background/payment-detector.js';
 import { initDownloadMonitor } from './background/download/downloadMonitor.js';
+import { validateMessageSender } from './background/message-validator.js';
+export { validateMessageSender };
 
 // ---------------------------------------------------------------------------
 // Load brands list + payment brands at startup
@@ -257,16 +259,16 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// Development-only allowlist gate for local harness debugging.
+// Strictly FALSE in shipped production builds.
+// ---------------------------------------------------------------------------
+export const ENABLE_DEV_ALLOWLIST = false;
+
 const userOverrideTabs = new Set();
 const userOverrideDomains = new Set();
 
 function isUserOverridden(tabId, url) {
-  if (url) {
-    try {
-      const host = new URL(url).hostname.toLowerCase();
-      if (host === 'localhost' || host === '127.0.0.1') return false;
-    } catch (e) {}
-  }
   if (tabId && userOverrideTabs.has(tabId)) return true;
   if (url) {
     try {
@@ -284,7 +286,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const { tabId, url, frameId } = details;
   if (isInternalUrl(url)) return;
 
-  if (url === 'http://localhost:3000/' || url === 'http://localhost:3000' || url === 'http://localhost:8080/' || url === 'http://localhost:8080') {
+  if (ENABLE_DEV_ALLOWLIST && (url === 'http://localhost:3000/' || url === 'http://localhost:3000' || url === 'http://localhost:8080/' || url === 'http://localhost:8080')) {
     userOverrideTabs.delete(tabId);
     const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
     await storeAndEnforce(tabId, verdict, frameId);
@@ -369,6 +371,13 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async (details) => {
 // Message Handler
 // ---------------------------------------------------------------------------
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  const validation = validateMessageSender(sender, chrome.runtime.id, message);
+  if (!validation.valid) {
+    console.warn('[Verity] Rejected runtime message:', validation.reason, { sender, message });
+    sendResponse({ error: 'Unauthorized message sender', reason: validation.reason });
+    return false;
+  }
+
   const tabId = sender.tab ? sender.tab.id : null;
   const frameId = sender.frameId || 0;
 

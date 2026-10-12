@@ -142,11 +142,12 @@ export class SearchUI {
     }
 
     badge.className = `verity-badge ${displayState}`;
-    
-    badge.innerHTML = `
-      <span class="verity-icon">${icon}</span>
-      ${label}
-    `;
+    badge.textContent = '';
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'verity-icon';
+    iconSpan.textContent = icon;
+    badge.appendChild(iconSpan);
+    badge.appendChild(document.createTextNode(label));
 
     // Tooltip
     const tooltip = document.createElement('div');
@@ -154,20 +155,42 @@ export class SearchUI {
     
     const titleColor = displayState === 'danger' ? '#dc2626' : (displayState === 'suspicious' ? '#d97706' : '#16a34a');
     
-    let reasonsHtml = '';
+    const titleEl = document.createElement('div');
+    titleEl.className = 'verity-tooltip-title';
+    titleEl.style.color = titleColor;
+    titleEl.textContent = 'Verity Analysis';
+    tooltip.appendChild(titleEl);
+
     const reasons = verdict.reasons || [];
     if (reasons.length === 0) {
-      if (displayState === 'safe') reasonsHtml = '<div class="verity-tooltip-reason"><span>✓</span> Safe reputation. No suspicious indicators found.</div>';
-      else reasonsHtml = '<div class="verity-tooltip-reason"><span>?</span> No specific threat data found. Proceed with care.</div>';
+      const reasonEl = document.createElement('div');
+      reasonEl.className = 'verity-tooltip-reason';
+      const bulletSpan = document.createElement('span');
+      bulletSpan.textContent = displayState === 'safe' ? '✓' : '?';
+      reasonEl.appendChild(bulletSpan);
+      reasonEl.appendChild(document.createTextNode(
+        displayState === 'safe'
+          ? ' Safe reputation. No suspicious indicators found.'
+          : ' No specific threat data found. Proceed with care.'
+      ));
+      tooltip.appendChild(reasonEl);
     } else {
-      reasonsHtml = reasons.map(r => `<div class="verity-tooltip-reason"><span>▸</span>${r}</div>`).join('');
+      for (const r of reasons) {
+        const reasonEl = document.createElement('div');
+        reasonEl.className = 'verity-tooltip-reason';
+        const bulletSpan = document.createElement('span');
+        bulletSpan.textContent = '▸';
+        reasonEl.appendChild(bulletSpan);
+        reasonEl.appendChild(document.createTextNode(String(r)));
+        tooltip.appendChild(reasonEl);
+      }
     }
 
-    tooltip.innerHTML = `
-      <div class="verity-tooltip-title" style="color: ${titleColor}">Verity Analysis</div>
-      ${reasonsHtml}
-      <div class="verity-tooltip-score">Risk Score: ${verdict.score}/100</div>
-    `;
+    const scoreEl = document.createElement('div');
+    scoreEl.className = 'verity-tooltip-score';
+    const scoreVal = verdict.score !== undefined ? verdict.score : (verdict.riskScore !== undefined ? verdict.riskScore : 0);
+    scoreEl.textContent = `Risk Score: ${scoreVal}/100`;
+    tooltip.appendChild(scoreEl);
 
     badge.appendChild(tooltip);
     shadow.appendChild(badge);

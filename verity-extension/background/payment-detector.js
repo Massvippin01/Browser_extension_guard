@@ -137,7 +137,6 @@ function verifyProviderDomain(hostname, claimedProviderObj, paymentBrands) {
  */
 export function analyzePaymentPage(url, domSignals, paymentBrands) {
   if (!url || !domSignals || !paymentBrands) return null;
-  if (url === 'http://localhost:3000/' || url === 'http://localhost:3000') return null;
 
   const hostname = safeHostname(url);
   const fields = domSignals.paymentFields || {};

@@ -30,11 +30,21 @@ function setCached(hostname, result) {
 }
 
 /**
+ * Remote threat intel lookup toggle (Opt-in only, OFF by default).
+ * When false, no network request leaves the extension.
+ */
+export const ENABLE_REMOTE_THREAT_INTEL = false;
+
+/**
  * Check URL reputation.
  * Returns: { malware: boolean, source: string|null }
  * 'unknown' result is returned if service is unavailable — never treated as malicious.
  */
 export async function checkReputation(url) {
+  if (!ENABLE_REMOTE_THREAT_INTEL) {
+    return { malware: false, source: null };
+  }
+
   let hostname = '';
   try {
     hostname = new URL(url).hostname.toLowerCase();

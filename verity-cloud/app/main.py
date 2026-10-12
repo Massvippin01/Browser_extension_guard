@@ -30,23 +30,23 @@ class TelemetryReport(BaseModel):
 # Simple in-memory cache for demo (Use Redis/SQLite in prod)
 threat_cache: Dict[str, dict] = {}
 
+# Remote threat intel lookup toggle (Opt-in only, OFF by default)
+ENABLE_REMOTE_THREAT_INTEL = False
+
 # Mock SafeBrowsing API Key (In production, load from env)
 SAFE_BROWSING_API_KEY = "YOUR_GOOGLE_SAFE_BROWSING_API_KEY"
 
 @app.post("/threat-intel/check")
 async def check_threat_intel(req: ThreatIntelRequest):
+    if not ENABLE_REMOTE_THREAT_INTEL:
+        return {"malware": False, "source": None}
+
     url = req.url
     
     if url in threat_cache:
         return threat_cache[url]
         
     result = {"malware": False, "source": None}
-    
-    # Hardcoded test for demo purposes
-    if "testsafebrowsing.appspot.com" in url:
-        result = {"malware": True, "source": "SafeBrowsing"}
-        threat_cache[url] = result
-        return result
 
     # Concurrently check SafeBrowsing and URLhaus
     async with httpx.AsyncClient() as client:

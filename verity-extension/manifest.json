@@ -7,10 +7,7 @@
     "webNavigation",
     "webRequest",
     "storage",
-    "activeTab",
-    "scripting",
     "offscreen",
-    "alarms",
     "downloads"
   ],
   "host_permissions": [

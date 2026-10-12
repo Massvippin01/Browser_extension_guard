@@ -3,11 +3,6 @@
  * Responsible for initiating early URL scans, collecting DOM signals, and enforcing blocks.
  */
 
-// Skip demo server pages entirely — they have self-contained overlays
-if (window.location.hostname === 'localhost' && window.location.port === '8080') {
-  // Do nothing — let the demo server's built-in overlays handle the UI
-} else {
-
 let isBlocked = false;
 let blockObserver = null;
 let statusBadgeHost = null;
@@ -394,17 +389,26 @@ function updateStatusBadge(verdict) {
   badge.classList.add('pulse');
   badge.addEventListener('animationend', () => badge.classList.remove('pulse'), { once: true });
 
-  let chainHtml = '';
+  tooltip.textContent = '';
+  const headerDiv = document.createElement('div');
+  const strongEl = document.createElement('strong');
+  strongEl.textContent = '🛡️ Verity';
+  headerDiv.appendChild(strongEl);
+  headerDiv.appendChild(document.createTextNode(` — ${label}`));
+  tooltip.appendChild(headerDiv);
+
+  const detailDiv = document.createElement('div');
+  detailDiv.style.opacity = '0.8';
+  detailDiv.textContent = detail;
+  tooltip.appendChild(detailDiv);
+
   if (shortener && chain && chain.length > 1) {
     const chainStr = chain.map(u => { try { return new URL(u).hostname; } catch(e) { return u; } }).join(' → ');
-    chainHtml = `<div style="margin-top:4px;opacity:0.8;font-size:10px;">🔗 ${chainStr}</div>`;
+    const chainDiv = document.createElement('div');
+    chainDiv.style.cssText = 'margin-top:4px;opacity:0.8;font-size:10px;';
+    chainDiv.textContent = `🔗 ${chainStr}`;
+    tooltip.appendChild(chainDiv);
   }
-
-  tooltip.innerHTML = `
-    <div><strong>🛡️ Verity</strong> — ${label}</div>
-    <div style="opacity:0.8">${detail}</div>
-    ${chainHtml}
-  `;
 }
 
 function showPopupBlockedToast(hostname) {
@@ -425,58 +429,70 @@ function showPopupBlockedToast(hostname) {
     badgeShadow.appendChild(toast);
   }
 
-  toast.innerHTML = `
-    <style>
-      .verity-toast-panel {
-        position: fixed;
-        top: 46px;
-        right: 16px;
-        background: rgba(15, 23, 42, 0.96);
-        color: #f8fafc;
-        border: 2px solid #ef4444;
-        border-radius: 12px;
-        padding: 12px 16px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(239,68,68,0.4);
-        z-index: 2147483647;
-        transform-origin: top right;
-        animation: toastExpandShrink 4.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        pointer-events: auto;
-      }
-      @keyframes toastExpandShrink {
-        0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
-        12%  { transform: scale(1.08) translateY(0); opacity: 1; }
-        18%  { transform: scale(1) translateY(0); opacity: 1; }
-        85%  { transform: scale(1) translateY(0); opacity: 1; }
-        100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
-      }
-    </style>
-    <div class="verity-toast-panel">
-      <span style="font-size:16px;">🚫</span>
-      <div>
-        <div style="font-weight:800;color:#ef4444;font-size:11px;letter-spacing:0.5px;">VERITY POP-UP BLOCKED</div>
-        <div style="color:#cbd5e1;font-size:11px;word-break:break-all;">Blocked pop-under to <strong>${hostname || 'Tracker'}</strong></div>
-      </div>
-    </div>
+  toast.textContent = '';
+
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    .verity-toast-panel {
+      position: fixed;
+      top: 46px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.96);
+      color: #f8fafc;
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(239,68,68,0.4);
+      z-index: 2147483647;
+      transform-origin: top right;
+      animation: toastExpandShrink 4.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      pointer-events: auto;
+    }
+    @keyframes toastExpandShrink {
+      0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
+      12%  { transform: scale(1.08) translateY(0); opacity: 1; }
+      18%  { transform: scale(1) translateY(0); opacity: 1; }
+      85%  { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
+    }
   `;
+  toast.appendChild(styleEl);
+
+  const panel = document.createElement('div');
+  panel.className = 'verity-toast-panel';
+
+  const iconSpan = document.createElement('span');
+  iconSpan.style.fontSize = '16px';
+  iconSpan.textContent = '🚫';
+  panel.appendChild(iconSpan);
+
+  const textWrap = document.createElement('div');
+
+  const titleDiv = document.createElement('div');
+  titleDiv.style.cssText = 'font-weight:800;color:#ef4444;font-size:11px;letter-spacing:0.5px;';
+  titleDiv.textContent = 'VERITY POP-UP BLOCKED';
+  textWrap.appendChild(titleDiv);
+
+  const subDiv = document.createElement('div');
+  subDiv.style.cssText = 'color:#cbd5e1;font-size:11px;word-break:break-all;';
+  subDiv.appendChild(document.createTextNode('Blocked pop-under to '));
+  const strongEl = document.createElement('strong');
+  strongEl.textContent = hostname || 'Tracker';
+  subDiv.appendChild(strongEl);
+  textWrap.appendChild(subDiv);
+
+  panel.appendChild(textWrap);
+  toast.appendChild(panel);
 
   setTimeout(() => {
-    if (toast) toast.innerHTML = '';
+    if (toast) toast.textContent = '';
   }, 4500);
 }
-
-// Listen for window messages from main world
-window.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'VERITY_POPUP_BLOCKED') {
-    let host = event.data.url;
-    try { host = new URL(host).hostname; } catch(e) {}
-    showPopupBlockedToast(host);
-  }
-});
 
 function handleEnforcementVerdict(verdict) {
   if (!verdict) return;
@@ -543,87 +559,162 @@ function injectDownloadWarning(payload) {
     ? (chromeSaysDangerous ? 'DANGEROUS DOWNLOAD' : 'HIGH-RISK DOWNLOAD BLOCKED')
     : 'SUSPICIOUS DOWNLOAD DETECTED';
 
-  const signalsHtml = (signals || []).map(s =>
-    `<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;">
-      <span style="color:${color};font-size:13px;flex-shrink:0;">✓</span>
-      <span>${s}</span>
-    </div>`
-  ).join('');
-
-  const cancelledNote = cancelled
-    ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.15);border-radius:6px;font-size:11px;color:#fca5a5;">Download cancelled by Verity.</div>`
-    : (isDanger ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:11px;color:#fca5a5;">Verity recommends cancelling this download manually.</div>` : '');
-
   const host = document.createElement('div');
   host.id = 'verity-download-warning-host';
   host.style.cssText = 'position:fixed;top:60px;right:16px;z-index:2147483645;pointer-events:auto;max-width:380px;width:380px;';
   downloadWarningHost = host;
 
   const shadow = host.attachShadow({ mode: 'closed' });
-  shadow.innerHTML = `
-    <style>
-      .dw-panel {
-        background: ${bgColor};
-        border: 2px solid ${color};
-        border-radius: 16px;
-        padding: 18px 20px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        font-size: 12px;
-        color: #f1f5f9;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px ${isDanger ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'};
-        transform-origin: top right;
-        animation: expandAndShrink 5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      }
-      @keyframes expandAndShrink {
-        0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
-        12%  { transform: scale(1.06) translateY(0); opacity: 1; }
-        18%  { transform: scale(1) translateY(0); opacity: 1; }
-        85%  { transform: scale(1) translateY(0); opacity: 1; }
-        100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
-      }
-      .dw-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-      .dw-icon { font-size:24px; animation: pulseIcon 1.5s infinite; }
-      @keyframes pulseIcon {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-      }
-      .dw-title { font-size:13px; font-weight:800; color:${color}; letter-spacing:0.5px; }
-      .dw-meta { background:rgba(255,255,255,0.06); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
-      .dw-meta-row { display:flex; gap:6px; margin-bottom:5px; font-size:11px; }
-      .dw-meta-label { color:#94a3b8; min-width:60px; flex-shrink:0; }
-      .dw-meta-value { color:#e2e8f0; word-break:break-all; font-weight:600; }
-      .dw-signals { margin-bottom:12px; font-size:11px; line-height:1.5; color:#cbd5e1; }
-      .dw-score { display:flex; justify-content:space-between; align-items:center; }
-      .dw-score-label { font-size:11px; color:#94a3b8; }
-      .dw-score-value { font-size:16px; font-weight:900; color:${color}; }
-      .dw-actions { display:flex; gap:10px; margin-top:14px; }
-      .dw-btn { flex:1; padding:9px; border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; transition: opacity 0.15s; }
-      .dw-btn-dismiss { background:rgba(255,255,255,0.1); color:#e2e8f0; }
-      .dw-btn-dismiss:hover { background:rgba(255,255,255,0.2); }
-      .dw-btn-action { background:${color}; color:white; font-weight:700; }
-      .dw-btn-action:hover { opacity:0.85; }
-    </style>
-    <div class="dw-panel">
-      <div class="dw-header">
-        <div class="dw-icon">${icon}</div>
-        <div class="dw-title">${title}</div>
-      </div>
-      <div class="dw-meta">
-        <div class="dw-meta-row"><div class="dw-meta-label">File:</div><div class="dw-meta-value">${filename || 'Unknown'}</div></div>
-        <div class="dw-meta-row"><div class="dw-meta-label">Source:</div><div class="dw-meta-value">${sourceHostname || 'Unknown'}</div></div>
-      </div>
-      ${signalsHtml ? `<div class="dw-signals">${signalsHtml}</div>` : ''}
-      <div class="dw-score">
-        <span class="dw-score-label">Risk Score</span>
-        <span class="dw-score-value">${riskScore} / 100</span>
-      </div>
-      ${cancelledNote}
-      <div class="dw-actions">
-        <button class="dw-btn dw-btn-dismiss" id="dw-dismiss">Dismiss</button>
-        ${!cancelled ? `<button class="dw-btn dw-btn-action" id="dw-open-dl">↓ View Downloads</button>` : ''}
-      </div>
-    </div>
+
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    .dw-panel {
+      background: ${bgColor};
+      border: 2px solid ${color};
+      border-radius: 16px;
+      padding: 18px 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      color: #f1f5f9;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px ${isDanger ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'};
+      transform-origin: top right;
+      animation: expandAndShrink 5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes expandAndShrink {
+      0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
+      12%  { transform: scale(1.06) translateY(0); opacity: 1; }
+      18%  { transform: scale(1) translateY(0); opacity: 1; }
+      85%  { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
+    }
+    .dw-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .dw-icon { font-size:24px; animation: pulseIcon 1.5s infinite; }
+    @keyframes pulseIcon {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .dw-title { font-size:13px; font-weight:800; color:${color}; letter-spacing:0.5px; }
+    .dw-meta { background:rgba(255,255,255,0.06); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
+    .dw-meta-row { display:flex; gap:6px; margin-bottom:5px; font-size:11px; }
+    .dw-meta-label { color:#94a3b8; min-width:60px; flex-shrink:0; }
+    .dw-meta-value { color:#e2e8f0; word-break:break-all; font-weight:600; }
+    .dw-signals { margin-bottom:12px; font-size:11px; line-height:1.5; color:#cbd5e1; }
+    .dw-score { display:flex; justify-content:space-between; align-items:center; }
+    .dw-score-label { font-size:11px; color:#94a3b8; }
+    .dw-score-value { font-size:16px; font-weight:900; color:${color}; }
+    .dw-actions { display:flex; gap:10px; margin-top:14px; }
+    .dw-btn { flex:1; padding:9px; border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; transition: opacity 0.15s; }
+    .dw-btn-dismiss { background:rgba(255,255,255,0.1); color:#e2e8f0; }
+    .dw-btn-dismiss:hover { background:rgba(255,255,255,0.2); }
+    .dw-btn-action { background:${color}; color:white; font-weight:700; }
+    .dw-btn-action:hover { opacity:0.85; }
   `;
+  shadow.appendChild(styleEl);
+
+  const panel = document.createElement('div');
+  panel.className = 'dw-panel';
+
+  const header = document.createElement('div');
+  header.className = 'dw-header';
+  const iconEl = document.createElement('div');
+  iconEl.className = 'dw-icon';
+  iconEl.textContent = icon;
+  const titleEl = document.createElement('div');
+  titleEl.className = 'dw-title';
+  titleEl.textContent = title;
+  header.appendChild(iconEl);
+  header.appendChild(titleEl);
+  panel.appendChild(header);
+
+  const meta = document.createElement('div');
+  meta.className = 'dw-meta';
+
+  const fileRow = document.createElement('div');
+  fileRow.className = 'dw-meta-row';
+  const fileLbl = document.createElement('div');
+  fileLbl.className = 'dw-meta-label';
+  fileLbl.textContent = 'File:';
+  const fileVal = document.createElement('div');
+  fileVal.className = 'dw-meta-value';
+  fileVal.textContent = filename || 'Unknown';
+  fileRow.appendChild(fileLbl);
+  fileRow.appendChild(fileVal);
+  meta.appendChild(fileRow);
+
+  const srcRow = document.createElement('div');
+  srcRow.className = 'dw-meta-row';
+  const srcLbl = document.createElement('div');
+  srcLbl.className = 'dw-meta-label';
+  srcLbl.textContent = 'Source:';
+  const srcVal = document.createElement('div');
+  srcVal.className = 'dw-meta-value';
+  srcVal.textContent = sourceHostname || 'Unknown';
+  srcRow.appendChild(srcLbl);
+  srcRow.appendChild(srcVal);
+  meta.appendChild(srcRow);
+
+  panel.appendChild(meta);
+
+  if (signals && signals.length > 0) {
+    const signalsContainer = document.createElement('div');
+    signalsContainer.className = 'dw-signals';
+    for (const s of signals) {
+      const sigRow = document.createElement('div');
+      sigRow.style.cssText = 'display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;';
+      const checkSpan = document.createElement('span');
+      checkSpan.style.cssText = `color:${color};font-size:13px;flex-shrink:0;`;
+      checkSpan.textContent = '✓';
+      const textSpan = document.createElement('span');
+      textSpan.textContent = String(s);
+      sigRow.appendChild(checkSpan);
+      sigRow.appendChild(textSpan);
+      signalsContainer.appendChild(sigRow);
+    }
+    panel.appendChild(signalsContainer);
+  }
+
+  const scoreRow = document.createElement('div');
+  scoreRow.className = 'dw-score';
+  const scoreLbl = document.createElement('span');
+  scoreLbl.className = 'dw-score-label';
+  scoreLbl.textContent = 'Risk Score';
+  const scoreValEl = document.createElement('span');
+  scoreValEl.className = 'dw-score-value';
+  scoreValEl.textContent = `${riskScore} / 100`;
+  scoreRow.appendChild(scoreLbl);
+  scoreRow.appendChild(scoreValEl);
+  panel.appendChild(scoreRow);
+
+  if (cancelled) {
+    const note = document.createElement('div');
+    note.style.cssText = 'margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.15);border-radius:6px;font-size:11px;color:#fca5a5;';
+    note.textContent = 'Download cancelled by Verity.';
+    panel.appendChild(note);
+  } else if (isDanger) {
+    const note = document.createElement('div');
+    note.style.cssText = 'margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:11px;color:#fca5a5;';
+    note.textContent = 'Verity recommends cancelling this download manually.';
+    panel.appendChild(note);
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'dw-actions';
+  const dismissBtn = document.createElement('button');
+  dismissBtn.className = 'dw-btn dw-btn-dismiss';
+  dismissBtn.id = 'dw-dismiss';
+  dismissBtn.textContent = 'Dismiss';
+  actions.appendChild(dismissBtn);
+
+  if (!cancelled) {
+    const actionBtn = document.createElement('button');
+    actionBtn.className = 'dw-btn dw-btn-action';
+    actionBtn.id = 'dw-open-dl';
+    actionBtn.textContent = '↓ View Downloads';
+    actions.appendChild(actionBtn);
+  }
+  panel.appendChild(actions);
+
+  shadow.appendChild(panel);
 
   setTimeout(() => {
     removeDownloadWarning();
@@ -971,35 +1062,6 @@ function injectOverlay(verdict) {
     ...(verdict.paymentAnalysis ? verdict.paymentAnalysis.reasons : []),
   ].filter(Boolean);
 
-  const tagsHtml = (allReasons.length > 0 ? allReasons : ['High Risk Pattern Detected']).map(r =>
-    `<span class="verity-tag">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-      ${r}
-    </span>`
-  ).join('');
-
-  const paymentWarning = isPaymentPhishing
-    ? `<p style="background:#FFEBEE;border:1px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-weight:600;margin-bottom:20px;font-size:14px;">
-        💳 <strong>Critical Payment Risk:</strong> Do NOT enter any card, UPI, CVV or OTP details on this website.
-       </p>`
-    : '';
-
-  let redirectChainHtml = '';
-  if (verdict.shortenerDetected && verdict.redirectChain && verdict.redirectChain.length > 1) {
-    let chainItems = verdict.redirectChain.map((url, i) => {
-      let u;
-      try { u = new URL(url).hostname; } catch(e) { u = url; }
-      return `<div style="padding: 4px 0; font-family: monospace; font-size: 13px;">${i + 1}. ${u}</div>`;
-    });
-    let formattedChain = chainItems.join('<div style="color: #94A3B8; padding-left: 12px;">↓</div>');
-    redirectChainHtml = `
-      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-        <div style="font-weight: 700; margin-bottom: 10px; font-size: 13px; color: #475569; letter-spacing: 0.5px;">🔗 REDIRECT CHAIN ANALYSIS</div>
-        ${formattedChain}
-      </div>
-    `;
-  }
-
   container.innerHTML = `
     <div class="verity-header">
       <div class="verity-header-brand">
@@ -1019,9 +1081,9 @@ function injectOverlay(verdict) {
 
         <div class="verity-card-right">
           <h1 class="verity-status">Website status: <span class="verity-status-highlight">${stateTitle}</span></h1>
-          <div class="verity-url">🌐 <span>${window.location.href}</span></div>
-          ${paymentWarning}
-          ${redirectChainHtml}
+          <div class="verity-url">🌐 <span id="verity-url-display"></span></div>
+          <div id="verity-payment-warning-container"></div>
+          <div id="verity-chain-container"></div>
           <p class="verity-message">
             ${isPaymentPhishing
               ? 'This website is attempting to impersonate a payment gateway to steal your payment credentials. We strongly recommend you do not proceed.'
@@ -1030,12 +1092,7 @@ function injectOverlay(verdict) {
                 : 'This site exhibits suspicious patterns. Please make sure you trust the domain before proceeding.'}
           </p>
 
-          <div class="verity-tags">
-            ${tagsHtml}
-            <span class="verity-tag" style="color: ${stateColor}; background: ${isDanger ? '#FFEBEE' : '#FEF3C7'}; border-color: rgba(239,68,68,0.2);">
-              Risk Score: ${verdict.score}/100
-            </span>
-          </div>
+          <div class="verity-tags" id="verity-tags-container"></div>
 
           <div class="verity-actions">
             <button class="verity-btn-secondary" id="btn-proceed">⚠️ Visit Anyway</button>
@@ -1055,7 +1112,7 @@ function injectOverlay(verdict) {
         <h1 class="verity-status" style="font-size: 26px; color: #DC2626;">⚠️ Are you sure you want to proceed?</h1>
         ${isPaymentPhishing ? '<p style="color:#BE123C;font-weight:600;font-size:14px;">💳 Danger: Entering passwords, OTPs, or card details on this site puts your financial account at risk.</p>' : ''}
         <p class="verity-message" style="margin-bottom: 10px; font-size: 15px;">
-          This website has been classified as <strong>${stateTitle}</strong>.<br><br>
+          This website has been classified as <strong id="verity-confirm-state"></strong>.<br><br>
           Bypassing protection exposes you to potential credential theft, phishing, or malvertising pop-unders.
         </p>
         <div class="verity-actions" style="margin-top: 20px; justify-content: space-between; gap: 12px;">
@@ -1065,6 +1122,78 @@ function injectOverlay(verdict) {
       </div>
     </div>
   `;
+
+  // Safely populate dynamic values via textContent
+  const urlDisplay = container.querySelector('#verity-url-display');
+  if (urlDisplay) urlDisplay.textContent = window.location.href;
+
+  const confirmState = container.querySelector('#verity-confirm-state');
+  if (confirmState) confirmState.textContent = stateTitle;
+
+  if (isPaymentPhishing) {
+    const pwContainer = container.querySelector('#verity-payment-warning-container');
+    if (pwContainer) {
+      const pw = document.createElement('p');
+      pw.style.cssText = 'background:#FFEBEE;border:1px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-weight:600;margin-bottom:20px;font-size:14px;';
+      pw.appendChild(document.createTextNode('💳 '));
+      const strongPw = document.createElement('strong');
+      strongPw.textContent = 'Critical Payment Risk:';
+      pw.appendChild(strongPw);
+      pw.appendChild(document.createTextNode(' Do NOT enter any card, UPI, CVV or OTP details on this website.'));
+      pwContainer.appendChild(pw);
+    }
+  }
+
+  if (verdict.shortenerDetected && verdict.redirectChain && verdict.redirectChain.length > 1) {
+    const chainContainer = container.querySelector('#verity-chain-container');
+    if (chainContainer) {
+      const chainBox = document.createElement('div');
+      chainBox.style.cssText = 'background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px; margin-bottom: 24px;';
+      const chainTitle = document.createElement('div');
+      chainTitle.style.cssText = 'font-weight: 700; margin-bottom: 10px; font-size: 13px; color: #475569; letter-spacing: 0.5px;';
+      chainTitle.textContent = '🔗 REDIRECT CHAIN ANALYSIS';
+      chainBox.appendChild(chainTitle);
+
+      verdict.redirectChain.forEach((url, i) => {
+        let u;
+        try { u = new URL(url).hostname; } catch(e) { u = url; }
+        const item = document.createElement('div');
+        item.style.cssText = 'padding: 4px 0; font-family: monospace; font-size: 13px;';
+        item.textContent = `${i + 1}. ${u}`;
+        chainBox.appendChild(item);
+        if (i < verdict.redirectChain.length - 1) {
+          const arrow = document.createElement('div');
+          arrow.style.cssText = 'color: #94A3B8; padding-left: 12px;';
+          arrow.textContent = '↓';
+          chainBox.appendChild(arrow);
+        }
+      });
+      chainContainer.appendChild(chainBox);
+    }
+  }
+
+  const tagsContainer = container.querySelector('#verity-tags-container');
+  if (tagsContainer) {
+    const reasonsList = allReasons.length > 0 ? allReasons : ['High Risk Pattern Detected'];
+    for (const r of reasonsList) {
+      const tag = document.createElement('span');
+      tag.className = 'verity-tag';
+      const svgWrap = document.createElement('span');
+      svgWrap.style.cssText = 'display:inline-flex;align-items:center;';
+      svgWrap.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+      tag.appendChild(svgWrap);
+      tag.appendChild(document.createTextNode(String(r)));
+      tagsContainer.appendChild(tag);
+    }
+
+    const scoreTag = document.createElement('span');
+    scoreTag.className = 'verity-tag';
+    scoreTag.style.color = stateColor;
+    scoreTag.style.background = isDanger ? '#FFEBEE' : '#FEF3C7';
+    scoreTag.style.borderColor = 'rgba(239,68,68,0.2)';
+    scoreTag.textContent = `Risk Score: ${verdict.score || 0}/100`;
+    tagsContainer.appendChild(scoreTag);
+  }
 
   shadow.appendChild(container);
 
@@ -1121,5 +1250,3 @@ function injectOverlay(verdict) {
     blockObserver.observe(parent, { childList: true });
   }
 }
-
-} // end of else block (skip localhost:8080)

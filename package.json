@@ -1,0 +1,8 @@
+{
+  "name": "verity-root",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "test": "npm --prefix verity-extension test"
+  }
+}
