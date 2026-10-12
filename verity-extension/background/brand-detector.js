@@ -1,5 +1,6 @@
 import { getDomain, getPublicSuffix } from '../shared/psl.js';
-
+import { isAllowlistedDomain } from '../shared/legit-domains.js';
+import { t } from '../shared/messages.js';
 
 /**
  * Calculates the Levenshtein distance between two strings.
@@ -56,15 +57,18 @@ function normalizeHostname(hostname) {
 export function detectTyposquatting(urlString, brandsList) {
   try {
     const url = new URL(urlString);
-    if (!['http:', 'https:'].includes(url.protocol)) return { score: 0, reason: null, triggered: false };
+    if (!['http:', 'https:'].includes(url.protocol)) return { id: null, params: {}, score: 0, reason: null, triggered: false };
 
     const hostname = url.hostname.toLowerCase();
+    if (isAllowlistedDomain(hostname)) {
+      return { id: null, params: {}, score: 0, reason: null, triggered: false };
+    }
     const normalizedHost = normalizeHostname(hostname);
     
     // First, verify if it's already a legitimate domain
     for (const brand of brandsList) {
       if (brand.domains.some(legit => hostname === legit || hostname.endsWith('.' + legit))) {
-        return { score: 0, reason: null, triggered: false }; // Legit site
+        return { id: null, params: {}, score: 0, reason: null, triggered: false }; // Legit site
       }
     }
 
@@ -79,8 +83,10 @@ export function detectTyposquatting(urlString, brandsList) {
       
       if (distance > 0 && distance <= threshold) {
         return {
+          id: 'BRAND_TYPOSQUATTING',
+          params: { brand: brand.name, distance },
           score: 85,
-          reason: `High typosquatting risk: Domain closely resembles the protected brand "${brand.name}".`,
+          reason: t('BRAND_TYPOSQUATTING', { brand: brand.name, distance }),
           triggered: true
         };
       }
@@ -88,5 +94,6 @@ export function detectTyposquatting(urlString, brandsList) {
     
   } catch (e) {}
   
-  return { score: 0, reason: null, triggered: false };
+  return { id: null, params: {}, score: 0, reason: null, triggered: false };
 }
+

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Times of India",
+    "url": "https://timesofindia.indiatimes.com/",
+    "unconditionalMs": 1.600000023841858,
+    "gatedMs": 0.3999999761581421,
+    "speedup": "4.0x"
+  },
+  {
+    "name": "BBC News",
+    "url": "https://www.bbc.com/news",
+    "unconditionalMs": 0.09999990463256836,
+    "gatedMs": 0,
+    "speedup": "10.0x"
+  },
+  {
+    "name": "Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Phishing",
+    "unconditionalMs": 1.100000023841858,
+    "gatedMs": 0.30000007152557373,
+    "speedup": "3.7x"
+  }
+]

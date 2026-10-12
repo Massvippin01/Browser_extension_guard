@@ -1,0 +1,255 @@
+[
+  {
+    "name": "Amazon India",
+    "url": "https://www.amazon.in/",
+    "finalScore": 70,
+    "action": "block",
+    "overlayShown": true,
+    "signals": [
+      {
+        "ruleOrId": "url",
+        "points": 30,
+        "category": "url",
+        "source": "url",
+        "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
+      },
+      {
+        "ruleOrId": "brand_impersonation",
+        "points": 40,
+        "category": "brand_impersonation",
+        "source": "url",
+        "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+      }
+    ],
+    "reasonsFromOverlay": [
+      "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\".",
+      "The URL contains the name \"Amazon\" but does not belong to its official domain.",
+      "Risk Score: 70/100"
+    ],
+    "domFeaturesSent": {
+      "hasBlockingOverlay": true,
+      "overlayScore": 70,
+      "overlayAction": "block",
+      "pageTitle": "",
+      "inputsCount": 0,
+      "passwordInputs": 0,
+      "formsCount": 0
+    },
+    "swSessionVerdict": {
+      "action": "block",
+      "categories": {
+        "malware": {
+          "flagged": false,
+          "source": null
+        },
+        "phishing": {
+          "confidence": 0,
+          "flagged": true,
+          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+        },
+        "scamFraud": {
+          "flagged": false,
+          "reason": null
+        },
+        "suspicious": {
+          "flagged": false,
+          "reason": null
+        }
+      },
+      "reasons": [
+        "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\".",
+        "The URL contains the name \"Amazon\" but does not belong to its official domain."
+      ],
+      "redirectChain": null,
+      "riskScore": 70,
+      "ruleScore": 30,
+      "score": 70,
+      "severity": "danger",
+      "shortenerDetected": false,
+      "signals": [
+        {
+          "category": "url",
+          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\".",
+          "score": 30
+        },
+        {
+          "category": "brand_impersonation",
+          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain.",
+          "score": 40
+        }
+      ],
+      "state": "danger",
+      "url": "https://www.amazon.in/"
+    }
+  },
+  {
+    "name": "SBI Online Retail Login",
+    "url": "https://retail.onlinesbi.sbi/retail/login.htm",
+    "finalScore": 70,
+    "action": "block",
+    "overlayShown": true,
+    "signals": [],
+    "reasonsFromOverlay": [
+      "The URL contains the name \"SBI\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"State Bank of India\".",
+      "The URL contains the name \"SBI\" but does not belong to its official domain.",
+      "Risk Score: 70/100"
+    ],
+    "domFeaturesSent": {
+      "hasBlockingOverlay": true,
+      "overlayScore": 70,
+      "overlayAction": "block",
+      "pageTitle": "YONO SBI",
+      "inputsCount": 0,
+      "passwordInputs": 0,
+      "formsCount": 0
+    }
+  },
+  {
+    "name": "HDFC Bank",
+    "url": "https://www.hdfcbank.com/",
+    "finalScore": 100,
+    "action": "block",
+    "overlayShown": true,
+    "signals": [],
+    "reasonsFromOverlay": [
+      "Hostname matches a known typosquat variant of \"HDFC Bank\".",
+      "Hostname matches a known typosquat variant of \"HDFC Bank\".",
+      "Financial terminology detected: net banking, credit card, debit card.",
+      "Fake payment provider: page claims to be \"HDFC Bank\" but domain is not its official domain.",
+      "Payment domain mismatch: \"HDFC Bank\" is not served from its verified domain.",
+      "HIGH CONFIDENCE: Payment Phishing — unverified domain requesting payment credentials (Card/CVV/OTP).",
+      "DIGITAL ARREST / BILL SCAM TRAP: Page uses high-pressure utility disconnection or digital arrest threats on an unverified domain.",
+      "Page claims to be \"HDFC Bank\" but domain \"www.hdfc.bank.in\" is not its official domain.",
+      "Official domain mismatch: \"www.hdfc.bank.in\" is not a verified \"HDFC Bank\" domain.",
+      "Risk Score: 100/100"
+    ],
+    "domFeaturesSent": {
+      "hasBlockingOverlay": true,
+      "overlayScore": 100,
+      "overlayAction": "block",
+      "pageTitle": "Personal Banking & Netbanking Services | HDFC Bank",
+      "inputsCount": 6,
+      "passwordInputs": 0,
+      "formsCount": 0
+    }
+  },
+  {
+    "name": "Paytm",
+    "url": "https://paytm.com/",
+    "finalScore": 80,
+    "action": "block",
+    "overlayShown": true,
+    "signals": [],
+    "reasonsFromOverlay": [
+      "Fake payment provider: page claims to be \"BHIM\" but domain is not its official domain.",
+      "Payment domain mismatch: \"BHIM\" is not served from its verified domain.",
+      "HIGH CONFIDENCE: Payment Phishing — unverified domain requesting payment credentials (Card/CVV/OTP).",
+      "Page claims to be \"BHIM\" but domain \"paytm.com\" is not its official domain.",
+      "Official domain mismatch: \"paytm.com\" is not a verified \"BHIM\" domain.",
+      "Risk Score: 80/100"
+    ],
+    "domFeaturesSent": {
+      "hasBlockingOverlay": true,
+      "overlayScore": 80,
+      "overlayAction": "block",
+      "pageTitle": "Paytm: Secure & Fast UPI Payments, Recharge Mobile & Pay Bills",
+      "inputsCount": 2,
+      "passwordInputs": 0,
+      "formsCount": 0
+    },
+    "swSessionVerdict": {
+      "action": "block",
+      "categories": {
+        "malware": {
+          "flagged": false,
+          "source": null
+        },
+        "phishing": {
+          "confidence": 0,
+          "flagged": false,
+          "reason": null
+        },
+        "scamFraud": {
+          "flagged": false,
+          "reason": null
+        },
+        "suspicious": {
+          "flagged": false,
+          "reason": null
+        }
+      },
+      "reasons": [
+        "Security Error (net::ERR_ABORTED): Connection terminated due to untrusted security certificate or network block."
+      ],
+      "redirectChain": null,
+      "riskScore": 85,
+      "ruleScore": 0,
+      "score": 85,
+      "severity": "danger",
+      "shortenerDetected": false,
+      "signals": [],
+      "state": "danger",
+      "url": "https://paytm.com/"
+    }
+  },
+  {
+    "name": "Times of India",
+    "url": "https://timesofindia.indiatimes.com/",
+    "finalScore": 80,
+    "action": "block",
+    "overlayShown": true,
+    "signals": [],
+    "reasonsFromOverlay": [
+      "Fake payment provider: page claims to be \"Visa\" but domain is not its official domain.",
+      "Payment domain mismatch: \"Visa\" is not served from its verified domain.",
+      "HIGH CONFIDENCE: Payment Phishing — unverified domain requesting payment credentials (Card/CVV/OTP).",
+      "DIGITAL ARREST / BILL SCAM TRAP: Page uses high-pressure utility disconnection or digital arrest threats on an unverified domain.",
+      "Page claims to be \"Visa\" but domain \"timesofindia.indiatimes.com\" is not its official domain.",
+      "Official domain mismatch: \"timesofindia.indiatimes.com\" is not a verified \"Visa\" domain.",
+      "Risk Score: 80/100"
+    ],
+    "domFeaturesSent": {
+      "hasBlockingOverlay": true,
+      "overlayScore": 80,
+      "overlayAction": "block",
+      "pageTitle": "TOI - Breaking News, Latest News, India News, World News, Bollywood, Sports, Business and Political News | The Times of India",
+      "inputsCount": 12,
+      "passwordInputs": 0,
+      "formsCount": 1
+    },
+    "swSessionVerdict": {
+      "action": "block",
+      "categories": {
+        "malware": {
+          "flagged": false,
+          "source": null
+        },
+        "phishing": {
+          "confidence": 0,
+          "flagged": false,
+          "reason": null
+        },
+        "scamFraud": {
+          "flagged": false,
+          "reason": null
+        },
+        "suspicious": {
+          "flagged": false,
+          "reason": null
+        }
+      },
+      "reasons": [
+        "Security Error (net::ERR_ABORTED): Connection terminated due to untrusted security certificate or network block."
+      ],
+      "redirectChain": null,
+      "riskScore": 85,
+      "ruleScore": 0,
+      "score": 85,
+      "severity": "danger",
+      "shortenerDetected": false,
+      "signals": [],
+      "state": "danger",
+      "url": "https://timesofindia.indiatimes.com/"
+    }
+  }
+]

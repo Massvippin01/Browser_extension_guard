@@ -1,6 +1,6 @@
 {
   "verified": true,
-  "timestamp": "2026-10-12T16:15:47.042Z",
+  "timestamp": "2026-10-12T17:15:00.227Z",
   "browserExecutable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "extensionPath": "C:\\Users\\User\\AppData\\Local\\Temp\\verity_ext_e2e_clean",
   "demoPages": [
@@ -11,14 +11,14 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 70,
-        "stateTitle": "Dangerous",
+        "score": 100,
+        "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
-        "reasonsCount": 3,
+        "reasonsCount": 14,
         "reasonsSample": [
-          "The connection is not secure (HTTP instead of HTTPS). URL contains multiple suspicious keywords: banking, netbanking. Hostname contains financial keyword \"netbanking\" on an unverified domain. Hostname matches a known typosquat variant of \"HDFC Bank\".",
-          "Hostname matches a known typosquat variant of \"HDFC Bank\".",
-          "Risk Score: 70/100"
+          "The connection is not secure (HTTP instead of HTTPS).",
+          "The URL contains punycode or suspicious keywords: banking, netbanking.",
+          "Hostname contains financial keyword \"netbanking\" on an unverified domain."
         ]
       },
       "matchesExpectation": true
@@ -30,14 +30,14 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 70,
-        "stateTitle": "Dangerous",
+        "score": 100,
+        "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
-        "reasonsCount": 3,
+        "reasonsCount": 13,
         "reasonsSample": [
-          "The connection is not secure (HTTP instead of HTTPS). The URL contains the name \"PayPal\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"PayPal\".",
+          "The connection is not secure (HTTP instead of HTTPS).",
           "The URL contains the name \"PayPal\" but does not belong to its official domain.",
-          "Risk Score: 70/100"
+          "Hostname matches a known typosquat variant of \"PayPal\"."
         ]
       },
       "matchesExpectation": true
@@ -49,14 +49,14 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 70,
-        "stateTitle": "Dangerous",
+        "score": 100,
+        "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
-        "reasonsCount": 3,
+        "reasonsCount": 11,
         "reasonsSample": [
-          "The connection is not secure (HTTP instead of HTTPS). The URL contains the name \"Paytm\" but does not belong to its official domain. URL contains multiple suspicious keywords: cashback, upi, reward. Hostname contains financial keyword \"paytm\" on an unverified domain. Hostname matches a known typosquat variant of \"Paytm\".",
+          "The connection is not secure (HTTP instead of HTTPS).",
           "The URL contains the name \"Paytm\" but does not belong to its official domain.",
-          "Risk Score: 70/100"
+          "The URL contains punycode or suspicious keywords: cashback, upi, reward."
         ]
       },
       "matchesExpectation": true
@@ -68,14 +68,14 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 80,
+        "score": 100,
         "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
-        "reasonsCount": 9,
+        "reasonsCount": 7,
         "reasonsSample": [
           "The connection is not secure (HTTP instead of HTTPS).",
           "Page requests sensitive credentials or payment information.",
-          "OTP/verification code requested on unverified payment domain."
+          "High risk: Unverified domain requesting payment credentials (Card/CVV/OTP)."
         ]
       },
       "matchesExpectation": true
@@ -105,8 +105,11 @@
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
@@ -117,104 +120,11 @@
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
-      }
-    },
-    {
-      "name": "Amazon India",
-      "url": "https://www.amazon.in/",
-      "status": "reachable",
-      "hasBlockingOverlay": true,
-      "verdict": {
-        "hasBlockingOverlay": true,
-        "hasBadge": true,
-        "overlayAction": "block",
-        "overlayScore": 70
-      }
-    },
-    {
-      "name": "Flipkart",
-      "url": "https://www.flipkart.com/",
-      "status": "reachable",
-      "hasBlockingOverlay": false,
-      "verdict": {
-        "hasBlockingOverlay": false,
-        "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
-      }
-    },
-    {
-      "name": "IRCTC Train Search",
-      "url": "https://www.irctc.co.in/nget/train-search",
-      "status": "reachable",
-      "hasBlockingOverlay": false,
-      "verdict": {
-        "hasBlockingOverlay": false,
-        "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
-      }
-    },
-    {
-      "name": "SBI Online Retail Login",
-      "url": "https://retail.onlinesbi.sbi/retail/login.htm",
-      "status": "reachable",
-      "hasBlockingOverlay": true,
-      "verdict": {
-        "hasBlockingOverlay": true,
-        "hasBadge": true,
-        "overlayAction": "block",
-        "overlayScore": 70
-      }
-    },
-    {
-      "name": "HDFC Bank",
-      "url": "https://www.hdfcbank.com/",
-      "status": "reachable",
-      "hasBlockingOverlay": true,
-      "verdict": {
-        "hasBlockingOverlay": true,
-        "hasBadge": true,
-        "overlayAction": "block",
-        "overlayScore": 100
-      }
-    },
-    {
-      "name": "ICICI Bank",
-      "url": "https://www.icicibank.com/",
-      "status": "reachable",
-      "hasBlockingOverlay": false,
-      "verdict": {
-        "hasBlockingOverlay": false,
-        "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
-      }
-    },
-    {
-      "name": "Paytm",
-      "url": "https://paytm.com/",
-      "status": "reachable",
-      "hasBlockingOverlay": true,
-      "verdict": {
-        "hasBlockingOverlay": true,
-        "hasBadge": true,
-        "overlayAction": "block",
-        "overlayScore": 80
-      }
-    },
-    {
-      "name": "PhonePe",
-      "url": "https://www.phonepe.com/",
-      "status": "reachable",
-      "hasBlockingOverlay": false,
-      "verdict": {
-        "hasBlockingOverlay": false,
-        "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
@@ -225,62 +135,341 @@
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "Stripe",
+      "name": "Stripe Home",
       "url": "https://stripe.com/",
       "status": "reachable",
       "hasBlockingOverlay": false,
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "NPCI UPI Portal",
-      "url": "https://www.npci.org.in/",
+      "name": "Microsoft Login",
+      "url": "https://login.live.com/",
       "status": "reachable",
       "hasBlockingOverlay": false,
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "Income Tax India",
-      "url": "https://incometax.gov.in/iec/foportal/",
-      "status": "unreachable",
-      "error": "net::ERR_NAME_NOT_RESOLVED at https://incometax.gov.in/iec/foportal/"
+      "name": "Wikipedia Home",
+      "url": "https://en.wikipedia.org/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
     },
     {
-      "name": "UIDAI Aadhaar",
+      "name": "BBC News Home",
+      "url": "https://www.bbc.com/news",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Times of India Home",
+      "url": "https://timesofindia.indiatimes.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Reddit Home",
+      "url": "https://www.reddit.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Stack Overflow",
+      "url": "https://stackoverflow.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Apple ID Portal",
+      "url": "https://appleid.apple.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Netflix Login",
+      "url": "https://www.netflix.com/login",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "SBI Online Retail Login",
+      "url": "https://retail.onlinesbi.sbi/retail/login.htm",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "HDFC Bank NetBanking Login",
+      "url": "https://netbanking.hdfcbank.com/netbanking/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "ICICI Bank Corporate/Retail",
+      "url": "https://infinity.icicibank.com/corp/AuthenticationController",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Axis Bank Internet Banking",
+      "url": "https://www.axisbank.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Kotak Net Banking Login",
+      "url": "https://netbanking.kotak.com/knb2/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Bank of Baroda Net Banking",
+      "url": "https://www.bobibanking.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Punjab National Bank NetBanking",
+      "url": "https://www.pnbindia.in/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Canara Bank NetBanking",
+      "url": "https://netbanking.canarabank.in/entry/ENULogin.jsp",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Paytm Portal",
+      "url": "https://paytm.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "PhonePe Portal",
+      "url": "https://www.phonepe.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Income Tax India (Fixed www)",
+      "url": "https://www.incometax.gov.in/iec/foportal/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "UIDAI Aadhaar Official",
       "url": "https://uidai.gov.in/",
       "status": "reachable",
       "hasBlockingOverlay": false,
       "verdict": {
         "hasBlockingOverlay": false,
-        "hasBadge": false,
-        "overlayAction": null,
-        "overlayScore": 0
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "DigiLocker",
+      "name": "DigiLocker Portal",
       "url": "https://www.digilocker.gov.in/",
       "status": "reachable",
       "hasBlockingOverlay": false,
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
@@ -291,44 +480,251 @@
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "Wikipedia",
-      "url": "https://en.wikipedia.org/",
+      "name": "IRCTC Train Search",
+      "url": "https://www.irctc.co.in/nget/train-search",
       "status": "reachable",
       "hasBlockingOverlay": false,
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "BBC News",
-      "url": "https://www.bbc.com/news",
+      "name": "National Portal of India",
+      "url": "https://www.india.gov.in/",
       "status": "reachable",
       "hasBlockingOverlay": false,
       "verdict": {
         "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": null,
-        "overlayScore": 0
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     },
     {
-      "name": "Times of India",
-      "url": "https://timesofindia.indiatimes.com/",
+      "name": "NPCI UPI Portal",
+      "url": "https://www.npci.org.in/",
       "status": "reachable",
-      "hasBlockingOverlay": true,
+      "hasBlockingOverlay": false,
       "verdict": {
-        "hasBlockingOverlay": true,
+        "hasBlockingOverlay": false,
         "hasBadge": true,
-        "overlayAction": "block",
-        "overlayScore": 80
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Amazon India Home",
+      "url": "https://www.amazon.in/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Amazon India Cart Entry",
+      "url": "https://www.amazon.in/gp/cart/view.html",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Flipkart Home",
+      "url": "https://www.flipkart.com/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Flipkart Cart Entry",
+      "url": "https://www.flipkart.com/viewcart",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Amazon India Bestsellers Deep Page",
+      "url": "https://www.amazon.in/gp/bestsellers",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Times of India World Article Section",
+      "url": "https://timesofindia.indiatimes.com/world",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "BBC News World Article Section",
+      "url": "https://www.bbc.com/news/world",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Wikipedia Deep Article: Computer Security",
+      "url": "https://en.wikipedia.org/wiki/Computer_security",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "Paytm Care FAQ (KYC/OTP text context)",
+      "url": "https://paytm.com/care/kyc/",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "RBI Official KYC FAQ Section",
+      "url": "https://www.rbi.org.in/Scripts/FAQView.aspx?Id=82",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "UIDAI Aadhaar Verification FAQ",
+      "url": "https://uidai.gov.in/en/contact-support/have-any-question.html",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "HDFC Bank Security Advisory Tips",
+      "url": "https://www.hdfcbank.com/personal/useful-links/security",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
+      }
+    },
+    {
+      "name": "SBI Security Advisory Tips",
+      "url": "https://retail.onlinesbi.sbi/retail/sbijava_securitytips.html",
+      "status": "reachable",
+      "hasBlockingOverlay": false,
+      "verdict": {
+        "hasBlockingOverlay": false,
+        "hasBadge": true,
+        "overlayAction": "allow",
+        "overlayScore": 0,
+        "verdict": "allow",
+        "score": 0,
+        "signals": []
       }
     }
   ],

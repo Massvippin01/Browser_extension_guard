@@ -1,35 +1,407 @@
 [
-  { "name": "HDFC Bank",    "domains": ["hdfcbank.com", "netbanking.hdfcbank.com"],        "aliases": ["hdfc", "hdfc bank", "hdfc netbanking"] },
-  { "name": "SBI",          "domains": ["onlinesbi.sbi", "sbi.co.in"],                      "aliases": ["sbi", "state bank of india", "sbi netbanking", "sbi yono"] },
-  { "name": "ICICI Bank",   "domains": ["icicibank.com", "infinity.icicibank.com"],          "aliases": ["icici", "icici bank", "icici netbanking"] },
-  { "name": "PayPal",       "domains": ["paypal.com", "paypal.me"],                        "aliases": ["paypal", "pay pal", "paypal.com"] },
-  { "name": "Stripe",       "domains": ["stripe.com", "dashboard.stripe.com"],             "aliases": ["stripe"] },
-  { "name": "Razorpay",     "domains": ["razorpay.com", "api.razorpay.com", "checkout.razorpay.com"], "aliases": ["razorpay"] },
-  { "name": "PhonePe",      "domains": ["phonepe.com", "secure.phonepe.com"],              "aliases": ["phonepe", "phone pe"] },
-  { "name": "Google Pay",   "domains": ["pay.google.com", "gpay.app", "payments.google.com"], "aliases": ["google pay", "gpay", "g pay"] },
-  { "name": "Paytm",        "domains": ["paytm.com", "payment.paytm.com", "paytmbank.com"], "aliases": ["paytm"] },
-  { "name": "Amazon Pay",   "domains": ["pay.amazon.com", "pay.amazon.in"],                "aliases": ["amazon pay", "amazonpay"] },
-  { "name": "PayU",         "domains": ["payu.in", "secure.payu.in", "payumoney.com"],     "aliases": ["payu", "payumoney", "payu money"] },
-  { "name": "CCAvenue",     "domains": ["ccavenue.com", "secure.ccavenue.com"],            "aliases": ["ccavenue", "cc avenue"] },
-  { "name": "BillDesk",     "domains": ["billdesk.com", "pgi.billdesk.com"],               "aliases": ["billdesk", "bill desk"] },
-  { "name": "Cashfree",     "domains": ["cashfree.com", "api.cashfree.com"],               "aliases": ["cashfree", "cash free"] },
-  { "name": "Instamojo",    "domains": ["instamojo.com"],                                  "aliases": ["instamojo", "insta mojo"] },
-  { "name": "EasyBuzz",     "domains": ["easebuzz.in"],                                    "aliases": ["easebuzz", "ease buzz"] },
-  { "name": "Atom",         "domains": ["atomtech.in", "paynimo.com"],                     "aliases": ["atom payment", "paynimo"] },
-  { "name": "Square",       "domains": ["squareup.com", "square.com"],                     "aliases": ["square", "square pay", "squareup"] },
-  { "name": "Klarna",       "domains": ["klarna.com", "pay.klarna.com"],                   "aliases": ["klarna"] },
-  { "name": "Afterpay",     "domains": ["afterpay.com"],                                   "aliases": ["afterpay", "after pay"] },
-  { "name": "Venmo",        "domains": ["venmo.com"],                                      "aliases": ["venmo"] },
-  { "name": "Apple Pay",    "domains": ["apple.com", "id.apple.com"],                      "aliases": ["apple pay", "applepay"] },
-  { "name": "Mastercard",   "domains": ["mastercard.com", "mastercard.in"],                "aliases": ["mastercard", "master card"] },
-  { "name": "Visa",         "domains": ["visa.com", "visa.co.in"],                        "aliases": ["visa"] },
-  { "name": "RuPay",        "domains": ["rupay.co.in", "npci.org.in"],                    "aliases": ["rupay", "ru pay"] },
-  { "name": "BHIM",         "domains": ["bhimupi.org.in", "npci.org.in"],                 "aliases": ["bhim", "bhim upi"] },
-  { "name": "UPI",          "domains": ["npci.org.in"],                                    "aliases": ["upi", "unified payments"] },
-  { "name": "Juspay",       "domains": ["juspay.in", "api.juspay.in"],                    "aliases": ["juspay"] },
-  { "name": "Airpay",       "domains": ["airpay.co.in"],                                   "aliases": ["airpay"] },
-  { "name": "PayZapp",      "domains": ["payzapp.in"],                                     "aliases": ["payzapp", "pay zapp"] },
-  { "name": "MobiKwik",     "domains": ["mobikwik.com"],                                   "aliases": ["mobikwik", "mobi kwik"] },
-  { "name": "FreeCharge",   "domains": ["freecharge.in"],                                  "aliases": ["freecharge", "free charge"] },
-  { "name": "Ola Money",    "domains": ["olamoney.com"],                                   "aliases": ["ola money", "olamoney"] }
+  {
+    "name": "HDFC Bank",
+    "domains": [
+      "hdfcbank.com",
+      "netbanking.hdfcbank.com",
+      "hdfc.com",
+      "hdfc.bank.in"
+    ],
+    "aliases": [
+      "hdfc",
+      "hdfc bank",
+      "hdfc netbanking"
+    ]
+  },
+  {
+    "name": "SBI",
+    "domains": [
+      "onlinesbi.sbi",
+      "sbi.co.in",
+      "bank.sbi",
+      "onlinesbi.com",
+      "sbi.bank.in"
+    ],
+    "aliases": [
+      "sbi",
+      "state bank of india",
+      "sbi netbanking",
+      "sbi yono"
+    ]
+  },
+  {
+    "name": "ICICI Bank",
+    "domains": [
+      "icicibank.com",
+      "infinity.icicibank.com",
+      "icici.bank.in"
+    ],
+    "aliases": [
+      "icici",
+      "icici bank",
+      "icici netbanking"
+    ]
+  },
+  {
+    "name": "PayPal",
+    "domains": [
+      "paypal.com",
+      "paypal.me"
+    ],
+    "aliases": [
+      "paypal",
+      "pay pal",
+      "paypal.com"
+    ]
+  },
+  {
+    "name": "Stripe",
+    "domains": [
+      "stripe.com",
+      "dashboard.stripe.com"
+    ],
+    "aliases": [
+      "stripe"
+    ]
+  },
+  {
+    "name": "Razorpay",
+    "domains": [
+      "razorpay.com",
+      "api.razorpay.com",
+      "checkout.razorpay.com"
+    ],
+    "aliases": [
+      "razorpay"
+    ]
+  },
+  {
+    "name": "PhonePe",
+    "domains": [
+      "phonepe.com",
+      "secure.phonepe.com"
+    ],
+    "aliases": [
+      "phonepe",
+      "phone pe"
+    ]
+  },
+  {
+    "name": "Google Pay",
+    "domains": [
+      "pay.google.com",
+      "gpay.app",
+      "payments.google.com"
+    ],
+    "aliases": [
+      "google pay",
+      "gpay",
+      "g pay"
+    ]
+  },
+  {
+    "name": "Paytm",
+    "domains": [
+      "paytm.com",
+      "payment.paytm.com",
+      "paytmbank.com",
+      "paytm.in"
+    ],
+    "aliases": [
+      "paytm"
+    ]
+  },
+  {
+    "name": "Amazon Pay",
+    "domains": [
+      "pay.amazon.com",
+      "pay.amazon.in",
+      "amazon.in",
+      "amazon.com"
+    ],
+    "aliases": [
+      "amazon pay",
+      "amazonpay"
+    ]
+  },
+  {
+    "name": "PayU",
+    "domains": [
+      "payu.in",
+      "secure.payu.in",
+      "payumoney.com"
+    ],
+    "aliases": [
+      "payu",
+      "payumoney",
+      "payu money"
+    ]
+  },
+  {
+    "name": "CCAvenue",
+    "domains": [
+      "ccavenue.com",
+      "secure.ccavenue.com"
+    ],
+    "aliases": [
+      "ccavenue",
+      "cc avenue"
+    ]
+  },
+  {
+    "name": "BillDesk",
+    "domains": [
+      "billdesk.com",
+      "pgi.billdesk.com"
+    ],
+    "aliases": [
+      "billdesk",
+      "bill desk"
+    ]
+  },
+  {
+    "name": "Cashfree",
+    "domains": [
+      "cashfree.com",
+      "api.cashfree.com"
+    ],
+    "aliases": [
+      "cashfree",
+      "cash free"
+    ]
+  },
+  {
+    "name": "Instamojo",
+    "domains": [
+      "instamojo.com"
+    ],
+    "aliases": [
+      "instamojo",
+      "insta mojo"
+    ]
+  },
+  {
+    "name": "EasyBuzz",
+    "domains": [
+      "easebuzz.in"
+    ],
+    "aliases": [
+      "easebuzz",
+      "ease buzz"
+    ]
+  },
+  {
+    "name": "Atom",
+    "domains": [
+      "atomtech.in",
+      "paynimo.com"
+    ],
+    "aliases": [
+      "atom payment",
+      "paynimo"
+    ]
+  },
+  {
+    "name": "Square",
+    "domains": [
+      "squareup.com",
+      "square.com"
+    ],
+    "aliases": [
+      "square",
+      "square pay",
+      "squareup"
+    ]
+  },
+  {
+    "name": "Klarna",
+    "domains": [
+      "klarna.com",
+      "pay.klarna.com"
+    ],
+    "aliases": [
+      "klarna"
+    ]
+  },
+  {
+    "name": "Afterpay",
+    "domains": [
+      "afterpay.com"
+    ],
+    "aliases": [
+      "afterpay",
+      "after pay"
+    ]
+  },
+  {
+    "name": "Venmo",
+    "domains": [
+      "venmo.com"
+    ],
+    "aliases": [
+      "venmo"
+    ]
+  },
+  {
+    "name": "Apple Pay",
+    "domains": [
+      "apple.com",
+      "id.apple.com"
+    ],
+    "aliases": [
+      "apple pay",
+      "applepay"
+    ]
+  },
+  {
+    "name": "Mastercard",
+    "domains": [
+      "mastercard.com",
+      "mastercard.in"
+    ],
+    "aliases": [
+      "mastercard",
+      "master card"
+    ]
+  },
+  {
+    "name": "Visa",
+    "domains": [
+      "visa.com",
+      "visa.co.in"
+    ],
+    "aliases": [
+      "visa"
+    ]
+  },
+  {
+    "name": "RuPay",
+    "domains": [
+      "rupay.co.in",
+      "npci.org.in"
+    ],
+    "aliases": [
+      "rupay",
+      "ru pay"
+    ]
+  },
+  {
+    "name": "BHIM",
+    "domains": [
+      "bhimupi.org.in",
+      "npci.org.in"
+    ],
+    "aliases": [
+      "bhim",
+      "bhim upi"
+    ]
+  },
+  {
+    "name": "UPI",
+    "domains": [
+      "npci.org.in"
+    ],
+    "aliases": [
+      "upi",
+      "unified payments"
+    ]
+  },
+  {
+    "name": "Juspay",
+    "domains": [
+      "juspay.in",
+      "api.juspay.in"
+    ],
+    "aliases": [
+      "juspay"
+    ]
+  },
+  {
+    "name": "Airpay",
+    "domains": [
+      "airpay.co.in"
+    ],
+    "aliases": [
+      "airpay"
+    ]
+  },
+  {
+    "name": "PayZapp",
+    "domains": [
+      "payzapp.in"
+    ],
+    "aliases": [
+      "payzapp",
+      "pay zapp"
+    ]
+  },
+  {
+    "name": "MobiKwik",
+    "domains": [
+      "mobikwik.com"
+    ],
+    "aliases": [
+      "mobikwik",
+      "mobi kwik"
+    ]
+  },
+  {
+    "name": "FreeCharge",
+    "domains": [
+      "freecharge.in"
+    ],
+    "aliases": [
+      "freecharge",
+      "free charge"
+    ]
+  },
+  {
+    "name": "Ola Money",
+    "domains": [
+      "olamoney.com"
+    ],
+    "aliases": [
+      "ola money",
+      "olamoney"
+    ]
+  },
+  {
+    "name": "Axis Bank",
+    "domains": [
+      "axisbank.com",
+      "axis.bank.in",
+      "axisbank.co.in"
+    ],
+    "aliases": [
+      "axis bank",
+      "axisbank",
+      "axis netbanking"
+    ]
+  },
+  {
+    "name": "Punjab National Bank",
+    "domains": [
+      "pnbindia.in",
+      "pnb.bank.in",
+      "pnb.co.in"
+    ],
+    "aliases": [
+      "pnb",
+      "punjab national bank",
+      "pnb netbanking"
+    ]
+  },
+  {
+    "name": "Kotak Mahindra Bank",
+    "domains": [
+      "kotak.com",
+      "kotak.bank.in",
+      "kotakbank.com"
+    ],
+    "aliases": [
+      "kotak",
+      "kotak bank",
+      "kotak netbanking"
+    ]
+  }
 ]

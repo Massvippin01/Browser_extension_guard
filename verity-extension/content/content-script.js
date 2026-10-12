@@ -107,22 +107,25 @@ const PAYMENT_BRAND_ALIASES = [
   ['RuPay', ['rupay']], ['BHIM', ['bhim']], ['MobiKwik', ['mobikwik']],
 ];
 
-function scanClaimedProviders() {
-  const text = (document.body ? document.body.innerText : '').toLowerCase();
+let earlyRiskElevated = false;
+let spaDebounceTimer = null;
+let lastSpaScanTime = 0;
+const SPA_MUTATION_THROTTLE_MS = 1500;
+
+function scanClaimedProviders(pageText) {
+  if (!pageText) return [];
   return PAYMENT_BRAND_ALIASES
-    .filter(([, aliases]) => aliases.some(a => text.includes(a)))
+    .filter(([, aliases]) => aliases.some(a => pageText.includes(a)))
     .map(([name]) => name);
 }
 
-// 1. Signal Collection (Stage 1)
+// 1. Signal Collection (Stage 1) - Gated, Lighter Scan
 function collectSignals() {
-  const text = document.body ? document.body.innerText.toLowerCase() : '';
   const currentHostname = window.location.hostname.toLowerCase().replace(/^www\./, '');
 
   // Major trusted domains — skip aggressive credential/financial synergy scoring.
-  // These sites legitimately have login forms and financial terminology.
   const TRUSTED_DOMAINS = new Set([
-    'github.com', 'google.com', 'microsoft.com', 'apple.com', 'amazon.com',
+    'github.com', 'google.com', 'microsoft.com', 'apple.com', 'amazon.com', 'amazon.in',
     'youtube.com', 'facebook.com', 'instagram.com', 'twitter.com', 'x.com',
     'linkedin.com', 'reddit.com', 'stackoverflow.com', 'wikipedia.org',
     'netflix.com', 'spotify.com', 'discord.com', 'slack.com', 'notion.so',
@@ -133,14 +136,33 @@ function collectSignals() {
     'accounts.google.com', 'login.microsoftonline.com',
     // Indian government & major services
     'irctc.co.in', 'incometax.gov.in', 'mca.gov.in', 'uidai.gov.in',
-    'epfindia.gov.in', 'onlinesbi.sbi', 'hdfcbank.com', 'icicibank.com',
-    'axisbank.com', 'kotak.com', 'paytm.com', 'phonepe.com', 'razorpay.com'
+    'epfindia.gov.in', 'onlinesbi.sbi', 'sbi.co.in', 'hdfcbank.com', 'icicibank.com',
+    'axisbank.com', 'kotak.com', 'paytm.com', 'phonepe.com', 'razorpay.com', 'indiatimes.com',
+    'sbi.bank.in', 'hdfc.bank.in', 'axis.bank.in', 'pnb.bank.in', 'pnbindia.in', 'icici.bank.in', 'kotak.bank.in', 'canarabank.in', 'bobibanking.com'
   ]);
 
   const isTrustedDomain = TRUSTED_DOMAINS.has(currentHostname) ||
-    [...TRUSTED_DOMAINS].some(d => currentHostname.endsWith('.' + d));
+    [...TRUSTED_DOMAINS].some(d => currentHostname.endsWith('.' + d)) ||
+    currentHostname.endsWith('.bank.in');
 
   const hasPasswordInput = document.querySelector('input[type="password"]') !== null;
+  const paymentFields    = detectPaymentFields();
+  const hasPaymentForm   = detectPaymentForm();
+  const allLinks = Array.from(document.querySelectorAll('a[href]'));
+  const hasUpiLink = allLinks.some(a => (a.href || '').toLowerCase().startsWith('upi://'));
+  const hasPaymentOrOtp  = !!(paymentFields.card || paymentFields.cvv || paymentFields.otp || paymentFields.upi || paymentFields.pin || hasUpiLink);
+  const hasSensitiveInputs = hasPasswordInput || hasPaymentOrOtp;
+
+
+
+  // GATED SCAN: Only read body text if sensitive inputs exist or URL risk is elevated
+  const shouldScanText = hasSensitiveInputs || earlyRiskElevated;
+  let text = '';
+  if (shouldScanText && document.body) {
+    // Length-capped to 20,000 characters to prevent thread stalling on massive DOMs
+    text = (document.body.innerText || '').slice(0, 20000).toLowerCase();
+  }
+
   const loginForms = Array.from(document.querySelectorAll('form')).filter(form => {
     return form.querySelector('input[type="password"]') !== null ||
            (form.action && form.action.toLowerCase().includes('login')) ||
@@ -149,9 +171,9 @@ function collectSignals() {
 
   const formActions = loginForms.map(form => form.action).filter(Boolean);
 
-  // Scam heuristics
+  // Scam heuristics (only evaluated if text was scanned)
   const scamPhrases = ['act now', 'limited time', 'your account will be suspended', 'pay with gift card', 'click here to claim'];
-  let scamMatch = scamPhrases.find(p => text.includes(p));
+  let scamMatch = text ? scamPhrases.find(p => text.includes(p)) : null;
 
   // PUP heuristics
   let pupMatch = null;
@@ -169,18 +191,14 @@ function collectSignals() {
   }
 
   // Financial Context Engine
-  // IMPORTANT: 'pin' removed — matches 'pinned' on GitHub/social sites.
-  // Only specific, unambiguous financial terms are included.
   const financialKeywords = [
     'upi', 'net banking', 'netbanking', 'credit card', 'debit card', 'cvv', 'otp',
     'kyc', 'atm pin', 'mpin', 'bank account', 'account number', 'ifsc',
     'cashback', 'crypto', 'wallet'
   ];
-  let financialMatch = isTrustedDomain ? [] : financialKeywords.filter(k => text.includes(k));
+  let financialMatch = (isTrustedDomain || !text) ? [] : financialKeywords.filter(k => text.includes(k));
 
   // Credential Collection Detection
-  // IMPORTANT: 'pin' and 'account' removed — too generic, causes false positives
-  // on GitHub (search box name attribute), Stack Overflow, etc.
   const sensitiveInputs = isTrustedDomain ? [] : Array.from(document.querySelectorAll('input')).filter(input => {
     const attr = ((input.name||'') + (input.id||'') + (input.type||'') + (input.placeholder||'')).toLowerCase();
     return attr.includes('password') || attr.includes('cardnumber') || 
@@ -188,14 +206,10 @@ function collectSignals() {
            attr.includes('cc-csc') || attr.includes('otp') || attr.includes('upi');
   });
 
-  // ── Payment-specific signals ──
-  const paymentFields    = detectPaymentFields();
-  const hasPaymentForm   = detectPaymentForm();
-  const claimedProviders = scanClaimedProviders();
+  // Claimed providers scan (using already-extracted text, no redundant read)
+  const claimedProviders = scanClaimedProviders(text);
 
-  // UPI link detection
-  const allLinks = Array.from(document.querySelectorAll('a[href]'));
-  const hasUpiLink = allLinks.some(a => (a.href || '').toLowerCase().startsWith('upi://'));
+
 
   return {
     hasPasswordInput: isTrustedDomain ? false : hasPasswordInput,
@@ -224,6 +238,9 @@ function triggerImmediateUrlScan() {
   chrome.runtime.sendMessage({ action: 'ANALYZE_URL_ONLY', url: window.location.href }, (response) => {
     if (chrome.runtime.lastError) return;
     if (response && response.verdict) {
+      if (response.verdict.action === 'warn' || response.verdict.action === 'block' || (response.verdict.score || 0) >= 35) {
+        earlyRiskElevated = true;
+      }
       handleEnforcementVerdict(response.verdict);
     }
   });
@@ -242,6 +259,22 @@ function triggerFullScan() {
     console.error('[Verity] Error in triggerFullScan:', e);
   }
 }
+
+// Throttle SPA DOM mutations (1500ms debounce)
+function handleSpaDomMutation() {
+  const now = Date.now();
+  if (now - lastSpaScanTime < SPA_MUTATION_THROTTLE_MS) {
+    if (spaDebounceTimer) clearTimeout(spaDebounceTimer);
+    spaDebounceTimer = setTimeout(() => {
+      lastSpaScanTime = Date.now();
+      triggerFullScan();
+    }, SPA_MUTATION_THROTTLE_MS);
+    return;
+  }
+  lastSpaScanTime = now;
+  triggerFullScan();
+}
+
 
 // ─── Live Status Badge ──────────────────────────────────────────────────────
 
@@ -496,8 +529,10 @@ function showPopupBlockedToast(hostname) {
 
 function handleEnforcementVerdict(verdict) {
   if (!verdict) return;
+  try { window.__verityLastVerdict = verdict; } catch (e) {}
   updateStatusBadge(verdict);
   if (verdict.action === 'block') {
+
     isBlocked = true;
     if (statusBadgeHost) statusBadgeHost.style.display = 'none';
     injectOverlay(verdict);
@@ -1061,10 +1096,18 @@ function injectOverlay(verdict) {
   const container = document.createElement('div');
   container.className = 'verity-overlay';
 
-  const allReasons = [
-    ...(verdict.reasons || []),
-    ...(verdict.paymentAnalysis ? verdict.paymentAnalysis.reasons : []),
-  ].filter(Boolean);
+  const allReasons = (verdict.signals && verdict.signals.length > 0)
+    ? verdict.signals.map(s => {
+        if (s.id && typeof t === 'function') {
+          return t(s.id, s.params);
+        }
+        return s.reason || s.id;
+      })
+    : [
+        ...(verdict.reasons || []),
+        ...(verdict.paymentAnalysis ? verdict.paymentAnalysis.reasons : []),
+      ].filter(Boolean);
+
 
   container.innerHTML = `
     <div class="verity-header">

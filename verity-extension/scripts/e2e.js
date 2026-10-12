@@ -52,27 +52,60 @@ const DEMO_PAGES = [
 ];
 
 const BENIGN_PAGES = [
+  // ── Global Top Services ──────────────────────────────────────────────────
   { name: 'Google Accounts', url: 'https://accounts.google.com/' },
   { name: 'GitHub Login', url: 'https://github.com/login' },
-  { name: 'Amazon India', url: 'https://www.amazon.in/' },
-  { name: 'Flipkart', url: 'https://www.flipkart.com/' },
-  { name: 'IRCTC Train Search', url: 'https://www.irctc.co.in/nget/train-search' },
-  { name: 'SBI Online Retail Login', url: 'https://retail.onlinesbi.sbi/retail/login.htm' },
-  { name: 'HDFC Bank', url: 'https://www.hdfcbank.com/' },
-  { name: 'ICICI Bank', url: 'https://www.icicibank.com/' },
-  { name: 'Paytm', url: 'https://paytm.com/' },
-  { name: 'PhonePe', url: 'https://www.phonepe.com/' },
   { name: 'PayPal Sign-in', url: 'https://www.paypal.com/signin' },
-  { name: 'Stripe', url: 'https://stripe.com/' },
-  { name: 'NPCI UPI Portal', url: 'https://www.npci.org.in/' },
-  { name: 'Income Tax India', url: 'https://incometax.gov.in/iec/foportal/' },
-  { name: 'UIDAI Aadhaar', url: 'https://uidai.gov.in/' },
-  { name: 'DigiLocker', url: 'https://www.digilocker.gov.in/' },
+  { name: 'Stripe Home', url: 'https://stripe.com/' },
+  { name: 'Microsoft Login', url: 'https://login.live.com/' },
+  { name: 'Wikipedia Home', url: 'https://en.wikipedia.org/' },
+  { name: 'BBC News Home', url: 'https://www.bbc.com/news' },
+  { name: 'Times of India Home', url: 'https://timesofindia.indiatimes.com/' },
+  { name: 'Reddit Home', url: 'https://www.reddit.com/' },
+  { name: 'Stack Overflow', url: 'https://stackoverflow.com/' },
+  { name: 'Apple ID Portal', url: 'https://appleid.apple.com/' },
+  { name: 'Netflix Login', url: 'https://www.netflix.com/login' },
+
+  // ── Indian Banks & Wallets (8+ Login Pages) ──────────────────────────────
+  { name: 'SBI Online Retail Login', url: 'https://retail.onlinesbi.sbi/retail/login.htm' },
+  { name: 'HDFC Bank NetBanking Login', url: 'https://netbanking.hdfcbank.com/netbanking/' },
+  { name: 'ICICI Bank Corporate/Retail', url: 'https://infinity.icicibank.com/corp/AuthenticationController' },
+  { name: 'Axis Bank Internet Banking', url: 'https://www.axisbank.com/' },
+  { name: 'Kotak Net Banking Login', url: 'https://netbanking.kotak.com/knb2/' },
+  { name: 'Bank of Baroda Net Banking', url: 'https://www.bobibanking.com/' },
+  { name: 'Punjab National Bank NetBanking', url: 'https://www.pnbindia.in/' },
+
+  { name: 'Canara Bank NetBanking', url: 'https://netbanking.canarabank.in/entry/ENULogin.jsp' },
+  { name: 'Paytm Portal', url: 'https://paytm.com/' },
+  { name: 'PhonePe Portal', url: 'https://www.phonepe.com/' },
+
+  // ── Government Portals ───────────────────────────────────────────────────
+  { name: 'Income Tax India (Fixed www)', url: 'https://www.incometax.gov.in/iec/foportal/' },
+  { name: 'UIDAI Aadhaar Official', url: 'https://uidai.gov.in/' },
+  { name: 'DigiLocker Portal', url: 'https://www.digilocker.gov.in/' },
   { name: 'National Cyber Crime Reporting', url: 'https://cybercrime.gov.in/' },
-  { name: 'Wikipedia', url: 'https://en.wikipedia.org/' },
-  { name: 'BBC News', url: 'https://www.bbc.com/news' },
-  { name: 'Times of India', url: 'https://timesofindia.indiatimes.com/' }
+  { name: 'IRCTC Train Search', url: 'https://www.irctc.co.in/nget/train-search' },
+  { name: 'National Portal of India', url: 'https://www.india.gov.in/' },
+  { name: 'NPCI UPI Portal', url: 'https://www.npci.org.in/' },
+
+  // ── E-Commerce & Checkout Entry ──────────────────────────────────────────
+  { name: 'Amazon India Home', url: 'https://www.amazon.in/' },
+  { name: 'Amazon India Cart Entry', url: 'https://www.amazon.in/gp/cart/view.html' },
+  { name: 'Flipkart Home', url: 'https://www.flipkart.com/' },
+  { name: 'Flipkart Cart Entry', url: 'https://www.flipkart.com/viewcart' },
+
+  // ── Deep Pages: Products, Articles, FAQs with KYC/OTP, Advisories ───────
+  { name: 'Amazon India Bestsellers Deep Page', url: 'https://www.amazon.in/gp/bestsellers' },
+  { name: 'Times of India World Article Section', url: 'https://timesofindia.indiatimes.com/world' },
+  { name: 'BBC News World Article Section', url: 'https://www.bbc.com/news/world' },
+  { name: 'Wikipedia Deep Article: Computer Security', url: 'https://en.wikipedia.org/wiki/Computer_security' },
+  { name: 'Paytm Care FAQ (KYC/OTP text context)', url: 'https://paytm.com/care/kyc/' },
+  { name: 'RBI Official KYC FAQ Section', url: 'https://www.rbi.org.in/Scripts/FAQView.aspx?Id=82' },
+  { name: 'UIDAI Aadhaar Verification FAQ', url: 'https://uidai.gov.in/en/contact-support/have-any-question.html' },
+  { name: 'HDFC Bank Security Advisory Tips', url: 'https://www.hdfcbank.com/personal/useful-links/security' },
+  { name: 'SBI Security Advisory Tips', url: 'https://retail.onlinesbi.sbi/retail/sbijava_securitytips.html' }
 ];
+
 
 async function runE2E() {
   console.log('======================================================================');
@@ -261,13 +294,18 @@ async function runE2E() {
         const pageVerdict = await page.evaluate(() => {
           const host = document.getElementById('verity-security-host');
           const badgeHost = document.getElementById('verity-status-badge-host');
+          const v = window.__verityLastVerdict || null;
           return {
             hasBlockingOverlay: !!host,
             hasBadge: !!badgeHost,
-            overlayAction: host ? (host.getAttribute('data-action') || host.dataset.action) : null,
-            overlayScore: host ? parseInt(host.getAttribute('data-score') || host.dataset.score || '0', 10) : 0
+            overlayAction: host ? (host.getAttribute('data-action') || host.dataset.action) : (v ? v.action : 'allow'),
+            overlayScore: host ? parseInt(host.getAttribute('data-score') || host.dataset.score || '0', 10) : (v ? v.score : 0),
+            verdict: v ? v.action : 'allow',
+            score: v ? v.score : (host ? parseInt(host.getAttribute('data-score') || '0', 10) : 0),
+            signals: v ? (v.signals || []) : []
           };
         });
+
 
         if (pageVerdict.hasBlockingOverlay) {
           console.log(`⚠️ FALSE BLOCK! (Score: ${pageVerdict.overlayScore})`);

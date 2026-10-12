@@ -15,6 +15,8 @@ import { checkReputation } from './background/reputation.js';
 import { analyzePaymentPage } from './background/payment-detector.js';
 import { initDownloadMonitor } from './background/download/downloadMonitor.js';
 import { validateMessageSender } from './background/message-validator.js';
+import { isAllowlistedDomain } from './shared/legit-domains.js';
+import { t } from './shared/messages.js';
 export { validateMessageSender };
 
 // ---------------------------------------------------------------------------
@@ -321,10 +323,27 @@ chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
   const { tabId, url, error, frameId } = details;
   if (isInternalUrl(url)) return;
 
+  // net::ERR_ABORTED is triggered by normal client redirects, link clicks, or cancelled prefetches,
+  // NOT a security failure. Ignore ERR_ABORTED.
+  if (error === 'net::ERR_ABORTED') return;
+
+  let hostname = '';
+  try { hostname = new URL(url).hostname.toLowerCase(); } catch (e) {}
+
+  // Allowlisted domains must never be blocked by transient network errors
+  if (isAllowlistedDomain(hostname)) return;
+
+  // Only real security certificate failures should trigger a security warning
+  const isCertSecurityError = error && (
+    error.startsWith('net::ERR_CERT_') ||
+    error.startsWith('net::ERR_SSL_')
+  );
+  if (!isCertSecurityError) return;
+
   const ruleSignals = await analyzeUrl(url);
   const verdict = calculateRisk(url, ruleSignals || []);
   
-  // Force high-risk verdict for security/network failures
+  // Force high-risk verdict for verified security/certificate failures
   verdict.riskScore = Math.max(verdict.riskScore || 0, 85);
   verdict.score = verdict.riskScore;
   verdict.severity = 'danger';
@@ -332,7 +351,7 @@ chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
   verdict.action = 'block';
   verdict.url = url;
   if (!verdict.reasons) verdict.reasons = [];
-  verdict.reasons.push(`Security Error (${error}): Connection terminated due to untrusted security certificate or network block.`);
+  verdict.reasons.push(t('SECURITY_ERROR_ABORTED', { error }));
 
   // Subframe rule: only enforce if dangerous
   if (frameId !== 0 && verdict.action !== 'block') {

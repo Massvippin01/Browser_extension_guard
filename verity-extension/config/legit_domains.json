@@ -32,6 +32,111 @@
     "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
   },
   {
+    "domain": "paytm.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "phonepe.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "amazon.in",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "amazon.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "flipkart.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "indiatimes.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "google.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "google.co.in",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "github.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "paypal.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "stripe.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "wikipedia.org",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "bbc.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "irctc.co.in",
+    "source": "https://www.india.gov.in/"
+  },
+  {
+    "domain": "incometax.gov.in",
+    "source": "https://www.india.gov.in/"
+  },
+  {
+    "domain": "uidai.gov.in",
+    "source": "https://www.india.gov.in/"
+  },
+  {
+    "domain": "digilocker.gov.in",
+    "source": "https://www.india.gov.in/"
+  },
+  {
+    "domain": "cybercrime.gov.in",
+    "source": "https://www.india.gov.in/"
+  },
+  {
+    "domain": "pnbindia.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "canarabank.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "canarabank.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "bankofbaroda.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "bobibanking.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "unionbankofindia.co.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+
+  {
+    "domain": "idbibank.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "indusind.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
     "domain": "chase.com",
     "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
   },
@@ -74,5 +179,45 @@
   {
     "domain": "tradingview.com",
     "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "sbi.bank.in",
+    "source": "https://www.idrbt.ac.in/bank.in.html"
+  },
+  {
+    "domain": "hdfc.bank.in",
+    "source": "https://www.idrbt.ac.in/bank.in.html"
+  },
+  {
+    "domain": "axis.bank.in",
+    "source": "https://www.idrbt.ac.in/bank.in.html"
+  },
+  {
+    "domain": "pnb.bank.in",
+    "source": "https://www.idrbt.ac.in/bank.in.html"
+  },
+  {
+    "domain": "pnbindia.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "icici.bank.in",
+    "source": "https://www.idrbt.ac.in/bank.in.html"
+  },
+  {
+    "domain": "kotak.bank.in",
+    "source": "https://www.idrbt.ac.in/bank.in.html"
+  },
+  {
+    "domain": "canarabank.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "bobibanking.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "bank.sbi",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
   }
 ]
