@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERITY — Settings</title>
+  <link rel="stylesheet" href="../shared/ui/tokens.css">
+  <link rel="stylesheet" href="../shared/ui/components.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+
+  <div class="opt-shell">
+
+    <!-- Top App Bar -->
+    <header class="opt-header" role="banner">
+      <div class="opt-header-brand">
+        <svg class="opt-logo" viewBox="0 0 128 128" width="24" height="24" aria-hidden="true">
+          <defs>
+            <linearGradient id="optShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#10b981" />
+              <stop offset="100%" stop-color="#059669" />
+            </linearGradient>
+          </defs>
+          <path d="M64 12 L106 28 C106 72 88 104 64 116 C40 104 22 72 22 28 Z" fill="url(#optShieldGrad)" />
+          <path d="M44 64 L56 76 L85 46" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </svg>
+        <div>
+          <h1 class="opt-app-title" id="txt-opt-title">VERITY Settings</h1>
+          <p class="opt-app-subtitle" id="txt-opt-subtitle">On-device web protection and security preferences</p>
+        </div>
+      </div>
+
+      <div class="opt-header-actions">
+        <!-- Autosave Indicator -->
+        <div class="opt-save-badge hidden" id="opt-save-badge" role="status" aria-live="polite">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span id="txt-saved">Saved</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Options Layout -->
+    <div class="opt-layout">
+
+      <!-- Sticky Left Nav -->
+      <nav class="opt-nav" role="navigation" aria-label="Settings Sections">
+        <button type="button" class="opt-nav-item active" data-tab="general" id="nav-btn-general">
+          <span class="opt-nav-icon" id="icon-nav-general"></span>
+          <span id="txt-nav-general">General</span>
+        </button>
+        <button type="button" class="opt-nav-item" data-tab="protection" id="nav-btn-protection">
+          <span class="opt-nav-icon" id="icon-nav-protection"></span>
+          <span id="txt-nav-protection">Protection Levels</span>
+        </button>
+        <button type="button" class="opt-nav-item" data-tab="allowlist" id="nav-btn-allowlist">
+          <span class="opt-nav-icon" id="icon-nav-allowlist"></span>
+          <span id="txt-nav-allowlist">Allowlist</span>
+        </button>
+        <button type="button" class="opt-nav-item" data-tab="about" id="nav-btn-about">
+          <span class="opt-nav-icon" id="icon-nav-about"></span>
+          <span id="txt-nav-about">About</span>
+        </button>
+      </nav>
+
+      <!-- Content Area -->
+      <main class="opt-content" role="main">
+
+        <!-- 1. GENERAL CARD -->
+        <section class="opt-section" id="sec-general" aria-labelledby="heading-general">
+          <div class="v-card opt-card">
+            <h2 class="opt-card-heading" id="heading-general">General Settings</h2>
+
+            <!-- Theme Picker -->
+            <div class="opt-row">
+              <div class="opt-row-info">
+                <label class="opt-row-title" id="txt-theme-title">Interface Theme</label>
+                <p class="opt-row-desc" id="txt-theme-desc">Select visual theme for popups and notification overlays</p>
+              </div>
+              <div class="opt-theme-radios" role="radiogroup" aria-labelledby="txt-theme-title">
+                <button type="button" class="opt-theme-card active" data-theme-val="system" id="theme-card-system">
+                  <div class="opt-theme-preview system"></div>
+                  <span id="txt-theme-system">System</span>
+                </button>
+                <button type="button" class="opt-theme-card" data-theme-val="light" id="theme-card-light">
+                  <div class="opt-theme-preview light"></div>
+                  <span id="txt-theme-light">Light</span>
+                </button>
+                <button type="button" class="opt-theme-card" data-theme-val="dark" id="theme-card-dark">
+                  <div class="opt-theme-preview dark"></div>
+                  <span id="txt-theme-dark">Dark</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="v-separator"></div>
+
+            <!-- Master Real-time Toggle -->
+            <div class="opt-row">
+              <div class="opt-row-info">
+                <label class="opt-row-title" for="switch-master-protection" id="txt-realtime-title">Real-time Web Protection</label>
+                <p class="opt-row-desc" id="txt-realtime-desc">Active background inspection of URLs, redirects, and DOM phishing lures</p>
+              </div>
+              <label class="v-switch" for="switch-master-protection">
+                <input type="checkbox" id="switch-master-protection" checked>
+                <span class="v-switch-track"><span class="v-switch-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. PROTECTION LEVELS CARD -->
+        <section class="opt-section hidden" id="sec-protection" aria-labelledby="heading-protection">
+          <div class="v-card opt-card">
+            <h2 class="opt-card-heading" id="heading-protection">Protection Modules</h2>
+
+            <!-- Phishing Module -->
+            <div class="opt-row">
+              <div class="opt-row-info">
+                <label class="opt-row-title" for="switch-mod-phishing" id="txt-phishing-title">Phishing & Impersonation Shield</label>
+                <p class="opt-row-desc" id="txt-phishing-desc">Blocks lookalike hostnames, brand typosquatting, and credential harvesting forms</p>
+              </div>
+              <label class="v-switch" for="switch-mod-phishing">
+                <input type="checkbox" id="switch-mod-phishing" checked>
+                <span class="v-switch-track"><span class="v-switch-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="v-separator"></div>
+
+            <!-- Payment Module -->
+            <div class="opt-row">
+              <div class="opt-row-info">
+                <label class="opt-row-title" for="switch-mod-payment" id="txt-payment-title">Financial & Payment Defense</label>
+                <p class="opt-row-desc" id="txt-payment-desc">Detects unverified gateways collecting cards, CVV, OTPs, and UPI debit traps</p>
+              </div>
+              <label class="v-switch" for="switch-mod-payment">
+                <input type="checkbox" id="switch-mod-payment" checked>
+                <span class="v-switch-track"><span class="v-switch-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="v-separator"></div>
+
+            <!-- Downloads Module -->
+            <div class="opt-row">
+              <div class="opt-row-info">
+                <label class="opt-row-title" for="switch-mod-download" id="txt-download-title">Malicious Download Interceptor</label>
+                <p class="opt-row-desc" id="txt-download-desc">Scans executables, hidden extensions, and untrusted APK payloads before launch</p>
+              </div>
+              <label class="v-switch" for="switch-mod-download">
+                <input type="checkbox" id="switch-mod-download" checked>
+                <span class="v-switch-track"><span class="v-switch-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="v-separator"></div>
+
+            <!-- Pop-up Killer -->
+            <div class="opt-row">
+              <div class="opt-row-info">
+                <label class="opt-row-title" for="switch-mod-popup" id="txt-popup-title">Aggressive Pop-up Killer</label>
+                <p class="opt-row-desc" id="txt-popup-desc">Automatically terminates unprompted new windows and malicious ad-redirects</p>
+              </div>
+              <label class="v-switch" for="switch-mod-popup">
+                <input type="checkbox" id="switch-mod-popup" checked>
+                <span class="v-switch-track"><span class="v-switch-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. ALLOWLIST CARD -->
+        <section class="opt-section hidden" id="sec-allowlist" aria-labelledby="heading-allowlist">
+          <div class="v-card opt-card">
+            <div class="opt-card-header-flex">
+              <div>
+                <h2 class="opt-card-heading" id="heading-allowlist">Trusted Domains Allowlist</h2>
+                <p class="opt-card-sub" id="txt-allowlist-desc">Domains you have explicitly marked as safe or bypassed past warning screens</p>
+              </div>
+            </div>
+
+            <!-- Add Domain Bar -->
+            <form class="opt-allowlist-form" id="form-add-allowlist">
+              <input type="text" class="v-input" id="input-new-domain" placeholder="e.g. portal.internal-company.net" aria-label="Domain name to allow" required>
+              <button type="submit" class="v-btn v-btn-primary v-btn-md" id="btn-add-domain">
+                <span id="icon-plus"></span>
+                <span id="txt-add-domain">Add Domain</span>
+              </button>
+            </form>
+
+            <!-- Search Filter Bar -->
+            <div class="opt-filter-bar">
+              <input type="search" class="v-input v-input-sm" id="input-filter-domains" placeholder="Filter allowed domains..." aria-label="Filter domains">
+            </div>
+
+            <!-- Allowlist Table Container -->
+            <div class="v-table-container opt-table-wrap">
+              <table class="v-table" id="table-allowlist">
+                <thead>
+                  <tr>
+                    <th>Domain</th>
+                    <th>Added Date</th>
+                    <th style="width: 80px; text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-allowlist">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+
+              <!-- Empty State -->
+              <div class="opt-empty-table hidden" id="allowlist-empty-state">
+                <div class="opt-empty-table-icon" id="empty-table-icon"></div>
+                <div class="opt-empty-table-title" id="txt-allowlist-empty">No custom domains in your allowlist.</div>
+                <div class="opt-empty-table-desc" id="txt-allowlist-empty-desc">Bypassed sites and explicitly allowed domains will appear here.</div>
+              </div>
+            </div>
+
+            <!-- Inline Undo Toast -->
+            <div class="opt-undo-toast hidden" id="opt-undo-toast" role="alert" aria-live="assertive">
+              <span id="opt-undo-msg">Domain removed from allowlist.</span>
+              <button type="button" class="v-btn v-btn-sm v-btn-secondary" id="btn-undo-remove">Undo</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. ABOUT CARD -->
+        <section class="opt-section hidden" id="sec-about" aria-labelledby="heading-about">
+          <div class="v-card opt-card">
+            <h2 class="opt-card-heading" id="heading-about">About VERITY</h2>
+            <p class="opt-card-sub" id="txt-about-desc">Next-generation private web protection powered by on-device ML.</p>
+
+            <div class="opt-about-grid">
+              <div class="opt-about-stat">
+                <span class="opt-stat-label" id="txt-about-version">Version</span>
+                <span class="opt-stat-value">2.0.0</span>
+              </div>
+              <div class="opt-about-stat">
+                <span class="opt-stat-label" id="txt-about-build">Build Target</span>
+                <span class="opt-stat-value">Manifest V3 · Local ML</span>
+              </div>
+              <div class="opt-about-stat">
+                <span class="opt-stat-label">Inference Engine</span>
+                <span class="opt-stat-value">Wasm / Client Heuristics</span>
+              </div>
+              <div class="opt-about-stat">
+                <span class="opt-stat-label">Privacy Mode</span>
+                <span class="opt-stat-value">100% On-Device</span>
+              </div>
+            </div>
+
+            <div class="v-separator"></div>
+
+            <div class="v-alert" style="background-color: var(--muted); border-color: var(--border);">
+              <div id="about-shield-icon"></div>
+              <div>
+                <div style="font-weight: 600; margin-bottom: 2px;" id="txt-about-privacy">Zero-Telemetry Architecture</div>
+                <div style="font-size: 13px; color: var(--muted-foreground);" id="txt-about-privacy-desc">
+                  Verity processes all URL signals, DOM features, and heuristic models strictly on your device. Your browsing history is never transmitted to any external server.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <script src="../shared/messages.en.js"></script>
+  <script src="../shared/ui/icons.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
