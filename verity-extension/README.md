@@ -56,6 +56,23 @@ The defensible benchmark suite (`npm run benchmark`) evaluates **4,750 real URLs
 - **Malware set (1,200 URLs):**
   - URLhaus recent malware URL feed (1,200 URLs kept in a separate malware category).
 
+## Allowlist Semantics & Abuse Protection
+
+Verity uses an independent allowlist (`config/legit_domains.json`) coupled with PSL registered-domain extraction (`shared/psl.js`). To ensure defense-in-depth, allowlist semantics are strictly bounded:
+
+### What Being on the Allowlist Caps
+- **Caution Cap (Score ≤ 40):** Verified benign and scheduled banking domains cap heuristic URL and DOM analysis scores at Caution (max 40). Legitimate password fields, login forms, payment gateways, and banking keywords on verified domains can never trigger a Block or Danger overlay.
+
+### What Can STILL Cause a Block on an Allowlisted Domain
+Being on the allowlist never grants carte blanche for malicious execution:
+1. **Cross-Domain Credential Exfiltration (`SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL`):** If an allowlisted page contains a credential or login form whose target `action` posts to a different registered domain, Verity triggers an immediate **Block (Score: 85)**.
+2. **Dangerous File Downloads (`DOWNLOAD_CHROME_DANGEROUS`):** If a downloaded file is flagged as dangerous or malicious by Chrome's native security engine, Verity triggers a **Block (Score: 90)** regardless of the host domain.
+3. **Malware from Untrusted Origins (`DOWNLOAD_SOURCE_MALICIOUS` + `DOWNLOAD_EXECUTABLE`):** Executables originating from unverified or malicious redirect chains override the allowlist cap.
+4. **Active Threat Intelligence (`THREAT_INTEL_MALWARE`):** Known malware indicators override the allowlist cap.
+
+### Explicit Allowlist Exclusions
+- **Multi-Tenant User-Content Platforms:** User-controlled subdomains on shared platforms (`*.github.io`, `*.pages.dev`, `*.firebaseapp.com`, `*.web.app`, `*.blogspot.com`, `*.wordpress.com`, `*.wixsite.com`, `*.weebly.com`, `*.vercel.app`, `*.netlify.app`, `*.workers.dev`, `*.azurewebsites.net`, etc.) **never inherit** parent domain allowlist status. Each user-content subdomain is evaluated as an unverified site.
+
 ## Known Limitations
 
 1. **ML Model Baseline:**
@@ -64,13 +81,10 @@ The defensible benchmark suite (`npm run benchmark`) evaluates **4,750 real URLs
 2. **English-Centric Heuristics:**
    - Text heuristics for detecting social engineering, KYC urgency, utility cutoffs, and payment traps currently inspect English keywords only (e.g., "disconnected", "cashback", "urgent notice"). Sites using Hindi, other Indian regional languages, or non-English text bypass these keyword heuristics.
 
-3. **No Public Suffix List (PSL):**
-   - Hostname and subdomain parsing rely on naive period splitting rather than the Mozilla Public Suffix List. Domains with multi-part suffixes (e.g., `.co.in`, `.com.au`, `.gov.uk`) may not have their apex domain distinguished accurately from subdomains, leading to false positives on unlisted regional institutions.
-
-4. **Desktop Chromium Only:**
+3. **Desktop Chromium Only:**
    - The extension relies on Manifest V3 desktop APIs (`chrome.webNavigation`, `chrome.webRequest`, `chrome.downloads`, `chrome.offscreen`) and is supported exclusively on desktop Chromium browsers (Chrome, Brave, Edge).
 
-5. **No Active Telemetry or Federated Retraining:**
+4. **No Active Telemetry or Federated Retraining:**
    - The extension operates fully client-side. The backend endpoint `/telemetry/report` in `verity-cloud` is an unpersisted demo stub with no federated learning or retraining pipeline connected. Remote threat intelligence is opt-in and disabled by default.
 
 ## Loading the Extension

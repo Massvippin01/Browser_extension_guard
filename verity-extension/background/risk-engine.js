@@ -38,7 +38,7 @@ export function calculateRisk(
   try { hostname = new URL(url).hostname.toLowerCase(); } catch (e) {}
 
   // 0. Trusted Top Domain Protection Override
-  if (isTrustedTopDomain(hostname) && (!threatIntel || !threatIntel.malware) && (!downloadSignals || !downloadSignals.chromeSaysDangerous)) {
+  if (isTrustedTopDomain(hostname) && (!threatIntel || !threatIntel.malware) && (!downloadSignals || !downloadSignals.chromeSaysDangerous) && (!domSignals || !domSignals.hasCrossDomainCredentialAction)) {
     return {
       url,
       hostname,
@@ -83,7 +83,7 @@ export function calculateRisk(
   };
 
   // ── 1. Process URL Heuristic Rule Signals ──────────────────────────────────
-  ruleSignals.forEach(s => {
+  (ruleSignals || []).forEach(s => {
     if (!s.triggered) return;
     const sigId = s.id || 'SIG_URL_SUSPICIOUS';
     const source = (sigId === 'RULE_IP_BASED_URL') ? 'url' : 'url';
@@ -142,6 +142,12 @@ export function calculateRisk(
       if (domSignals.loginFormCount > 0) {
         emitSignal('SIG_LOGIN_FORM', {}, 5, 'dom');
       }
+    }
+
+    // Cross-Domain Credential Exfiltration (must trigger even on allowlisted domains)
+    if (domSignals.hasCrossDomainCredentialAction) {
+      emitSignal('SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL', { targetDomain: domSignals.exfilTargetDomain || 'external' }, 85, 'threat_intel');
+      categories.phishing.flagged = true;
     }
 
     // C. Scam Language / PUP
@@ -266,9 +272,9 @@ export function calculateRisk(
 
   // ── 8. Apply Convergence & Allowlist Rules ──────────────────────────────────
   // A. Independent Allowlist Rule:
-  // Pages on legit_domains.json cap at Caution (max 40) unless download or credential-exfil fires
+  // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download or credential-exfil fires
   const hasDangerousDownload = downloadSignals && (downloadSignals.chromeSaysDangerous || (downloadSignals.executableDownload && downloadSignals.sourceDomainMalicious));
-  const hasCredentialExfil = false; // exfil monitoring signal flag
+  const hasCredentialExfil = !!(domSignals && domSignals.hasCrossDomainCredentialAction);
 
   if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil) {
     riskScore = Math.min(riskScore, 40);
@@ -277,9 +283,9 @@ export function calculateRisk(
   // B. Convergence Rule:
   // A Block-level verdict (>= 70) must require independent evidence from at least TWO sources
   // (url, ml, dom_credentials, download, threat_intel).
-  // Single-source signals (or DOM text alone) can add at most Caution-level score.
+  // Single-source signals (or DOM text alone) can add at most Caution-level score, unless a hard override fires.
   if (riskScore >= 70) {
-    const hasOverride = (threatIntel && threatIntel.malware) || (downloadSignals && downloadSignals.chromeSaysDangerous);
+    const hasOverride = (threatIntel && threatIntel.malware) || (downloadSignals && downloadSignals.chromeSaysDangerous) || hasCredentialExfil;
     if (!hasOverride && activeSources.size < 2) {
       // Demote to Caution
       riskScore = 65;

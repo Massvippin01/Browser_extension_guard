@@ -82,6 +82,12 @@ test('Rule 5: hasBrandVariantMatch', () => {
   const benign = hasBrandVariantMatch('https://paypal.com/signin', brands);
   assert.equal(benign.triggered, false);
   assert.equal(benign.score, 0);
+
+  // Benign: Compound name containing brand variant as substring must NOT trigger
+  const compoundBank = [{ name: 'Union Bank', domains: ['unionbankofindia.co.in'], variants: ['unionbank'] }];
+  const cityUnion = hasBrandVariantMatch('https://www.cityunionbank.com/', compoundBank);
+  assert.equal(cityUnion.triggered, false);
+  assert.equal(cityUnion.score, 0);
 });
 
 test('Rule 6: hasFinancialKeywordInHostname', () => {

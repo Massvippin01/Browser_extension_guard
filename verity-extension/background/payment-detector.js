@@ -78,9 +78,16 @@ function detectPaymentIntent(domSignals) {
 function detectClaimedProvider(domSignals, paymentBrands) {
   if (!domSignals || !paymentBrands) return { claimedProvider: null, confidence: 0 };
 
-  const pageText = (domSignals.pageText || '').toLowerCase();
+  // Mechanism Fix: Require a claim in page structure (document.title, form action, or logo alt/structural text),
+  // NOT body text alone. Educational or news articles mentioning payment providers in body text must not trigger.
   const pageTitle = (domSignals.pageTitle || '').toLowerCase();
-  const combinedText = pageText + ' ' + pageTitle;
+  const formActions = Array.isArray(domSignals.formActions) ? domSignals.formActions.join(' ').toLowerCase() : '';
+  const structuralText = (domSignals.structuralText || '').toLowerCase();
+  const structuralContext = `${pageTitle} ${formActions} ${structuralText}`.trim();
+
+  if (!structuralContext) {
+    return { claimedProvider: null, confidence: 0 };
+  }
 
   let bestMatch = null;
   let bestScore = 0;
@@ -88,7 +95,7 @@ function detectClaimedProvider(domSignals, paymentBrands) {
   for (const brand of paymentBrands) {
     let hits = 0;
     for (const alias of (brand.aliases || [])) {
-      if (combinedText.includes(alias.toLowerCase())) {
+      if (structuralContext.includes(alias.toLowerCase())) {
         hits++;
       }
     }

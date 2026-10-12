@@ -64,6 +64,7 @@
     SIG_DIGITAL_ARREST_SCAM: (p) => 'High risk: Digital arrest or utility disconnection scam pattern detected on an unverified domain.',
     SIG_UPI_DEBIT_TRAP: (p) => 'High risk: UPI cashback or debit trap detected hiding a payment request.',
     SIG_PAYMENT_PHISHING: (p) => 'High risk: Unverified domain requesting payment credentials (Card/CVV/OTP).',
+    SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL: (p) => `Critical risk: Form transmits sensitive credentials to an untrusted external domain (${p?.targetDomain || 'unverified'}).`,
 
     // ── Payment Protection Signals ────────────────────────────────────────────
     PAYMENT_FAKE_PROVIDER: (p) => `Page claims to be "${p?.claimedProvider || 'Provider'}" but domain "${p?.hostname || ''}" is not its official domain.`,
@@ -175,7 +176,8 @@
     // Category: threat_intel
     THREAT_INTEL_MALWARE: 'threat_intel',
     SECURITY_ERROR_ABORTED: 'threat_intel',
-    USER_OVERRIDE_ACTIVE: 'threat_intel'
+    USER_OVERRIDE_ACTIVE: 'threat_intel',
+    SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL: 'threat_intel'
   };
 
   /**

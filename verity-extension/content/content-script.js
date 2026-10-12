@@ -206,15 +206,55 @@ function collectSignals() {
            attr.includes('cc-csc') || attr.includes('otp') || attr.includes('upi');
   });
 
+  // Extract structural text from title, form actions, and logo elements
+  const logoElements = Array.from(document.querySelectorAll('img[alt], [aria-label], [class*="logo"], [id*="logo"]')).slice(0, 20);
+  const logoAlts = logoElements.map(el => (el.getAttribute('alt') || el.getAttribute('aria-label') || el.title || '').trim()).filter(Boolean);
+  const structuralText = [
+    document.title || '',
+    ...formActions,
+    ...logoAlts
+  ].join(' ').toLowerCase();
+
+  // Cross-domain credential exfiltration check (credential form posting to different registered domain)
+  let hasCrossDomainCredentialAction = false;
+  let exfilTargetDomain = null;
+  const currentHost = window.location.hostname.toLowerCase();
+  function getBaseDomain(h) {
+    if (!h) return '';
+    const parts = h.split('.').filter(Boolean);
+    if (parts.length <= 2) return h;
+    return parts.slice(-2).join('.');
+  }
+  const pageBaseDomain = getBaseDomain(currentHost);
+
+  for (const form of loginForms) {
+    const action = form.getAttribute('action') || form.action;
+    if (action && !action.startsWith('#') && !action.startsWith('javascript:')) {
+      try {
+        const resolved = new URL(action, window.location.href);
+        const actionHost = resolved.hostname.toLowerCase();
+        if (actionHost && actionHost !== currentHost) {
+          const actionBase = getBaseDomain(actionHost);
+          if (actionBase && pageBaseDomain && actionBase !== pageBaseDomain) {
+            hasCrossDomainCredentialAction = true;
+            exfilTargetDomain = actionHost;
+            break;
+          }
+        }
+      } catch {}
+    }
+  }
+
   // Claimed providers scan (using already-extracted text, no redundant read)
   const claimedProviders = scanClaimedProviders(text);
-
-
 
   return {
     hasPasswordInput: isTrustedDomain ? false : hasPasswordInput,
     loginFormCount: isTrustedDomain ? 0 : loginForms.length,
     formActions,
+    structuralText: structuralText.substring(0, 2000),
+    hasCrossDomainCredentialAction,
+    exfilTargetDomain,
     scam: !!scamMatch,
     scamReason: scamMatch ? `Matches scam language: "${scamMatch}"` : null,
     pup: !!pupMatch,

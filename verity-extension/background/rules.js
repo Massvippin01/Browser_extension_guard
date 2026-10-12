@@ -121,14 +121,12 @@ export function hasBrandNameInWrongDomain(urlString, brandsList) {
     const brandNameLower = brand.name.toLowerCase();
     let match = false;
     
-    // For short brand names (e.g. UPS, SBI), require a token boundary to avoid matching inside other words.
-    // For longer names (e.g. netflix, paypal), a substring match is safe enough.
-    if (brandNameLower.length <= 4) {
-      const regex = new RegExp(`(^|[-.])${brandNameLower}([-.]|$)`, 'i');
-      match = regex.test(hostname);
-    } else {
-      match = hostname.includes(brandNameLower);
-    }
+    // Require token boundary or exact label matching for all brand names to prevent
+    // embedded substring collisions in distinct compound names (e.g. cityunionbank vs unionbank).
+    const brandToken = brand.name.toLowerCase().replace(/\s+/g, '');
+    const escaped = brandToken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(^|[-.])${escaped}([-.]|$)`, 'i');
+    match = regex.test(hostname);
     
     if (match) {
       // Is the hostname actually one of the legitimate domains or a subdomain of it?
@@ -659,12 +657,11 @@ export function hasBrandVariantMatch(urlString, brandsList) {
         const variantLower = variant.toLowerCase();
         let match = false;
         
-        if (variantLower.length <= 4) {
-          const regex = new RegExp(`(^|[-.])${variantLower}([-.]|$)`, 'i');
-          match = regex.test(hostname);
-        } else {
-          match = hostname.includes(variantLower);
-        }
+        // Require token boundary matching (^|[-.])variant([-.]|$) for ALL variants
+        // to prevent embedded substring collisions in distinct compound names (e.g. cityunionbank vs unionbank).
+        const escaped = variantLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(^|[-.])${escaped}([-.]|$)`, 'i');
+        match = regex.test(hostname);
 
         if (match) {
           return {
