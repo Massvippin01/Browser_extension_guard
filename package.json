@@ -3,6 +3,8 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "test": "npm --prefix verity-extension test"
+    "test": "npm --prefix verity-extension test",
+    "benchmark": "npm --prefix verity-extension run benchmark",
+    "e2e": "npm --prefix verity-extension run e2e"
   }
 }

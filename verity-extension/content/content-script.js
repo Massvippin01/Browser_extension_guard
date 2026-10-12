@@ -810,7 +810,7 @@ function injectOverlay(verdict) {
   host.style.setProperty('z-index', '2147483647', 'important');
   host.style.setProperty('background-color', '#FAFAFA', 'important');
 
-  const shadow = host.attachShadow({ mode: 'closed' });
+  const shadow = host.attachShadow({ mode: 'open' });
 
   // Determine State
   const isDanger = verdict.action === 'block' || verdict.severity === 'danger';
@@ -818,6 +818,10 @@ function injectOverlay(verdict) {
   const stateColor = isDanger ? '#D32F2F' : '#F57C00';
   const stateIconColor = isDanger ? '#EF5350' : '#FFCA28';
   const stateTitle = isPaymentPhishing ? 'Payment Phishing Blocked' : (isDanger ? 'Dangerous' : 'Suspicious');
+
+  host.dataset.action = verdict.action;
+  host.dataset.score = String(verdict.score || verdict.riskScore || 0);
+  host.dataset.stateTitle = stateTitle;
 
   // Extract primary threat category
   let primaryCategory = 'Suspicious Website';

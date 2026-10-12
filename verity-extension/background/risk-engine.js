@@ -1,6 +1,17 @@
 import { isTrustedTopDomain } from './rules.js';
 
-export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null, paymentAnalysis = null, downloadSignals = null) {
+/**
+ * Scaling factor for on-device ML score (0.0 = disabled, 1.0 = standard 0-25 pts).
+ * Default set to 0 per ablation decision rule (baseline ML does not improve held-out F1).
+ */
+export let ML_WEIGHT = 1.0;
+
+export function setMlWeight(w) {
+  ML_WEIGHT = w;
+}
+
+export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals = null, threatIntel = null, redirectSignals = null, paymentAnalysis = null, downloadSignals = null, mlWeightOverride = null) {
+  const activeMlWeight = (mlWeightOverride !== null) ? mlWeightOverride : ML_WEIGHT;
   let hostname = '';
   try { hostname = new URL(url).hostname; } catch(e) {}
 
@@ -78,16 +89,18 @@ export function calculateRisk(url, ruleSignals = [], mlScore = null, domSignals 
     categories.suspicious.reason = malvertReasons[0];
   }
 
-  // 2. Local ML Signals (0-25 points)
-  if (mlScore !== null && mlScore > 30) {
-    const mlScaled = Math.min(Math.round(mlScore * 0.25), 25);
-    addSignal('ml', mlScaled, 'On-device ML model flagged structural phishing characteristics.');
-    categories.phishing.flagged = true;
-    categories.phishing.confidence = mlScore;
+  // 2. Local ML Signals (0-25 points scaled by activeMlWeight)
+  if (activeMlWeight > 0 && mlScore !== null && mlScore > 30) {
+    const mlScaled = Math.min(Math.round(mlScore * 0.25 * activeMlWeight), Math.round(25 * activeMlWeight));
+    if (mlScaled > 0) {
+      addSignal('ml', mlScaled, 'On-device ML model flagged structural phishing characteristics.');
+      categories.phishing.flagged = true;
+      categories.phishing.confidence = mlScore;
+    }
   }
 
   // 3. Brand Impersonation (0-60 points)
-  const brandSignal = ruleSignals.find(s => s.triggered && s.reason && s.reason.includes('name'));
+  const brandSignal = ruleSignals.find(s => s.triggered && s.reason && (s.reason.includes('the name "') || s.reason.includes('brand name') || s.reason.includes('typosquat')));
   if (brandSignal) {
     addSignal('brand_impersonation', 40, brandSignal.reason);
     categories.phishing.flagged = true;

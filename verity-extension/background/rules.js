@@ -394,10 +394,22 @@ export function hasAffiliateTrackerPattern(urlString) {
 }
 
 
+function calcLabelEntropy(str) {
+  if (!str) return 0;
+  const map = {};
+  for (const c of str) map[c] = (map[c] || 0) + 1;
+  let ent = 0;
+  for (const c in map) {
+    const p = map[c] / str.length;
+    ent -= p * Math.log2(p);
+  }
+  return ent;
+}
+
 /**
  * Rule 5c: Random-looking hostname detection
- * Catches hostnames like: wb.omegatootler.rest, random-abc123.xyz, etc.
- * These are common in ad-redirect networks, malware C2, and malvertising.
+ * Catches hostnames with high entropy, long hex hashes, or unpronounceable consonant clusters.
+ * Tuned on dev set to avoid flagging dictionary words and hyphenated domain compounds.
  * @param {string} urlString
  */
 export function hasRandomLookingHostname(urlString) {
@@ -413,50 +425,58 @@ export function hasRandomLookingHostname(urlString) {
   const safeLabels = new Set(['www', 'mail', 'api', 'cdn', 'static', 'assets', 'img', 'media', 'blog', 'shop', 'store', 'news', 'help', 'support', 'app', 'dev']);
 
   const parts = hostname.split('.');
-  // Check subdomains and domain labels (excluding standard TLDs)
   const labelsToCheck = parts.length > 1 ? parts.slice(0, -1) : parts;
+  const tld = parts.length > 1 ? '.' + parts[parts.length - 1] : '';
+  const suspTLDs = new Set(['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.ga', '.cf', '.gq', '.click', '.online', '.site', '.fun', '.icu', '.sbs', '.cfd', '.monster', '.skin', '.qpon']);
 
   for (const label of labelsToCheck) {
     if (safeLabels.has(label)) continue;
 
-    if (label.length >= 10) {
-      const vowels = (label.match(/[aeiou]/g) || []).length;
-      const vowelRatio = vowels / label.length;
-      const hasLongConsonantCluster = /[bcdfghjklmnpqrstvwxyz]{5,}/i.test(label);
-      const hasDigitMix = /[0-9]/.test(label) && /[a-z]/.test(label);
+    // Split on hyphens to inspect individual tokens
+    const subTokens = label.split('-');
+    for (const tok of subTokens) {
+      if (tok.length < 8) continue;
 
-      if (vowelRatio < 0.20 || hasLongConsonantCluster || (hasDigitMix && label.length > 10)) {
+      // Hex hash check (e.g. md5 / uuid / random hex string)
+      if (tok.length >= 16 && /^[0-9a-f]+$/i.test(tok)) {
         return {
           score: 65,
-          reason: `Hostname "${hostname}" contains a randomly generated label ("${label}") — signature of ad-redirect & malware DGA infrastructure.`,
+          reason: `Hostname "${hostname}" contains a hex hash label ("${tok}") — signature of ad-redirect & malware DGA infrastructure.`,
           triggered: true
         };
       }
-    }
 
-    // DGA / Nonsense label detection (e.g. dstimaariracon.org)
-    if (label.length >= 11 && !/^(google|amazon|microsoft|facebook|youtube|twitter|instagram|netflix|apple|adobe|paypal|stripe|shopify|cloudflare|github|linkedin|reddit|discord|zoom|slack|notion|atlassian)/.test(label)) {
-      const startsWithConsonantCluster = /^[bcdfghjklmnpqrstvwxyz]{3,}/i.test(label);
-      if (startsWithConsonantCluster || label.length >= 13) {
+      // Consonant cluster (6+ consecutive consonants without vowel, treating y as semi-vowel)
+      if (/[bcdfghjklmnpqrstvwxz]{6,}/i.test(tok)) {
         return {
           score: 65,
-          reason: `Hostname "${hostname}" uses a synthetic DGA domain label ("${label}") — typical of malvertising & phishing infrastructure.`,
+          reason: `Hostname "${hostname}" contains an unpronounceable consonant sequence ("${tok}") — signature of ad-redirect & malware DGA infrastructure.`,
           triggered: true
         };
       }
-    }
-  }
 
-  // Check if domain label matches suspicious TLD pattern
-  const domainLabel = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
-  if (domainLabel.length > 10 && !/^(google|amazon|microsoft|facebook|youtube|twitter|instagram|netflix|apple|adobe|paypal|stripe|shopify|cloudflare|github|linkedin|reddit|discord|zoom|slack|notion|atlassian)/.test(domainLabel)) {
-    const suspTLDs = ['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.click', '.online', '.site', '.fun', '.live', '.vip', '.club', '.icu', '.sbs', '.uno', '.cfd', '.bar', '.monster', '.skin', '.qpon', '.world', '.ninja', '.mov', '.film', '.download', '.com'];
-    if (suspTLDs.some(tld => hostname.endsWith(tld))) {
-      return {
-        score: 50,
-        reason: `Hostname "${hostname}" combines an unrecognized domain with a high-risk TLD.`,
-        triggered: true
-      };
+      // Extreme low vowel ratio or high entropy on long single tokens
+      if (tok.length >= 10) {
+        const vowels = (tok.match(/[aeiouy]/g) || []).length;
+        const vowelRatio = vowels / tok.length;
+        const entropy = calcLabelEntropy(tok);
+
+        if (vowelRatio < 0.12 && tok.length >= 10) {
+          return {
+            score: 65,
+            reason: `Hostname "${hostname}" contains a randomly generated label ("${tok}") — signature of ad-redirect & malware DGA infrastructure.`,
+            triggered: true
+          };
+        }
+
+        if (entropy > 3.6 && suspTLDs.has(tld)) {
+          return {
+            score: 65,
+            reason: `Hostname "${hostname}" uses a synthetic DGA domain label ("${tok}") on high-risk TLD "${tld}".`,
+            triggered: true
+          };
+        }
+      }
     }
   }
 
@@ -597,18 +617,42 @@ export function hasFinancialKeywordInHostname(urlString, brandsList) {
     if (isLegit) return { score: 0, reason: null, triggered: false };
   }
 
+  // Exempt established legitimate financial/banking domains and portals
+  const knownLegitExact = new Set([
+    'bhimupi.org.in', 'npci.org.in', 'investopedia.com', 'tradingview.com',
+    'bankofamerica.com', 'chase.com', 'wellsfargo.com', 'citi.com', 'citibank.com',
+    'capitalone.com', 'barclays.co.uk', 'hsbc.co.uk', 'lloydsbank.com',
+    'hdfcbank.com', 'icicibank.com', 'axisbank.com', 'kotak.com', 'sbi.co.in', 'onlinesbi.sbi'
+  ]);
+  if (knownLegitExact.has(hostname) || [...knownLegitExact].some(d => hostname.endsWith('.' + d))) {
+    return { score: 0, reason: null, triggered: false };
+  }
+
+  const parts = hostname.split('.');
+  if (parts.length <= 1) return { score: 0, reason: null, triggered: false };
+  const domainAndSubdomains = parts.slice(0, -1).join('.');
+
   const financialHostKeywords = [
-    'bank', 'banking', 'wallet', 'upi', 'netbanking', 'ibank',
-    'payment', 'paytm', 'phonepe', 'gpay', 'bhim',
-    'kyc', 'loan', 'finance', 'insurance', 'invest',
-    'crypto', 'bitcoin', 'nft', 'demat', 'trading'
+    'netbanking', 'ibank', 'webwallet', 'wallet', 'kyc', 'upi',
+    'paytm', 'phonepe', 'gpay', 'bhim'
   ];
-  const found = financialHostKeywords.find(k => hostname.includes(k));
-  
-  if (found) {
+
+  for (const kw of financialHostKeywords) {
+    if (domainAndSubdomains.includes(kw)) {
+      return {
+        score: 55,
+        reason: `Hostname contains financial keyword "${kw}" on an unverified domain.`,
+        triggered: true
+      };
+    }
+  }
+
+  const bankMatch = /(?:^|[-.])(?:net)?banking?(?:[-.]|$)/i.test(domainAndSubdomains) ||
+                    /(?:[-.])bank(?:[-.]|$)/i.test(domainAndSubdomains);
+  if (bankMatch) {
     return {
       score: 55,
-      reason: `Hostname contains financial keyword "${found}" but is not a verified banking domain.`,
+      reason: `Hostname contains banking keyword on an unverified domain.`,
       triggered: true
     };
   }

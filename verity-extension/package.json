@@ -5,6 +5,11 @@
   "type": "module",
   "description": "Verity: Real-time on-device website security extension",
   "scripts": {
-    "test": "node --test tests/**/*.test.js"
+    "test": "node --test tests/**/*.test.js",
+    "benchmark": "node scripts/benchmark.js",
+    "e2e": "node scripts/e2e.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.13.0"
   }
 }

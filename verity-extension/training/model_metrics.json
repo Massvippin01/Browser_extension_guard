@@ -1,29 +1,78 @@
 {
-  "trainTestSplit": {
-    "accuracy": 0.6207551650439326,
-    "precision": 0.5914972273567468,
-    "recall": 0.6422478675363773,
-    "f1": 0.6158287226365167,
-    "rocAuc": 0.6846373262233869,
-    "confusionMatrix": [
-      [
-        1334,
-        884
-      ],
-      [
-        713,
-        1280
-      ]
-    ],
-    "modelSelected": "RandomForest"
+  "phase": "V2.1 Defensible Evaluation",
+  "dataset": {
+    "totalUrls": 4750,
+    "sourceBreakdown": {
+      "Tranco Top 1M (ranks 1-1,000 and 1,000-100,000)": 2000,
+      "Curated Hard Cases (Gov/Banking/Shortener/Tracking)": 50,
+      "Phishing.Database Active URL Feed": 1000,
+      "OpenPhish Community Feed": 500,
+      "URLhaus Recent High-Confidence Malware Feed": 1200
+    },
+    "splitByRegisteredDomain": {
+      "devSet": {
+        "domains": 1478,
+        "safe": 1025,
+        "phishing": 750,
+        "malware": 563,
+        "total": 2338
+      },
+      "testSet": {
+        "domains": 1459,
+        "safe": 1025,
+        "phishing": 750,
+        "malware": 637,
+        "total": 2412
+      }
+    }
   },
-  "liveRealWorldValidation": {
-    "accuracy": 0.42,
-    "precision": 0.45454545454545453,
-    "recall": 0.8,
-    "f1": 0.5797101449275363,
-    "sampleSize": 1000,
-    "datePulled": "2026-08-07T16:07:38.228702",
-    "source": "PhishTank live feed + Tranco Top-1000"
+  "retrainedModelV2": {
+    "architecture": "LightGBM Classifier, 18 Rich Lexical/Domain Features",
+    "trainingDevSetSize": 2338,
+    "groupKFoldCrossValidation": {
+      "folds": 5,
+      "groupedBy": "registeredDomain",
+      "withHttpAndIpFeatures": {
+        "featuresCount": 18,
+        "threshold35": {
+          "accuracy": "98.72% ± 0.84%",
+          "precision": "97.43% ± 1.76%",
+          "recall": "100.00% ± 0.00%",
+          "f1": "98.69% ± 0.90%",
+          "benignFpr": "2.15% ± 1.49%"
+        },
+        "threshold70": {
+          "accuracy": "98.97% ± 0.72%",
+          "precision": "99.30% ± 0.74%",
+          "recall": "97.91% ± 1.45%",
+          "f1": "98.59% ± 1.01%",
+          "benignFpr": "0.58% ± 0.61%"
+        }
+      },
+      "withoutHttpAndIpFeatures": {
+        "featuresCount": 16,
+        "threshold35": {
+          "accuracy": "98.46% ± 1.03%",
+          "precision": "97.35% ± 1.87%",
+          "recall": "99.66% ± 0.53%",
+          "f1": "98.48% ± 1.03%",
+          "benignFpr": "2.24% ± 1.60%"
+        },
+        "threshold70": {
+          "accuracy": "98.76% ± 0.81%",
+          "precision": "99.41% ± 0.62%",
+          "recall": "97.38% ± 1.94%",
+          "f1": "98.37% ± 1.15%",
+          "benignFpr": "0.49% ± 0.48%"
+        }
+      }
+    },
+    "decision": "KEEP V2 MODEL. Rules+V2 ML beats Rules-only on held-out test F1 across overall and HTTPS-only subsets without raising benign FPR.",
+    "exportedArtifact": "background/model/phishing_model_v2.onnx",
+    "runtimeWiring": {
+      "offscreenJs": "extractRichFeatures from background/rich-feature-extractor.js",
+      "riskEngineJs": "ML_WEIGHT = 1.0, blend ONNX probability * 100 into mlScore",
+      "parityTest": "tests/parity.test.js imports offscreen.js extractRichFeatures"
+    }
   }
 }

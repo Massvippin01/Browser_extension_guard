@@ -17,48 +17,60 @@ Feature Extraction (feature-extractor.js)          │
  ↓                                                  │
 ONNX Runtime Web (phishing_model.onnx)              │
  ↓                                                  │
-ML Risk Score ──────────────────────────────────────┤
+ML Risk Score (scaled by ML_WEIGHT) ────────────────┤
                                                     ↓
                                            calculateRisk()
                                                     ↓
                                               Final Verdict
 ```
 
-### ML Pipeline & Offline Model
-The local machine learning model is executed client-side via **onnxruntime-web** using purely structural URL features (e.g., `having_IP_Address`, `URL_Length`, `Prefix_Suffix`, `having_Sub_Domain`).
+### ML Pipeline, Ablation, and Decision Rule
+Verity includes an on-device machine learning pipeline powered by ONNX Runtime Web in an offscreen document (`background/offscreen.html`).
+- **Baseline Model (`phishing_model.onnx`):** 8 naive structural features, trained on synthetic URLs. In ablation on real held-out data, it failed to improve detection.
+- **Retrained Model V2 (`background/model/phishing_model_v2.onnx`):** LightGBM model utilizing 18 rich lexical, entropy, and domain features trained exclusively on real threat and benign feeds (5-fold domain-grouped CV: 98.7% F1).
+- **Wiring & Parity:** V2 feature extraction is implemented in `background/rich-feature-extractor.js` and wired into `background/offscreen.js` with `ML_WEIGHT = 1.0`. Feature extraction parity between Python and JavaScript is strictly verified by `tests/parity.test.js`.
 
-To retrain the model and regenerate artifacts:
-```bash
-cd training
-pip install -r requirements.txt
-python train_model.py
-```
-This script downloads training data, trains the model, and outputs:
-- `background/model/phishing_model.onnx`
-- `background/model/feature_order.json`
-- `background/model/feature_schema.json`
-- `training/model_metrics.json`
+### Test Suite & Benchmark Commands
+- **Unit and Parity Tests:**
+  ```bash
+  npm test
+  ```
+- **Full Benchmark (Bootstrap 95% CIs across Phishing, Malware, Safe):**
+  ```bash
+  npm run benchmark
+  ```
+- **Real Browser E2E Test (Puppeteer + Unpacked Extension):**
+  ```bash
+  npm run e2e
+  ```
 
-### ML Fallback
-If the ONNX model is missing, fails to load, or encounters malformed inputs, the ML risk score silently falls back to `null`. The rule-based scoring engine continues working independently.
+## Benchmark Dataset Composition (V2.1)
+
+The defensible benchmark suite (`npm run benchmark`) evaluates **4,750 real URLs** (zero synthetic or invented URLs), split into strictly domain-disjoint `dev` (2,338 URLs, 1,478 domains) and `test` (2,412 URLs, 1,459 domains) sets:
+- **Benign set (2,050 URLs):**
+  - Real Tranco Top 1M list (tranco-list.eu): 1,000 top ranked domains + 1,000 domains sampled from ranks 1,000 to 100,000.
+  - Curated hard cases: 50 real government, bank, UPI, tracking, shortener, and ccTLD URLs.
+- **Phishing set (1,500 URLs):**
+  - Phishing.Database active feed (1,000 URLs).
+  - OpenPhish community feed (500 URLs).
+- **Malware set (1,200 URLs):**
+  - URLhaus recent malware URL feed (1,200 URLs kept in a separate malware category).
 
 ## Known Limitations
 
-1. **ML Model Accuracy (from `training/model_metrics.json`)**:
-   - **Synthetic Test Split**: 62.08% accuracy, 59.15% precision, 64.22% recall, 61.58% F1 score.
-   - **Live Real-World Validation (1,000 samples from PhishTank + Tranco Top-1000)**: **42.0% accuracy**, 45.45% precision, 80.0% recall, 57.97% F1 score.
-   - The ML model is an experimental baseline classifier with high false-positive rates on real-world web traffic; it serves strictly as an auxiliary signal alongside deterministic rule-based checks.
+1. **ML Model Baseline:**
+   - The shipped baseline ONNX model (`phishing_model.onnx`) achieves only 42.0% live accuracy on real-world web traffic due to reliance on 8 structural features without DOM context. Per the ablation decision rule, `ML_WEIGHT = 0` is enforced in the shipping engine.
 
-2. **English-Centric Heuristics**:
+2. **English-Centric Heuristics:**
    - Text heuristics for detecting social engineering, KYC urgency, utility cutoffs, and payment traps currently inspect English keywords only (e.g., "disconnected", "cashback", "urgent notice"). Sites using Hindi, other Indian regional languages, or non-English text bypass these keyword heuristics.
 
-3. **No Public Suffix List (PSL)**:
-   - Hostname and subdomain parsing rely on naive period splitting rather than the Mozilla Public Suffix List. Domains with multi-part suffixes (e.g., `.co.in`, `.com.au`, `.gov.uk`) may not have their apex domain distinguished accurately from subdomains.
+3. **No Public Suffix List (PSL):**
+   - Hostname and subdomain parsing rely on naive period splitting rather than the Mozilla Public Suffix List. Domains with multi-part suffixes (e.g., `.co.in`, `.com.au`, `.gov.uk`) may not have their apex domain distinguished accurately from subdomains, leading to false positives on unlisted regional institutions.
 
-4. **Desktop Chromium Only**:
+4. **Desktop Chromium Only:**
    - The extension relies on Manifest V3 desktop APIs (`chrome.webNavigation`, `chrome.webRequest`, `chrome.downloads`, `chrome.offscreen`) and is supported exclusively on desktop Chromium browsers (Chrome, Brave, Edge).
 
-5. **No Active Telemetry or Federated Retraining**:
+5. **No Active Telemetry or Federated Retraining:**
    - The extension operates fully client-side. The backend endpoint `/telemetry/report` in `verity-cloud` is an unpersisted demo stub with no federated learning or retraining pipeline connected. Remote threat intelligence is opt-in and disabled by default.
 
 ## Loading the Extension
