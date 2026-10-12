@@ -259,12 +259,38 @@ export function calculateRisk(
     }
   }
 
-  // Sum capped scores across categories
-  let riskScore = 0;
+  // Combine capped scores across categories:
+  // Sort category points descending: highest category takes full weight,
+  // secondary categories add diminishing marginal risk (factor 0.4)
+  // so saturation at 100 is not the normal outcome.
+  const cappedScores = [];
   for (const [cat, rawPoints] of Object.entries(pointsByCategory)) {
     const cap = CATEGORY_CAPS[cat] !== undefined ? CATEGORY_CAPS[cat] : 30;
     const capped = Math.min(rawPoints, cap);
-    riskScore += capped;
+    if (capped > 0) cappedScores.push(capped);
+  }
+  cappedScores.sort((a, b) => b - a);
+
+  let riskScore = 0;
+  if (cappedScores.length > 0) {
+    riskScore = cappedScores[0];
+    for (let i = 1; i < cappedScores.length; i++) {
+      const weight = 0.5 * Math.pow(0.3, i - 1);
+      riskScore += Math.round(cappedScores[i] * weight);
+    }
+  }
+
+  // Hard override floors (known malware, chrome dangerous download, credential exfil)
+  const hasDangerousDownload = downloadSignals && (downloadSignals.chromeSaysDangerous || (downloadSignals.executableDownload && downloadSignals.sourceDomainMalicious));
+  const hasCredentialExfil = !!(domSignals && domSignals.hasCrossDomainCredentialAction);
+  const hasMalwareIntel = !!(threatIntel && threatIntel.malware);
+
+  if (hasCredentialExfil) {
+    riskScore = Math.max(riskScore, 85);
+  } else if (downloadSignals && downloadSignals.chromeSaysDangerous) {
+    riskScore = Math.max(riskScore, 90);
+  } else if (hasMalwareIntel) {
+    riskScore = Math.max(riskScore, 85);
   }
 
   // Overall clamp [0, 100]
@@ -273,19 +299,16 @@ export function calculateRisk(
   // ── 8. Apply Convergence & Allowlist Rules ──────────────────────────────────
   // A. Independent Allowlist Rule:
   // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download or credential-exfil fires
-  const hasDangerousDownload = downloadSignals && (downloadSignals.chromeSaysDangerous || (downloadSignals.executableDownload && downloadSignals.sourceDomainMalicious));
-  const hasCredentialExfil = !!(domSignals && domSignals.hasCrossDomainCredentialAction);
-
   if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil) {
     riskScore = Math.min(riskScore, 40);
   }
 
   // B. Convergence Rule:
-  // A Block-level verdict (>= 70) must require independent evidence from at least TWO sources
-  // (url, ml, dom_credentials, download, threat_intel).
-  // Single-source signals (or DOM text alone) can add at most Caution-level score, unless a hard override fires.
+  // A Block-level verdict (>= 70) strictly requires independent evidence from at least TWO sources
+  // (url, ml, dom_credentials, download, threat_intel), unless a hard override fires.
+  // Single-source signals can add at most Caution-level score (demoted to 65).
   if (riskScore >= 70) {
-    const hasOverride = (threatIntel && threatIntel.malware) || (downloadSignals && downloadSignals.chromeSaysDangerous) || hasCredentialExfil;
+    const hasOverride = hasMalwareIntel || (downloadSignals && downloadSignals.chromeSaysDangerous) || hasCredentialExfil;
     if (!hasOverride && activeSources.size < 2) {
       // Demote to Caution
       riskScore = 65;

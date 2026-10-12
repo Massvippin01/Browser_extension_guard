@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-10-12T19:03:07.559Z",
+  "results": {
+    "test1_exfil": {
+      "url": "http://allowlisted-corp.test:8085/fixture/exfil",
+      "action": "block",
+      "score": 85,
+      "passed": true
+    },
+    "test2_userSubdomain": {
+      "url": "http://malicious-tenant.github.io:8085/fixture/user-subdomain",
+      "action": "block",
+      "score": 100,
+      "passed": true
+    },
+    "test3_downloadWarnings": {
+      "executableExe": true,
+      "installerApk": true,
+      "scriptBat": true,
+      "allShown": true
+    }
+  }
+}

@@ -183,19 +183,21 @@
   /**
    * Documented Category Caps:
    * Maximum points allowable per category before combining.
+   * Hard Invariant: No single category cap can reach the Block threshold (70) alone.
+   * Multi-signal convergence is strictly required to achieve a Block verdict.
    */
   const CATEGORY_CAPS = {
     url: 30,
-    ip_host: 75,
-    malvertising: 85,
+    ip_host: 60,
+    malvertising: 60,
     brand_impersonation: 60,
     ml: 25,
     dom_credentials: 25,
     scam_language: 20,
-    payment_phishing: 75,
-    synergy: 50,
-    download: 95,
-    threat_intel: 100
+    payment_phishing: 60,
+    synergy: 40,
+    download: 60,
+    threat_intel: 65
   };
 
   /**

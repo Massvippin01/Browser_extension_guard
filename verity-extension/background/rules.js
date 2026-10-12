@@ -95,6 +95,70 @@ export function hasExcessiveSubdomains(urlString) {
   return { id: null, params: {}, score: 0, reason: null, triggered: false };
 }
 
+const PHISHING_LURE_KEYWORDS = [
+  'login', 'signin', 'sign-in', 'logon', 'log',
+  'secure', 'security', 'sec', 'safe',
+  'verify', 'verification', 'verif', 'val', 'auth',
+  'update', 'upgrade', 'renew', 'recovery', 'recover', 'reset',
+  'account', 'acct', 'myaccount', 'user', 'portal', 'client',
+  'online', 'web', 'net', 'netbanking', 'banking', 'bank',
+  'kyc', 'otp', 'pin', 'card', 'bill', 'pay', 'payment', 'wallet',
+  'help', 'support', 'desk', 'care', 'service', 'services', 'serv',
+  'alert', 'notice', 'confirm', 'confirmation', 'claim', 'reward',
+  'mobile', 'app', 'access', 'connect', 'center', 'centre',
+  'broadband', 'network', 'telecom', 'official', 'protect'
+];
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Checks if a candidate term matches a hostname, using remainder analysis:
+ * - A delimiter-separated match (^|[-.])term([-.]|$) is always strong.
+ * - An exact token match (empty remainder) is always strong.
+ * - A concatenated substring match is strong ONLY if the remainder contains a phishing/lure keyword,
+ *   a numeric/single-character prefix (e.g. 03chase, nfacebook), or common inflection suffix (e.g. whatsapper).
+ * - A remainder that is another plain word (e.g. 'city' in 'cityunionbank') is weak and returns false.
+ */
+function isBrandMatchWithRemainder(hostname, term) {
+  if (!term || term.length < 3) return false;
+
+  // Case 1: Delimiter-separated token (^|[-.])term([-.]|$) -> STRONG
+  const delimRegex = new RegExp(`(^|[-.])${escapeRegExp(term)}([-.]|$)`, 'i');
+  if (delimRegex.test(hostname)) return true;
+
+  // Case 2: Substring inside a token -> require remainder analysis
+  if (!hostname.includes(term)) return false;
+
+  const labels = hostname.split('.');
+  for (const label of labels) {
+    const tokens = label.split('-');
+    for (const tok of tokens) {
+      if (tok.includes(term)) {
+        const idx = tok.indexOf(term);
+        const prefix = tok.slice(0, idx);
+        const suffix = tok.slice(idx + term.length);
+
+        if (!prefix && !suffix) return true;
+
+        const remainderParts = [prefix, suffix].filter(Boolean);
+        const hasLure = remainderParts.some(part =>
+          PHISHING_LURE_KEYWORDS.some(kw => part.includes(kw) || (kw.includes(part) && part.length >= 3))
+        );
+        const isNumericOrShortPrefix = /^[0-9]+$/.test(prefix) || (prefix.length === 1 && term.length >= 6);
+        const isInflectionSuffix = /^(?:er|app|apps)$/.test(suffix);
+
+        if (hasLure || isNumericOrShortPrefix || isInflectionSuffix) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 /**
  * Rule 4: Brand Impersonation Rule
  * Detect when a protected brand name appears in the URL but the actual domain does not belong to that brand.
@@ -118,15 +182,8 @@ export function hasBrandNameInWrongDomain(urlString, brandsList) {
   }
   
   for (const brand of brandsList) {
-    const brandNameLower = brand.name.toLowerCase();
-    let match = false;
-    
-    // Require token boundary or exact label matching for all brand names to prevent
-    // embedded substring collisions in distinct compound names (e.g. cityunionbank vs unionbank).
     const brandToken = brand.name.toLowerCase().replace(/\s+/g, '');
-    const escaped = brandToken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(^|[-.])${escaped}([-.]|$)`, 'i');
-    match = regex.test(hostname);
+    const match = isBrandMatchWithRemainder(hostname, brandToken);
     
     if (match) {
       // Is the hostname actually one of the legitimate domains or a subdomain of it?
@@ -655,13 +712,7 @@ export function hasBrandVariantMatch(urlString, brandsList) {
     if (brand.variants && Array.isArray(brand.variants)) {
       for (const variant of brand.variants) {
         const variantLower = variant.toLowerCase();
-        let match = false;
-        
-        // Require token boundary matching (^|[-.])variant([-.]|$) for ALL variants
-        // to prevent embedded substring collisions in distinct compound names (e.g. cityunionbank vs unionbank).
-        const escaped = variantLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`(^|[-.])${escaped}([-.]|$)`, 'i');
-        match = regex.test(hostname);
+        const match = isBrandMatchWithRemainder(hostname, variantLower);
 
         if (match) {
           return {

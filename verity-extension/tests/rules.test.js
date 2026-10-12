@@ -83,11 +83,17 @@ test('Rule 5: hasBrandVariantMatch', () => {
   assert.equal(benign.triggered, false);
   assert.equal(benign.score, 0);
 
-  // Benign: Compound name containing brand variant as substring must NOT trigger
+  // Benign: Compound name containing brand variant as substring must NOT trigger (plain word remainder)
   const compoundBank = [{ name: 'Union Bank', domains: ['unionbankofindia.co.in'], variants: ['unionbank'] }];
   const cityUnion = hasBrandVariantMatch('https://www.cityunionbank.com/', compoundBank);
   assert.equal(cityUnion.triggered, false);
   assert.equal(cityUnion.score, 0);
+
+  // Attack: Concatenated brand with phishing lure keyword in remainder must trigger
+  const paypalBrands = [{ name: 'PayPal', domains: ['paypal.com'], variants: ['paypal'] }];
+  const concatLure = hasBrandVariantMatch('https://securepaypalcard.com/', paypalBrands);
+  assert.equal(concatLure.triggered, true);
+  assert.equal(concatLure.score, 85);
 });
 
 test('Rule 6: hasFinancialKeywordInHostname', () => {

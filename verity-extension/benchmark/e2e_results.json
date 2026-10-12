@@ -1,6 +1,6 @@
 {
   "verified": true,
-  "timestamp": "2026-10-12T17:15:00.227Z",
+  "timestamp": "2026-10-12T18:49:44.635Z",
   "browserExecutable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "extensionPath": "C:\\Users\\User\\AppData\\Local\\Temp\\verity_ext_e2e_clean",
   "demoPages": [
@@ -68,7 +68,7 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 100,
+        "score": 98,
         "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
         "reasonsCount": 7,

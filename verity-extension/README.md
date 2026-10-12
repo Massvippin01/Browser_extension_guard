@@ -66,12 +66,14 @@ Verity uses an independent allowlist (`config/legit_domains.json`) coupled with 
 ### What Can STILL Cause a Block on an Allowlisted Domain
 Being on the allowlist never grants carte blanche for malicious execution:
 1. **Cross-Domain Credential Exfiltration (`SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL`):** If an allowlisted page contains a credential or login form whose target `action` posts to a different registered domain, Verity triggers an immediate **Block (Score: 85)**.
+   > **Coverage Boundary:** Detection inspects top-level HTML `<form action="...">` attributes at DOM scan time. It does **NOT** cover asynchronous JavaScript network exfiltration (`fetch()`, `XMLHttpRequest`, `navigator.sendBeacon()`, WebSockets) or credentials entered into cross-origin `<iframe>` elements.
 2. **Dangerous File Downloads (`DOWNLOAD_CHROME_DANGEROUS`):** If a downloaded file is flagged as dangerous or malicious by Chrome's native security engine, Verity triggers a **Block (Score: 90)** regardless of the host domain.
 3. **Malware from Untrusted Origins (`DOWNLOAD_SOURCE_MALICIOUS` + `DOWNLOAD_EXECUTABLE`):** Executables originating from unverified or malicious redirect chains override the allowlist cap.
 4. **Active Threat Intelligence (`THREAT_INTEL_MALWARE`):** Known malware indicators override the allowlist cap.
 
 ### Explicit Allowlist Exclusions
-- **Multi-Tenant User-Content Platforms:** User-controlled subdomains on shared platforms (`*.github.io`, `*.pages.dev`, `*.firebaseapp.com`, `*.web.app`, `*.blogspot.com`, `*.wordpress.com`, `*.wixsite.com`, `*.weebly.com`, `*.vercel.app`, `*.netlify.app`, `*.workers.dev`, `*.azurewebsites.net`, etc.) **never inherit** parent domain allowlist status. Each user-content subdomain is evaluated as an unverified site.
+- **PSL Private Section Platforms:** Domains matching the Public Suffix List (PSL) `PRIVATE` section (`*.github.io`, `*.pages.dev`, `*.firebaseapp.com`, `*.web.app`, `*.workers.dev`, `*.azurewebsites.net`, etc.) **never inherit** parent domain allowlist status, as private suffixes establish independent multi-tenant boundaries.
+- **Shared User-Content Paths:** Multi-tenant services sharing a root domain by path (`sites.google.com`, `docs.google.com/forms`, `forms.gle`, `drive.google.com`, `notion.site`, `s3.amazonaws.com`, `storage.googleapis.com`, `blob.core.windows.net`) do not inherit allowlist protection on user-generated paths.
 
 ## Known Limitations
 
@@ -84,7 +86,10 @@ Being on the allowlist never grants carte blanche for malicious execution:
 3. **Desktop Chromium Only:**
    - The extension relies on Manifest V3 desktop APIs (`chrome.webNavigation`, `chrome.webRequest`, `chrome.downloads`, `chrome.offscreen`) and is supported exclusively on desktop Chromium browsers (Chrome, Brave, Edge).
 
-4. **No Active Telemetry or Federated Retraining:**
+4. **Credential Exfiltration Boundaries:**
+   - Credential exfiltration analysis scans top-level HTML form action attributes (`form.action`). It does not hook or intercept dynamic JavaScript runtime network calls (`fetch`, `XMLHttpRequest`, `sendBeacon`, WebSockets) and does not scan cross-origin iframes.
+
+5. **No Active Telemetry or Federated Retraining:**
    - The extension operates fully client-side. The backend endpoint `/telemetry/report` in `verity-cloud` is an unpersisted demo stub with no federated learning or retraining pipeline connected. Remote threat intelligence is opt-in and disabled by default.
 
 ## Loading the Extension

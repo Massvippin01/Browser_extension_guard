@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { calculateRisk } from '../background/risk-engine.js';
 import { isAllowlistedDomain, LEGIT_DOMAINS } from '../shared/legit-domains.js';
+import { CATEGORY_CAPS } from '../shared/messages.js';
 
 test('Convergence Rule: Block-level verdict requires >= 2 independent sources', () => {
   // Case A: Single source alone (URL brand typosquat = 85 pts) without ML or DOM credentials
@@ -78,3 +79,53 @@ test('Allowlist: independent allowlist domains cap at Caution unless download or
   assert.notEqual(sbiVerdict.action, 'block', 'Allowlisted bank login must NEVER block');
   assert.ok(sbiVerdict.score <= 40, `Allowlisted domain score must cap at <= 40, got ${sbiVerdict.score}`);
 });
+
+test('Score Architecture: each category alone at its cap must NEVER produce a Block verdict', () => {
+  const categories = Object.keys(CATEGORY_CAPS);
+
+  for (const cat of categories) {
+    const cap = CATEGORY_CAPS[cat];
+    assert.ok(cap < 70, `Category "${cat}" cap (${cap}) must be strictly < 70 to prevent single-category block`);
+
+    const url = 'https://unverified-sample-host.org/test';
+    const ruleSignals = [];
+    let domSignals = null;
+    let mlScore = null;
+    let redirectSignals = null;
+    let paymentAnalysis = null;
+    let downloadSignals = null;
+    let threatIntel = null;
+
+    if (['url', 'ip_host', 'malvertising', 'brand_impersonation'].includes(cat)) {
+      const sigMap = {
+        url: 'RULE_MISSING_HTTPS',
+        ip_host: 'RULE_IP_BASED_URL',
+        malvertising: 'RULE_MALVERTISING_REDIRECT',
+        brand_impersonation: 'RULE_BRAND_VARIANT_MATCH'
+      };
+      ruleSignals.push({ id: sigMap[cat], score: cap, triggered: true });
+    } else if (cat === 'ml') {
+      mlScore = 100;
+    } else if (cat === 'dom_credentials') {
+      domSignals = { hasCredentialCollection: true, hasPasswordInput: true, loginFormCount: 1 };
+    } else if (cat === 'scam_language') {
+      domSignals = { scam: true, scamReason: 'Urgent notice' };
+    } else if (cat === 'payment_phishing') {
+      paymentAnalysis = {
+        isPaymentPage: true,
+        structuredReasons: [{ id: 'PAYMENT_DOMAIN_MISMATCH', score: cap, params: { hostname: 'unverified-sample-host.org' } }]
+      };
+    } else if (cat === 'download') {
+      downloadSignals = { analysisContext: 'download', executableDownload: true, sourceDomainSuspicious: true };
+    }
+
+    const verdict = calculateRisk(url, ruleSignals, mlScore, domSignals, threatIntel, redirectSignals, paymentAnalysis, downloadSignals);
+    assert.notEqual(
+      verdict.action,
+      'block',
+      `Category "${cat}" alone at its cap (${cap} pts) must NEVER produce a Block verdict`
+    );
+    assert.ok(verdict.score < 70, `Category "${cat}" alone score (${verdict.score}) must be < 70`);
+  }
+});
+

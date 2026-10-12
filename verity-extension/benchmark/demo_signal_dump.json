@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-10-12T18:56:49.484Z",
+  "dump": [
+    {
+      "demo": "A",
+      "name": "Demo A: Fake Bank Login (HDFC NetBanking)",
+      "url": "http://fake-hdfc-netbanking.test:8080/demo/bank",
+      "action": "block",
+      "score": 96,
+      "threshold": 70,
+      "margin": 26,
+      "hostData": {
+        "detected": true,
+        "action": "block",
+        "score": 96,
+        "title": "Payment Phishing Blocked"
+      }
+    },
+    {
+      "demo": "B",
+      "name": "Demo B: Fake Payment Gateway (PayPal)",
+      "url": "http://fake-paypal-checkout.test:8080/demo/payment",
+      "action": "block",
+      "score": 96,
+      "threshold": 70,
+      "margin": 26,
+      "hostData": {
+        "detected": true,
+        "action": "block",
+        "score": 96,
+        "title": "Payment Phishing Blocked"
+      }
+    },
+    {
+      "demo": "C",
+      "name": "Demo C: UPI Cashback Scam (Paytm)",
+      "url": "http://paytm-cashback-rewards.test:8080/demo/upi",
+      "action": "block",
+      "score": 96,
+      "threshold": 70,
+      "margin": 26,
+      "hostData": {
+        "detected": true,
+        "action": "block",
+        "score": 96,
+        "title": "Payment Phishing Blocked"
+      }
+    },
+    {
+      "demo": "D",
+      "name": "Demo D: Digital Arrest / Utility Notice",
+      "url": "http://electricity-disconnection-notice.test:8080/demo/utility",
+      "action": "block",
+      "score": 80,
+      "threshold": 70,
+      "margin": 10,
+      "hostData": {
+        "detected": true,
+        "action": "block",
+        "score": 80,
+        "title": "Payment Phishing Blocked"
+      }
+    },
+    {
+      "demo": "E",
+      "name": "Demo E: Malicious APK Download (SBI YONO)",
+      "url": "http://rewards-download.test:8080/demo/download",
+      "action": "none",
+      "score": 0,
+      "threshold": 70,
+      "margin": -70,
+      "hostData": null
+    }
+  ],
+  "dlWarning": true
+}
