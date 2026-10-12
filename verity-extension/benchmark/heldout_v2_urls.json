@@ -1,0 +1,810 @@
+[
+  {
+    "id": 1,
+    "name": "IndusInd IndusNet Login",
+    "url": "https://indusnet.indusind.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 2,
+    "name": "Yes Bank Retail NetBanking",
+    "url": "https://retail.yesbank.in/index.htm",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 3,
+    "name": "IDFC FIRST Bank Portal Login",
+    "url": "https://my.idfcfirstbank.com/login",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 4,
+    "name": "Federal Bank FedNet Login",
+    "url": "https://www.fednetbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 5,
+    "name": "South Indian Bank NetBanking",
+    "url": "https://sibnet.southindianbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 6,
+    "name": "Karur Vysya Bank Internet Banking",
+    "url": "https://www.kvbinetbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 7,
+    "name": "RBL Bank Internet Banking",
+    "url": "https://online.rblbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 8,
+    "name": "Bandhan Bank NetBanking",
+    "url": "https://netbanking.bandhanbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 9,
+    "name": "CSB Bank NetBanking Portal",
+    "url": "https://www.csbnet.co.in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 10,
+    "name": "DCB Bank Internet Banking",
+    "url": "https://netbanking.dcbbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 11,
+    "name": "Dhanlaxmi Bank Retail Login",
+    "url": "https://dhanbank.netbanking.dhanbank.in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 12,
+    "name": "Nainital Bank Internet Banking",
+    "url": "https://netbanking.nainitalbank.co.in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 13,
+    "name": "Jammu & Kashmir Bank e-Banking",
+    "url": "https://www.jkbankonline.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 14,
+    "name": "Karnataka Bank MoneyClick",
+    "url": "https://moneyclick.karnatakabank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 15,
+    "name": "Ujjivan SFB Internet Banking",
+    "url": "https://netbanking.ujjivansfb.in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 16,
+    "name": "Jana SFB Internet Banking",
+    "url": "https://netbanking.janabank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 17,
+    "name": "Suryoday SFB NetBanking",
+    "url": "https://netbanking.suryodaybank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 18,
+    "name": "Utkarsh SFB Internet Banking",
+    "url": "https://internetbanking.utkarsh.bank/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 19,
+    "name": "ESAF SFB NetBanking",
+    "url": "https://netbanking.esafbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 20,
+    "name": "Fincare SFB NetBanking",
+    "url": "https://netbanking.fincarebank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 21,
+    "name": "North East SFB NetBanking",
+    "url": "https://netbanking.nesfb.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 22,
+    "name": "Shivalik SFB NetBanking",
+    "url": "https://netbanking.shivalikbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 23,
+    "name": "Unity SFB NetBanking",
+    "url": "https://netbanking.unitybank.co.in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 24,
+    "name": "Airtel Payments Bank Login",
+    "url": "https://www.airtel.in/bank/login",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 25,
+    "name": "India Post Payments Bank (IPPB)",
+    "url": "https://www.ippbonline.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 26,
+    "name": "Fino Payments Bank NetBanking",
+    "url": "https://netbanking.finobank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 27,
+    "name": "Jio Payments Bank Portal",
+    "url": "https://www.jiopaymentsbank.com/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 28,
+    "name": "Saraswat Bank NetBanking Login",
+    "url": "https://netbanking.saraswatbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 29,
+    "name": "Cosmos Co-operative Bank Login",
+    "url": "https://netbanking.cosmosbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 30,
+    "name": "SVC Co-operative Bank Login",
+    "url": "https://netbanking.svcbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 31,
+    "name": "TJSB Sahakari Bank NetBanking",
+    "url": "https://netbanking.tjsbbank.co.in/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 32,
+    "name": "NKGSB Co-operative Bank Login",
+    "url": "https://netbanking.nkgsb-bank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 33,
+    "name": "Abhyudaya Bank NetBanking Login",
+    "url": "https://netbanking.abhyudayabank.co.in/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 34,
+    "name": "Bharat Co-operative Bank Login",
+    "url": "https://netbanking.bharatbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 35,
+    "name": "Kalupur Bank Internet Banking",
+    "url": "https://netbanking.kalupurbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 36,
+    "name": "Mehsana Urban Bank NetBanking",
+    "url": "https://netbanking.mucbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 37,
+    "name": "Surat Peoples Co-op Bank Login",
+    "url": "https://netbanking.spcbl.in/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 38,
+    "name": "Ahmedabad Mercantile Bank Login",
+    "url": "https://netbanking.amco-bank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 39,
+    "name": "Rajkot Nagarik Sahakari Bank",
+    "url": "https://netbanking.rnsbindia.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 40,
+    "name": "Dombivli Nagari Sahakari Bank",
+    "url": "https://netbanking.dnsb.bank/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 41,
+    "name": "Nutan Nagarik Sahakari Bank",
+    "url": "https://netbanking.nutanbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 42,
+    "name": "Andhra Pradesh Urban Co-op Bank",
+    "url": "https://netbanking.apurbanbank.com/",
+    "category": "bank_login",
+    "source": "https://www.npci.org.in/what-we-do/upi/live-members",
+    "allowlisted": "no"
+  },
+  {
+    "id": 43,
+    "name": "Standard Chartered India iBanking",
+    "url": "https://ibanking.sc.com/in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 44,
+    "name": "Citibank India Online Banking",
+    "url": "https://www.online.citibank.co.in/",
+    "category": "bank_login",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx",
+    "allowlisted": "no"
+  },
+  {
+    "id": 45,
+    "name": "ServicePlus Citizen Portal",
+    "url": "https://serviceonline.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 46,
+    "name": "National Scholarship Portal",
+    "url": "https://scholarships.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 47,
+    "name": "e-Courts Services Portal",
+    "url": "https://ecourts.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 48,
+    "name": "EPFO Member Portal Login",
+    "url": "https://unifiedportal-mem.epfindia.gov.in/memberinterface/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 49,
+    "name": "Sarathi Parivahan License Login",
+    "url": "https://sarathi.parivahan.gov.in/sarathiservice/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 50,
+    "name": "Bhavishya Pension Portal",
+    "url": "https://bhavishya.nic.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 51,
+    "name": "e-Hospital Portal India",
+    "url": "https://ehospital.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 52,
+    "name": "Central Vigilance Commission",
+    "url": "https://www.cvc.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 53,
+    "name": "National Voters Services (ECI)",
+    "url": "https://voters.eci.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 54,
+    "name": "e-Procurement Portal (CPPP)",
+    "url": "https://eprocure.gov.in/eprocure/app",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 55,
+    "name": "PM Kisan Citizen Portal",
+    "url": "https://pmkisan.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 56,
+    "name": "UMANG Web Portal",
+    "url": "https://web.umang.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 57,
+    "name": "Manav Sampada Portal",
+    "url": "https://ehrms.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 58,
+    "name": "e-Office Government Portal",
+    "url": "https://eoffice.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 59,
+    "name": "National Career Service Login",
+    "url": "https://www.ncs.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 60,
+    "name": "e-Sanad Verification Portal",
+    "url": "https://esanad.nic.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 61,
+    "name": "Ministry of Education Portal",
+    "url": "https://education.gov.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 62,
+    "name": "Central Govt Health Scheme (CGHS)",
+    "url": "https://cghs.nic.in/",
+    "category": "gov_portal",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 63,
+    "name": "Razorpay Checkout Platform",
+    "url": "https://checkout.razorpay.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 64,
+    "name": "Cashfree Payments Portal",
+    "url": "https://www.cashfree.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 65,
+    "name": "CCAvenue Merchant Gateway",
+    "url": "https://www.ccavenue.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 66,
+    "name": "PayU India Gateway",
+    "url": "https://payu.in/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 67,
+    "name": "Instamojo Login Entry",
+    "url": "https://www.instamojo.com/accounts/login/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 68,
+    "name": "Tata Neu SuperApp Portal",
+    "url": "https://www.tataneu.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 69,
+    "name": "Swiggy Food & Checkout",
+    "url": "https://www.swiggy.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 70,
+    "name": "Zomato Dining & Order",
+    "url": "https://www.zomato.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 71,
+    "name": "BookMyShow Entertainment Sign-in",
+    "url": "https://in.bookmyshow.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 72,
+    "name": "MakeMyTrip Travel Account",
+    "url": "https://www.makemytrip.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 73,
+    "name": "Cleartrip Booking Account",
+    "url": "https://www.cleartrip.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 74,
+    "name": "Nykaa Beauty Sign-in",
+    "url": "https://www.nykaa.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 75,
+    "name": "Myntra Fashion Login",
+    "url": "https://www.myntra.com/login",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 76,
+    "name": "Meesho Supplier Sign-in",
+    "url": "https://supplier.meesho.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 77,
+    "name": "JioMart Retail Login",
+    "url": "https://www.jiomart.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 78,
+    "name": "BigBasket Grocery Portal",
+    "url": "https://www.bigbasket.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 79,
+    "name": "Ajio Fashion Login Portal",
+    "url": "https://www.ajio.com/login",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 80,
+    "name": "Pepperfry Furniture & Decor",
+    "url": "https://www.pepperfry.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 81,
+    "name": "Urban Ladder Home Decor",
+    "url": "https://www.urbanladder.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 82,
+    "name": "Cred Rewards & Cards",
+    "url": "https://cred.club/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 83,
+    "name": "Groww Invest Login Portal",
+    "url": "https://groww.in/login",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 84,
+    "name": "Zerodha Kite Trading Login",
+    "url": "https://kite.zerodha.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 85,
+    "name": "Upstox Pro Trading Login",
+    "url": "https://login.upstox.com/",
+    "category": "ecommerce_fintech",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 86,
+    "name": "RBI Kehta Hai Official Safety Portal",
+    "url": "https://rbikehtahai.rbi.org.in/",
+    "category": "news_advisory",
+    "source": "https://www.rbi.org.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 87,
+    "name": "SBI Security Tips & Fraud Safety",
+    "url": "https://sbi.co.in/web/personal-banking/security-tips",
+    "category": "news_advisory",
+    "source": "https://www.rbi.org.in/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 88,
+    "name": "ICICI Safe Banking Awareness",
+    "url": "https://www.icicibank.com/safe-banking",
+    "category": "news_advisory",
+    "source": "https://www.rbi.org.in/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 89,
+    "name": "Axis Bank Cyber Security Advisory",
+    "url": "https://www.axisbank.com/security",
+    "category": "news_advisory",
+    "source": "https://www.rbi.org.in/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 90,
+    "name": "Kotak Fraud Awareness Portal",
+    "url": "https://www.kotak.com/en/fraud-awareness.html",
+    "category": "news_advisory",
+    "source": "https://www.rbi.org.in/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 91,
+    "name": "NPCI UPI Safety Shield Advisory",
+    "url": "https://www.npci.org.in/what-we-do/upi-safety-shield",
+    "category": "news_advisory",
+    "source": "https://www.npci.org.in/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 92,
+    "name": "CERT-In Current Security Advisories",
+    "url": "https://www.cert-in.org.in/",
+    "category": "news_advisory",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 93,
+    "name": "Indian Cyber Crime Coordination (I4C)",
+    "url": "https://i4c.mha.gov.in/",
+    "category": "news_advisory",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 94,
+    "name": "TRAI Spam & Telecom Advisory",
+    "url": "https://www.trai.gov.in/",
+    "category": "news_advisory",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 95,
+    "name": "DoT Sanchar Saathi Chakshu Portal",
+    "url": "https://sancharsaathi.gov.in/sfc/",
+    "category": "news_advisory",
+    "source": "https://directory.gov.in/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 96,
+    "name": "Paytm Blog Security Advisories",
+    "url": "https://paytm.com/blog/security/",
+    "category": "news_advisory",
+    "source": "https://paytm.com/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 97,
+    "name": "PhonePe Trust and Safety Hub",
+    "url": "https://www.phonepe.com/trust-and-safety/",
+    "category": "news_advisory",
+    "source": "https://www.phonepe.com/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 98,
+    "name": "Google India Safety Center Hub",
+    "url": "https://safety.google/intl/en_in/",
+    "category": "news_advisory",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 99,
+    "name": "Microsoft India Security Advisory",
+    "url": "https://www.microsoft.com/en-in/security/business",
+    "category": "news_advisory",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  },
+  {
+    "id": 100,
+    "name": "ET Wealth Banking Fraud Alerts",
+    "url": "https://economictimes.indiatimes.com/wealth/personal-finance-news/banking-fraud-alert",
+    "category": "news_advisory",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "yes"
+  },
+  {
+    "id": 101,
+    "name": "LiveMint Cyber Fraud Warning Guide",
+    "url": "https://www.livemint.com/money/personal-finance/cyber-fraud-alerts",
+    "category": "news_advisory",
+    "source": "https://tranco-list.eu/",
+    "allowlisted": "no"
+  }
+]
