@@ -1,8 +1,6 @@
-/**
- * rules.js - Pure functions for evaluating website authenticity.
- * Each function returns an object: { score: number, reason: string|null, triggered: boolean }
- * The score is a partial risk contribution (0-100).
- */
+import { getDomain, getPublicSuffix, getSubdomain } from '../shared/psl.js';
+import { isAllowlistedDomain } from '../shared/legit-domains.js';
+
 
 /**
  * Parses a URL string safely. Returns null if invalid.
@@ -78,19 +76,16 @@ export function hasExcessiveSubdomains(urlString) {
     return { score: 0, reason: null, triggered: false };
   }
 
-  // Very basic approximation for base domains. 
-  // We assume the last two parts form the registrable domain (e.g., example.com)
-  // For domains like co.uk, it would be 3 parts. 
-  // Limitation: A full PSL is needed for accuracy.
-  const parts = url.hostname.split('.');
-  
-  // Basic heuristic: if > 4 parts, it's highly likely it has excessive subdomains (e.g. 1.2.3.example.com)
-  if (parts.length > 4) {
-    return {
-      score: 30,
-      reason: "The URL uses an unusually high number of subdomains.",
-      triggered: true
-    };
+  const subdomain = getSubdomain(url.hostname);
+  if (subdomain) {
+    const subParts = subdomain.split('.');
+    if (subParts.length >= 3) {
+      return {
+        score: 30,
+        reason: "The URL uses an unusually high number of subdomains.",
+        triggered: true
+      };
+    }
   }
 
   return { score: 0, reason: null, triggered: false };
@@ -617,20 +612,18 @@ export function hasFinancialKeywordInHostname(urlString, brandsList) {
     if (isLegit) return { score: 0, reason: null, triggered: false };
   }
 
-  // Exempt established legitimate financial/banking domains and portals
-  const knownLegitExact = new Set([
-    'bhimupi.org.in', 'npci.org.in', 'investopedia.com', 'tradingview.com',
-    'bankofamerica.com', 'chase.com', 'wellsfargo.com', 'citi.com', 'citibank.com',
-    'capitalone.com', 'barclays.co.uk', 'hsbc.co.uk', 'lloydsbank.com',
-    'hdfcbank.com', 'icicibank.com', 'axisbank.com', 'kotak.com', 'sbi.co.in', 'onlinesbi.sbi'
-  ]);
-  if (knownLegitExact.has(hostname) || [...knownLegitExact].some(d => hostname.endsWith('.' + d))) {
+  // Exempt established legitimate financial/banking domains via independent allowlist
+  if (isAllowlistedDomain(hostname)) {
     return { score: 0, reason: null, triggered: false };
   }
 
-  const parts = hostname.split('.');
-  if (parts.length <= 1) return { score: 0, reason: null, triggered: false };
-  const domainAndSubdomains = parts.slice(0, -1).join('.');
+  const regDomain = getDomain(hostname) || hostname;
+  const suffix = getPublicSuffix(hostname) || '';
+  const domainLabel = suffix && regDomain.endsWith('.' + suffix)
+    ? regDomain.slice(0, -(suffix.length + 1))
+    : regDomain;
+  const subdomain = getSubdomain(hostname) || '';
+  const domainAndSubdomains = subdomain ? `${subdomain}.${domainLabel}` : domainLabel;
 
   const financialHostKeywords = [
     'netbanking', 'ibank', 'webwallet', 'wallet', 'kyc', 'upi',

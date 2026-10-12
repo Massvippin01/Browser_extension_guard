@@ -1,0 +1,6815 @@
+[
+  {
+    "id": "deep_b_1",
+    "url": "https://www.google.com/search?q=cybersecurity+best+practices&hl=en&gl=us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "google.com"
+  },
+  {
+    "id": "deep_b_2",
+    "url": "https://www.google.com/maps/dir/?api=1&origin=Seattle&destination=Portland",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "google.com"
+  },
+  {
+    "id": "deep_b_3",
+    "url": "https://www.google.com/preferences?hl=en&fg=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "google.com"
+  },
+  {
+    "id": "deep_b_4",
+    "url": "https://policies.google.com/privacy?hl=en-US",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "google.com"
+  },
+  {
+    "id": "deep_b_5",
+    "url": "https://support.google.com/accounts/answer/465?hl=en&ref_topic=3382296",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "google.com"
+  },
+  {
+    "id": "deep_b_6",
+    "url": "https://safety.google/authentication/?utm_source=google&utm_medium=referral",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "google.com"
+  },
+  {
+    "id": "deep_b_7",
+    "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=youtu.be",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "youtube.com"
+  },
+  {
+    "id": "deep_b_8",
+    "url": "https://www.youtube.com/feed/trending?bp=6gQJRkVleHBsb3Jl",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "youtube.com"
+  },
+  {
+    "id": "deep_b_9",
+    "url": "https://www.youtube.com/premium?utm_source=youtube&utm_medium=referral",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "youtube.com"
+  },
+  {
+    "id": "deep_b_10",
+    "url": "https://www.youtube.com/howyoutubeworks/policies/community-guidelines/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "youtube.com"
+  },
+  {
+    "id": "deep_b_11",
+    "url": "https://www.youtube.com/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ/videos",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "youtube.com"
+  },
+  {
+    "id": "deep_b_12",
+    "url": "https://github.com/torvalds/linux/blob/master/README.md",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "github.com"
+  },
+  {
+    "id": "deep_b_13",
+    "url": "https://github.com/trending?since=daily&spoken_language_code=en",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "github.com"
+  },
+  {
+    "id": "deep_b_14",
+    "url": "https://github.com/features/actions?utm_source=github&utm_medium=nav",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "github.com"
+  },
+  {
+    "id": "deep_b_15",
+    "url": "https://github.com/pricing?ref_cta=Sign+up&ref_loc=header+nav",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "github.com"
+  },
+  {
+    "id": "deep_b_16",
+    "url": "https://docs.github.com/en/get-started/exploring-projects-on-github",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "github.com"
+  },
+  {
+    "id": "deep_b_17",
+    "url": "https://en.wikipedia.org/wiki/Phishing?action=history&offset=&limit=50",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "wikipedia.org"
+  },
+  {
+    "id": "deep_b_18",
+    "url": "https://en.wikipedia.org/wiki/Portal:Current_events?uselang=en",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "wikipedia.org"
+  },
+  {
+    "id": "deep_b_19",
+    "url": "https://en.wikipedia.org/wiki/Special:Random?utm_source=test",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "wikipedia.org"
+  },
+  {
+    "id": "deep_b_20",
+    "url": "https://en.wikipedia.org/w/index.php?title=Cybersecurity&oldid=11894231",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "wikipedia.org"
+  },
+  {
+    "id": "deep_b_21",
+    "url": "https://en.wikipedia.org/wiki/Help:Contents",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "wikipedia.org"
+  },
+  {
+    "id": "deep_b_22",
+    "url": "https://www.amazon.in/gp/bestsellers/books/?ref_=nav_em_all_bestsellers_0_1_1_2",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "amazon.in"
+  },
+  {
+    "id": "deep_b_23",
+    "url": "https://www.amazon.in/gp/help/customer/display.html?nodeId=200507590",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "amazon.in"
+  },
+  {
+    "id": "deep_b_24",
+    "url": "https://www.amazon.in/electronics/b/?ie=UTF8&node=976419031&ref_=nav_cs_electronics",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "amazon.in"
+  },
+  {
+    "id": "deep_b_25",
+    "url": "https://www.amazon.in/minitv?ref_=nav_em_nav_atv_0_1_1_1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "amazon.in"
+  },
+  {
+    "id": "deep_b_26",
+    "url": "https://www.amazon.in/gp/goldbox?ref_=nav_cs_gb",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "amazon.in"
+  },
+  {
+    "id": "deep_b_27",
+    "url": "https://www.flipkart.com/helpcentre?otracker=undefined_footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "flipkart.com"
+  },
+  {
+    "id": "deep_b_28",
+    "url": "https://www.flipkart.com/offers-store?otracker=nmenu_sub_Offers",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "flipkart.com"
+  },
+  {
+    "id": "deep_b_29",
+    "url": "https://www.flipkart.com/account/orders?link=home_orders",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "flipkart.com"
+  },
+  {
+    "id": "deep_b_30",
+    "url": "https://www.flipkart.com/plus?otracker=undefined_footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "flipkart.com"
+  },
+  {
+    "id": "deep_b_31",
+    "url": "https://www.flipkart.com/returnpolicy?otracker=undefined_footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "flipkart.com"
+  },
+  {
+    "id": "deep_b_32",
+    "url": "https://www.irctc.co.in/nget/train-search?utm_source=direct",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "irctc.co.in"
+  },
+  {
+    "id": "deep_b_33",
+    "url": "https://contents.irctc.co.in/en/GeneralCancelPolicy.pdf",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "irctc.co.in"
+  },
+  {
+    "id": "deep_b_34",
+    "url": "https://www.irctc.co.in/nget/profile/user-registration",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "irctc.co.in"
+  },
+  {
+    "id": "deep_b_35",
+    "url": "https://www.irctc.co.in/nget/enquiry/pnr-status",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "irctc.co.in"
+  },
+  {
+    "id": "deep_b_36",
+    "url": "https://www.irctc.co.in/nget/terms-conditions",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "irctc.co.in"
+  },
+  {
+    "id": "deep_b_37",
+    "url": "https://www.npci.org.in/what-we-do/upi/product-overview",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "npci.org.in"
+  },
+  {
+    "id": "deep_b_38",
+    "url": "https://www.npci.org.in/what-we-do/nach/product-overview",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "npci.org.in"
+  },
+  {
+    "id": "deep_b_39",
+    "url": "https://www.npci.org.in/what-we-do/rupay/product-overview",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "npci.org.in"
+  },
+  {
+    "id": "deep_b_40",
+    "url": "https://www.npci.org.in/who-we-are/about-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "npci.org.in"
+  },
+  {
+    "id": "deep_b_41",
+    "url": "https://www.npci.org.in/financial-inclusion/overview",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "npci.org.in"
+  },
+  {
+    "id": "deep_b_42",
+    "url": "https://incometax.gov.in/iec/foportal/help/all-topics",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "incometax.gov.in"
+  },
+  {
+    "id": "deep_b_43",
+    "url": "https://incometax.gov.in/iec/foportal/downloads/income-tax-returns",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "incometax.gov.in"
+  },
+  {
+    "id": "deep_b_44",
+    "url": "https://incometax.gov.in/iec/foportal/latest-news",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "incometax.gov.in"
+  },
+  {
+    "id": "deep_b_45",
+    "url": "https://incometax.gov.in/iec/foportal/tax-calendar",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "incometax.gov.in"
+  },
+  {
+    "id": "deep_b_46",
+    "url": "https://incometax.gov.in/iec/foportal/contact-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "incometax.gov.in"
+  },
+  {
+    "id": "deep_b_47",
+    "url": "https://uidai.gov.in/en/my-aadhaar/get-aadhaar.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "uidai.gov.in"
+  },
+  {
+    "id": "deep_b_48",
+    "url": "https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "uidai.gov.in"
+  },
+  {
+    "id": "deep_b_49",
+    "url": "https://uidai.gov.in/en/about-uidai/unique-identification-authority-of-india/vision-mission.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "uidai.gov.in"
+  },
+  {
+    "id": "deep_b_50",
+    "url": "https://myaadhaar.uidai.gov.in/check-aadhaar-validity",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "uidai.gov.in"
+  },
+  {
+    "id": "deep_b_51",
+    "url": "https://uidai.gov.in/en/ecosystem/authentication-ecosystem/operation-model.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "dev",
+    "registeredDomain": "uidai.gov.in"
+  },
+  {
+    "id": "deep_b_52",
+    "url": "https://www.digilocker.gov.in/about/faq",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "digilocker.gov.in"
+  },
+  {
+    "id": "deep_b_53",
+    "url": "https://www.digilocker.gov.in/terms-and-conditions",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "digilocker.gov.in"
+  },
+  {
+    "id": "deep_b_54",
+    "url": "https://www.digilocker.gov.in/privacy-policy",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "digilocker.gov.in"
+  },
+  {
+    "id": "deep_b_55",
+    "url": "https://www.digilocker.gov.in/dashboard/stats",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "digilocker.gov.in"
+  },
+  {
+    "id": "deep_b_56",
+    "url": "https://www.digilocker.gov.in/circulars-notifications",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "canonical_portal_directory",
+    "split": "test",
+    "registeredDomain": "digilocker.gov.in"
+  },
+  {
+    "id": "deep_b_57",
+    "url": "https://epfindia.gov.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "epfindia.gov.in"
+  },
+  {
+    "id": "deep_b_58",
+    "url": "https://epfindia.gov.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "epfindia.gov.in"
+  },
+  {
+    "id": "deep_b_59",
+    "url": "https://epfindia.gov.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "epfindia.gov.in"
+  },
+  {
+    "id": "deep_b_60",
+    "url": "https://epfindia.gov.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "epfindia.gov.in"
+  },
+  {
+    "id": "deep_b_61",
+    "url": "https://epfindia.gov.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "epfindia.gov.in"
+  },
+  {
+    "id": "deep_b_62",
+    "url": "http://parivahan.gov.in/en/rss.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_63",
+    "url": "https://parivahan.gov.in/content/screen-reader-access",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_64",
+    "url": "https://parivahan.gov.in/en/high-contrast/disable?destination=/en/node",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_65",
+    "url": "https://parivahan.gov.in/en/high-contrast/enable?destination=/en/node",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_66",
+    "url": "https://parivahan.gov.in/hi",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_67",
+    "url": "https://vahan.parivahan.gov.in/mobileupdate/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_68",
+    "url": "https://sarathi.parivahan.gov.in/sarathiservice/mobNumUpdpub.do",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "parivahan.gov.in"
+  },
+  {
+    "id": "deep_b_69",
+    "url": "https://mca.gov.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "mca.gov.in"
+  },
+  {
+    "id": "deep_b_70",
+    "url": "https://mca.gov.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "mca.gov.in"
+  },
+  {
+    "id": "deep_b_71",
+    "url": "https://mca.gov.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "mca.gov.in"
+  },
+  {
+    "id": "deep_b_72",
+    "url": "https://mca.gov.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "mca.gov.in"
+  },
+  {
+    "id": "deep_b_73",
+    "url": "https://mca.gov.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "mca.gov.in"
+  },
+  {
+    "id": "deep_b_74",
+    "url": "https://gst.gov.in/TSPD/?type=25",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gst.gov.in"
+  },
+  {
+    "id": "deep_b_75",
+    "url": "https://india.gov.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_76",
+    "url": "https://india.gov.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_77",
+    "url": "https://india.gov.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_78",
+    "url": "https://india.gov.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_79",
+    "url": "https://india.gov.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_80",
+    "url": "https://mha.gov.in/hi",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_81",
+    "url": "https://mha.gov.in/hi/about-us/%E0%A4%AE%E0%A4%82%E0%A4%A4%E0%A5%8D%E0%A4%B0%E0%A4%BE%E0%A4%B2%E0%A4%AF-%E0%A4%95%E0%A5%87-%E0%A4%AC%E0%A4%BE%E0%A4%B0%E0%A5%87-%E0%A4%AE%E0%A5%87%E0%A4%82",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_82",
+    "url": "https://mha.gov.in/hi/page/%E0%A4%95%E0%A5%8C%E0%A4%A8-%E0%A4%95%E0%A5%8D%E0%A4%AF%E0%A4%BE-%E0%A4%B9%E0%A5%88",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_83",
+    "url": "https://mha.gov.in/hi/about-us/meet-the-minister/union-home-minister",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_84",
+    "url": "https://mha.gov.in/hi/about-us/meet-the-secretary/home-secretary",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_85",
+    "url": "https://mha.gov.in/hi/about-us/meet-the-secretary/special-secretary",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_86",
+    "url": "https://mha.gov.in/hi/node/101431",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "mha.gov.in"
+  },
+  {
+    "id": "deep_b_87",
+    "url": "https://mof.gov.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "mof.gov.in"
+  },
+  {
+    "id": "deep_b_88",
+    "url": "https://mof.gov.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "mof.gov.in"
+  },
+  {
+    "id": "deep_b_89",
+    "url": "https://mof.gov.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "mof.gov.in"
+  },
+  {
+    "id": "deep_b_90",
+    "url": "https://mof.gov.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "mof.gov.in"
+  },
+  {
+    "id": "deep_b_91",
+    "url": "https://mof.gov.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "mof.gov.in"
+  },
+  {
+    "id": "deep_b_92",
+    "url": "https://cbic.gov.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "cbic.gov.in"
+  },
+  {
+    "id": "deep_b_93",
+    "url": "https://cbic.gov.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "cbic.gov.in"
+  },
+  {
+    "id": "deep_b_94",
+    "url": "https://cbic.gov.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "cbic.gov.in"
+  },
+  {
+    "id": "deep_b_95",
+    "url": "https://cbic.gov.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "cbic.gov.in"
+  },
+  {
+    "id": "deep_b_96",
+    "url": "https://cbic.gov.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "cbic.gov.in"
+  },
+  {
+    "id": "deep_b_97",
+    "url": "https://www.upsc.gov.in/site-map",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_98",
+    "url": "https://upsc.gov.in/rss.php",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_99",
+    "url": "https://www.upsc.gov.in/hi",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_100",
+    "url": "https://upsc.gov.in/about-us/historical-perspective",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_101",
+    "url": "https://upsc.gov.in/about-us/constitutional-provisions",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_102",
+    "url": "https://upsc.gov.in/about-us/commission-",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_103",
+    "url": "https://upsc.gov.in/about-us/functions",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "upsc.gov.in"
+  },
+  {
+    "id": "deep_b_104",
+    "url": "https://isro.gov.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "isro.gov.in"
+  },
+  {
+    "id": "deep_b_105",
+    "url": "https://isro.gov.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "isro.gov.in"
+  },
+  {
+    "id": "deep_b_106",
+    "url": "https://isro.gov.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "isro.gov.in"
+  },
+  {
+    "id": "deep_b_107",
+    "url": "https://isro.gov.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "isro.gov.in"
+  },
+  {
+    "id": "deep_b_108",
+    "url": "https://isro.gov.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "isro.gov.in"
+  },
+  {
+    "id": "deep_b_109",
+    "url": "https://ncs.gov.in/job-listing",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_110",
+    "url": "https://ncs.gov.in/latest-update",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_111",
+    "url": "https://ncs.gov.in/e-migrate",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_112",
+    "url": "https://ncs.gov.in/job-listing?isGovernmentJob=true",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_113",
+    "url": "https://ncs.gov.in/job-listing?pwdCandidateWelcome=true",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_114",
+    "url": "https://ncs.gov.in/job-listing?exServicemanPreferred=true",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_115",
+    "url": "https://ncs.gov.in/career-counsellors",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ncs.gov.in"
+  },
+  {
+    "id": "deep_b_116",
+    "url": "https://services.india.gov.in/calendar",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_117",
+    "url": "https://services.india.gov.in/help",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_118",
+    "url": "https://services.india.gov.in/about-us#data-sources",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_119",
+    "url": "https://services.india.gov.in/india-portal-brochure",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_120",
+    "url": "https://services.india.gov.in/disclaimer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "india.gov.in"
+  },
+  {
+    "id": "deep_b_121",
+    "url": "https://hdfcbank.com/nri-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_122",
+    "url": "https://hdfcbank.com/hni-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_123",
+    "url": "https://hdfcbank.com/wholesale-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_124",
+    "url": "https://hdfcbank.com/agri-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_125",
+    "url": "https://hdfcbank.com/msme-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_126",
+    "url": "https://hdfcbank.com/government-schemes",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_127",
+    "url": "https://hdfcbank.com/savings-account",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hdfcbank.com"
+  },
+  {
+    "id": "deep_b_128",
+    "url": "https://icicibank.com/content/dam/icicibank/india/managed-assets/images/revamp/d_banner.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_129",
+    "url": "https://icicibank.com/content/dam/icicibank/india/managed-assets/images/revamp/m_.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_130",
+    "url": "https://icicibank.com/content/dam/icicibank/india/managed-assets/images/revamp/t_banner.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_131",
+    "url": "https://icicibank.com/etc.clientlibs/icicibank-revamp/clientlibs/clientlib-site/resources/icons/carousel-content-shade-mobile.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_132",
+    "url": "https://icicibank.com/etc.clientlibs/icicibank-revamp/clientlibs/clientlib-site/resources/icons/carousel-content-shade-tab-portrait.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_133",
+    "url": "https://icicibank.com/etc.clientlibs/icicibank-revamp/clientlibs/clientlib-site/resources/icons/carousel-content-shade-tab-landscape.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_134",
+    "url": "https://icicibank.com/etc.clientlibs/icicibank-revamp/clientlibs/clientlib-site/resources/icons/carousel-content-shade-desktop.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "icicibank.com"
+  },
+  {
+    "id": "deep_b_135",
+    "url": "https://axisbank.com/assets/push-notify/chrome/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_136",
+    "url": "https://axisbank.com/business-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_137",
+    "url": "https://axisbank.com/nri",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_138",
+    "url": "https://axisbank.com/burgundy-private",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_139",
+    "url": "https://axisbank.com/burgundy",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_140",
+    "url": "https://axisbank.com/priority-banking-program",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_141",
+    "url": "https://axisbank.com/corporate",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "axisbank.com"
+  },
+  {
+    "id": "deep_b_142",
+    "url": "https://kotak.com/content/kotakcl/en/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_143",
+    "url": "https://kotak.com/en/home.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_144",
+    "url": "https://kotak.com/en/personal-banking/accounts/savings-account.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_145",
+    "url": "https://kotak.com/en/personal-banking/accounts/corporate-salary-account.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_146",
+    "url": "https://kotak.com/en/kotak-private.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_147",
+    "url": "https://kotak.com/en/privy.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_148",
+    "url": "https://kotak.com/en/solitaire.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "kotak.com"
+  },
+  {
+    "id": "deep_b_149",
+    "url": "https://sbi.co.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "sbi.co.in"
+  },
+  {
+    "id": "deep_b_150",
+    "url": "https://sbi.co.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "sbi.co.in"
+  },
+  {
+    "id": "deep_b_151",
+    "url": "https://sbi.co.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "sbi.co.in"
+  },
+  {
+    "id": "deep_b_152",
+    "url": "https://sbi.co.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "sbi.co.in"
+  },
+  {
+    "id": "deep_b_153",
+    "url": "https://sbi.co.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "sbi.co.in"
+  },
+  {
+    "id": "deep_b_154",
+    "url": "https://merchant.onlinesbi.sbi/npcimandatecug/emandateloanregistration.htm",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "onlinesbi.sbi"
+  },
+  {
+    "id": "deep_b_155",
+    "url": "https://paytm.com/opensearch.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_156",
+    "url": "https://paytm.com/recharge",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_157",
+    "url": "https://paytm.com/electricity-bill-payment",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_158",
+    "url": "https://paytm.com/dth-recharge",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_159",
+    "url": "https://paytm.com/municipal-payments",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_160",
+    "url": "https://paytm.com/water-bill-payment",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_161",
+    "url": "https://paytm.com/gas-bill-payment",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paytm.com"
+  },
+  {
+    "id": "deep_b_162",
+    "url": "https://phonepe.com/manifest.webmanifest",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_163",
+    "url": "https://www.phonepe.com/webstatic/15180/sitemap-index.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_164",
+    "url": "https://phonepe.com/about-us/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_165",
+    "url": "https://phonepe.com/careers/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_166",
+    "url": "https://www.phonepe.com/press",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_167",
+    "url": "https://phonepe.com/blog/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_168",
+    "url": "https://phonepe.com/business-solutions/offline-merchant/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "phonepe.com"
+  },
+  {
+    "id": "deep_b_169",
+    "url": "https://razorpay.com/us/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_170",
+    "url": "https://razorpay.com/sg/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_171",
+    "url": "https://razorpay.com/.well-known/api-catalog",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_172",
+    "url": "https://razorpay.com/docs/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_173",
+    "url": "https://razorpay.com/.well-known/mcp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_174",
+    "url": "https://razorpay.com/agents.md",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_175",
+    "url": "https://razorpay.com/pricing.md",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "razorpay.com"
+  },
+  {
+    "id": "deep_b_176",
+    "url": "https://billdesk.com/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "billdesk.com"
+  },
+  {
+    "id": "deep_b_177",
+    "url": "https://billdesk.com/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "billdesk.com"
+  },
+  {
+    "id": "deep_b_178",
+    "url": "https://billdesk.com/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "billdesk.com"
+  },
+  {
+    "id": "deep_b_179",
+    "url": "https://billdesk.com/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "billdesk.com"
+  },
+  {
+    "id": "deep_b_180",
+    "url": "https://billdesk.com/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "billdesk.com"
+  },
+  {
+    "id": "deep_b_181",
+    "url": "https://cashfree.com/payment-gateway-india/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_182",
+    "url": "https://cashfree.com/hosted-checkout/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_183",
+    "url": "https://cashfree.com/payment-links/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_184",
+    "url": "https://cashfree.com/payment-forms/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_185",
+    "url": "https://cashfree.com/recurring-payment/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_186",
+    "url": "https://cashfree.com/upi-for-business/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_187",
+    "url": "https://cashfree.com/card-payments/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cashfree.com"
+  },
+  {
+    "id": "deep_b_188",
+    "url": "https://canarabank.com/documents/20126/33915/fevicon.png/666e26af-cafc-b26d-eb4b-a33d3417c5ba",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_189",
+    "url": "https://canarabank.com/screen-reader",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_190",
+    "url": "https://canarabank.com/documents/d/guest/change",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_191",
+    "url": "https://canarabank.com/about-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_192",
+    "url": "https://canarabank.com/feedback",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_193",
+    "url": "https://canarabank.com/contact-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_194",
+    "url": "https://canarabank.com/documents/d/guest/canara_bank_certificate",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canarabank.com"
+  },
+  {
+    "id": "deep_b_195",
+    "url": "https://bankofbaroda.in/manifest.json?v=20",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_196",
+    "url": "https://bankofbaroda.in/business-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_197",
+    "url": "https://bankofbaroda.in/locate-us/branches",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_198",
+    "url": "https://bankofbaroda.in/locate-us/atms",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_199",
+    "url": "https://bankofbaroda.in/locate-us/cash-recycler",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_200",
+    "url": "https://bankofbaroda.in/locate-us/phygital-branch",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_201",
+    "url": "https://bankofbaroda.in/subsidiaries",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofbaroda.in"
+  },
+  {
+    "id": "deep_b_202",
+    "url": "https://pnbindia.in/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "pnbindia.in"
+  },
+  {
+    "id": "deep_b_203",
+    "url": "https://digitallending.pnbindia.in/Tatkal/Processor/Tatkal",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "pnbindia.in"
+  },
+  {
+    "id": "deep_b_204",
+    "url": "https://pnbmetaverse.pnbindia.in/pnb/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "pnbindia.in"
+  },
+  {
+    "id": "deep_b_205",
+    "url": "https://onlinesb.pnbindia.in/static/pnb/pwa/main.html#/landinPage",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "pnbindia.in"
+  },
+  {
+    "id": "deep_b_206",
+    "url": "https://unionbankofindia.co.in/hindi/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_207",
+    "url": "https://unionbankofindia.co.in/en/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_208",
+    "url": "https://unionbankofindia.co.in/en/common/screen-reader-accessibility",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_209",
+    "url": "https://unionbankofindia.co.in/en/common/contact-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_210",
+    "url": "https://unionbankofindia.co.in/en/SubCatList/Self-Service-Banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_211",
+    "url": "https://unionbankofindia.co.in/en/LeadPages",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_212",
+    "url": "https://unionbankofindia.co.in/en/common/rates-and-charges",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "unionbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_213",
+    "url": "https://centralbankofindia.co.in/en",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_214",
+    "url": "https://centralbankofindia.co.in/en/about-us/profile",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_215",
+    "url": "https://centralbankofindia.co.in/en/Branch-locators",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_216",
+    "url": "https://centralbankofindia.co.in/en/contact-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_217",
+    "url": "https://centralbankofindia.co.in/en/recruitments",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_218",
+    "url": "https://centralbankofindia.co.in/en/investor-relations",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_219",
+    "url": "https://centralbankofindia.co.in/hi",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "centralbankofindia.co.in"
+  },
+  {
+    "id": "deep_b_220",
+    "url": "https://idbibank.in/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "idbibank.in"
+  },
+  {
+    "id": "deep_b_221",
+    "url": "https://idbibank.in/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "idbibank.in"
+  },
+  {
+    "id": "deep_b_222",
+    "url": "https://idbibank.in/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "idbibank.in"
+  },
+  {
+    "id": "deep_b_223",
+    "url": "https://idbibank.in/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "idbibank.in"
+  },
+  {
+    "id": "deep_b_224",
+    "url": "https://idbibank.in/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "idbibank.in"
+  },
+  {
+    "id": "deep_b_225",
+    "url": "https://indusind.com/content/dam/homepage_webp_img/search-next.webp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_226",
+    "url": "https://indusind.com/in/en/personal/cards/debit-card/duo-card.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_227",
+    "url": "https://indusind.com/in/en/nri.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_228",
+    "url": "https://indusind.com/in/en/business.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_229",
+    "url": "https://indusind.com/in/en/corporate.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_230",
+    "url": "https://indusind.com/in/en/personal/grievance-redressal.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_231",
+    "url": "https://indusind.com/in/en/personal/locate-us.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "indusind.com"
+  },
+  {
+    "id": "deep_b_232",
+    "url": "https://rblbank.com/personal-banking/accounts/savings-accounts",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_233",
+    "url": "https://rblbank.com/personal-banking/term-deposits",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_234",
+    "url": "https://rblbank.com/personal-banking/cards/credit-cards",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_235",
+    "url": "https://rblbank.com/nri-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_236",
+    "url": "https://rblbank.com/personal-banking/loans",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_237",
+    "url": "https://rblbank.com/preferred-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_238",
+    "url": "https://rblbank.com/personal-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "rblbank.com"
+  },
+  {
+    "id": "deep_b_239",
+    "url": "https://bandhanbank.com/personal",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_240",
+    "url": "https://bandhanbank.com/business-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_241",
+    "url": "https://bandhanbank.com/nri-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_242",
+    "url": "https://bandhanbank.com/about-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_243",
+    "url": "https://bandhanbank.com/media-room",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_244",
+    "url": "https://bandhanbank.com/careers",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_245",
+    "url": "https://bandhanbank.com/join-our-team",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bandhanbank.com"
+  },
+  {
+    "id": "deep_b_246",
+    "url": "https://idfcfirstbank.com/personal-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_247",
+    "url": "https://idfcfirstbank.com/business-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_248",
+    "url": "https://idfcfirstbank.com/credit-card",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_249",
+    "url": "https://idfcfirstbank.com/nri-banking",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_250",
+    "url": "https://idfcfirstbank.com/personal-banking/payments",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_251",
+    "url": "https://idfcfirstbank.com/personal-banking/accounts",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_252",
+    "url": "https://idfcfirstbank.com/personal-banking/accounts/savings-account?utm_source=website&utm_medium=L1PersonalAccounts&utm_campaign=SavingsAccount",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "idfcfirstbank.com"
+  },
+  {
+    "id": "deep_b_253",
+    "url": "https://equitasbank.com/sitemap-index.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_254",
+    "url": "https://www.equitasbank.com/unauthorized-transaction/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_255",
+    "url": "https://www.equitasbank.com/register-your-feedback/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_256",
+    "url": "https://equitasbank.com/head-office/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_257",
+    "url": "https://www.equitasbank.com/asset-branch-banking/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_258",
+    "url": "https://equitasbank.com/bc-location-new/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_259",
+    "url": "https://www.equitasbank.com/form-centre/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "equitasbank.com"
+  },
+  {
+    "id": "deep_b_260",
+    "url": "https://ujjivansfb.in/personal",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_261",
+    "url": "https://ujjivansfb.in/business",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_262",
+    "url": "https://ujjivansfb.in/nri",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_263",
+    "url": "https://ujjivansfb.in/careers-home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_264",
+    "url": "https://ujjivansfb.in/investor-relations",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_265",
+    "url": "https://ujjivansfb.in/news-and-media",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_266",
+    "url": "https://ujjivansfb.in/personal/savings-account",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "ujjivansfb.in"
+  },
+  {
+    "id": "deep_b_267",
+    "url": "https://ideal.dbs.com/loginSubscriber/login/pin.jsp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_268",
+    "url": "https://dbs.com/sites/flp_index/default.page?q=Digibank",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_269",
+    "url": "https://dbs.com/sites/flp_index/default.page?q=Loan",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_270",
+    "url": "https://www.dbs.com/india/default.page",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_271",
+    "url": "https://dbs.com/in/iwov-resources/flp/splitter/images/pdf/Schedule_of_Charges.pdf",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_272",
+    "url": "https://dbs.com/digibank/in/default.page?pid=in-consumer-banking-digibank",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_273",
+    "url": "https://dbs.com/in/credit-cards/default.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dbs.com"
+  },
+  {
+    "id": "deep_b_274",
+    "url": "https://timesofindia.indiatimes.com//static.toiimg.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_275",
+    "url": "https://timesofindia.indiatimes.com//securepubads.g.doubleclick.net",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_276",
+    "url": "https://timesofindia.indiatimes.com//assets.toiimg.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_277",
+    "url": "https://timesofindia.indiatimes.com//fonts.gstatic.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_278",
+    "url": "https://timesofindia.indiatimes.com//tpapi.timespoints.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_279",
+    "url": "https://timesofindia.indiatimes.com/toiads_prebid/minify-1.cms",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_280",
+    "url": "https://timesofindia.indiatimes.com/us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "indiatimes.com"
+  },
+  {
+    "id": "deep_b_281",
+    "url": "https://www.ndtv.com/estatic/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_282",
+    "url": "https://www.ndtv.com/search.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_283",
+    "url": "https://www.ndtv.com/video/live/channel/ndtv24x7?pfrom=home-ndtv_mainnavigation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_284",
+    "url": "https://www.ndtv.com/video/live/channel/ndtv24x7",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_285",
+    "url": "https://www.ndtv.com/video/live/channel/ndtvprofit",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_286",
+    "url": "https://marathi.ndtv.com/livetv-ndtvmarathi",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_287",
+    "url": "https://www.ndtv.com/latest?pfrom=home-ndtv_mainnavigation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ndtv.com"
+  },
+  {
+    "id": "deep_b_288",
+    "url": "https://www.hindustantimes.com/amp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_289",
+    "url": "https://www.hindustantimes.com/static-content/1y/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_290",
+    "url": "https://www.hindustantimes.com/search",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_291",
+    "url": "https://accounts.hindustantimes.com/ht/userplan?funnel_entry=top_header&amp;type=plain&amp;ref=ht&amp;cta=top_header",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_292",
+    "url": "https://accounts.hindustantimes.com/ht/manage_profile",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_293",
+    "url": "https://accounts.hindustantimes.com/ht/userplan?funnel_entry=my_account&amp;type=plain&amp;ref=ht&amp;cta=my_account",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_294",
+    "url": "https://www.hindustantimes.com/saved",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hindustantimes.com"
+  },
+  {
+    "id": "deep_b_295",
+    "url": "https://www.thehindu.com/feeder/default.rss",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_296",
+    "url": "https://www.thehindu.com/subscription/?utm_source=home_sidemenu",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_297",
+    "url": "https://www.thehindu.com/premium/ebook/?utm_source=home_sidemenu",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_298",
+    "url": "https://www.thehindu.com/premium/subscriber-events/?utm_source=home_sidemenu",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_299",
+    "url": "https://www.thehindu.com/newsletter-subscription/?utm_source=home_sidemenu",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_300",
+    "url": "https://www.thehindu.com/crosswords?utm_source=home_sidemenu",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_301",
+    "url": "https://www.thehindu.com/monthly-digest/?utm_source=home_sidemenu",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "thehindu.com"
+  },
+  {
+    "id": "deep_b_302",
+    "url": "https://www.moneycontrol.com/manifest.json?v=2",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_303",
+    "url": "https://www.moneycontrol.com/amp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_304",
+    "url": "https://www.moneycontrol.com/rss/latestnews.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_305",
+    "url": "https://www.moneycontrol.com/my-alerts",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_306",
+    "url": "https://www.moneycontrol.com/promos/pro.php",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_307",
+    "url": "https://www.moneycontrol.com/portfolio-management/user/update_profile",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_308",
+    "url": "https://www.moneycontrol.com/india/bestportfoliomanager/investment-tool",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "moneycontrol.com"
+  },
+  {
+    "id": "deep_b_309",
+    "url": "https://www.zomato.com/investor-relations",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_310",
+    "url": "https://www.zomato.com/partner-with-us/new/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_311",
+    "url": "https://www.zomato.com/restaurant-expansion-consulting-services/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_312",
+    "url": "https://www.zomato.com/deliver-food/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_313",
+    "url": "https://www.zomato.com/privacy",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_314",
+    "url": "https://www.zomato.com/security",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_315",
+    "url": "https://www.zomato.com/conditions",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "zomato.com"
+  },
+  {
+    "id": "deep_b_316",
+    "url": "https://myntra.com/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_317",
+    "url": "https://www.myntra.com/opensearch.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_318",
+    "url": "https://myntra.com/shop/men",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_319",
+    "url": "https://myntra.com/men-topwear",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_320",
+    "url": "https://myntra.com/men-tshirts",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_321",
+    "url": "https://myntra.com/men-casual-shirts",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_322",
+    "url": "https://myntra.com/men-formal-shirts",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "myntra.com"
+  },
+  {
+    "id": "deep_b_323",
+    "url": "https://makemytrip.com/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "makemytrip.com"
+  },
+  {
+    "id": "deep_b_324",
+    "url": "https://makemytrip.com/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "makemytrip.com"
+  },
+  {
+    "id": "deep_b_325",
+    "url": "https://makemytrip.com/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "makemytrip.com"
+  },
+  {
+    "id": "deep_b_326",
+    "url": "https://makemytrip.com/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "makemytrip.com"
+  },
+  {
+    "id": "deep_b_327",
+    "url": "https://makemytrip.com/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "makemytrip.com"
+  },
+  {
+    "id": "deep_b_328",
+    "url": "https://www.microsoft.com/en-in",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_329",
+    "url": "https://www.microsoft.com/en-in/microsoft-365",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_330",
+    "url": "https://azure.microsoft.com/en-in?ocid=cmm4r4ppnhp",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_331",
+    "url": "https://www.microsoft.com/en-in/windows/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_332",
+    "url": "https://www.microsoft.com/surface",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_333",
+    "url": "https://support.microsoft.com/en-us?icid=DSM_TopNav_Support",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_334",
+    "url": "https://apps.microsoft.com/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "microsoft.com"
+  },
+  {
+    "id": "deep_b_335",
+    "url": "https://www.apple.com/ae-ar/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_336",
+    "url": "https://www.apple.com/ae/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_337",
+    "url": "https://www.apple.com/am/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_338",
+    "url": "https://www.apple.com/at/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_339",
+    "url": "https://www.apple.com/au/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_340",
+    "url": "https://www.apple.com/az/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_341",
+    "url": "https://www.apple.com/befr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apple.com"
+  },
+  {
+    "id": "deep_b_342",
+    "url": "https://twitter.com/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "twitter.com"
+  },
+  {
+    "id": "deep_b_343",
+    "url": "https://twitter.com/os-x.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "twitter.com"
+  },
+  {
+    "id": "deep_b_344",
+    "url": "https://twitter.com/os-grok.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "twitter.com"
+  },
+  {
+    "id": "deep_b_345",
+    "url": "https://linkedin.com/homepage-guest/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_346",
+    "url": "https://linkedin.com/legal/user-agreement?trk=linkedin-tc_auth-button_user-agreement",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_347",
+    "url": "https://linkedin.com/legal/privacy-policy?trk=linkedin-tc_auth-button_privacy-policy",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_348",
+    "url": "https://linkedin.com/legal/cookie-policy?trk=linkedin-tc_auth-button_cookie-policy",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_349",
+    "url": "https://www.linkedin.com/top-content?trk=guest_homepage-basic_guest_nav_menu_topContent",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_350",
+    "url": "https://www.linkedin.com/pub/dir/+/+?trk=guest_homepage-basic_guest_nav_menu_people",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_351",
+    "url": "https://www.linkedin.com/learning/search?trk=guest_homepage-basic_guest_nav_menu_learning",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "linkedin.com"
+  },
+  {
+    "id": "deep_b_352",
+    "url": "https://netflix.com/in/login",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_353",
+    "url": "https://help.netflix.com/support/412",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_354",
+    "url": "https://netflix.com/youraccount",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_355",
+    "url": "https://jobs.netflix.com/jobs",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_356",
+    "url": "https://netflix.com/watch",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_357",
+    "url": "https://help.netflix.com/legal/termsofuse",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_358",
+    "url": "https://help.netflix.com/legal/privacy",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "netflix.com"
+  },
+  {
+    "id": "deep_b_359",
+    "url": "https://www.cloudflare.com/es-es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_360",
+    "url": "https://www.cloudflare.com/fr-fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_361",
+    "url": "https://www.cloudflare.com/de-de/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_362",
+    "url": "https://www.cloudflare.com/it-it/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_363",
+    "url": "https://www.cloudflare.com/pt-br/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_364",
+    "url": "https://www.cloudflare.com/zh-cn/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_365",
+    "url": "https://www.cloudflare.com/ja-jp/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cloudflare.com"
+  },
+  {
+    "id": "deep_b_366",
+    "url": "http://wordpress.org/news/feed/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_367",
+    "url": "https://wordpress.org//www.googletagmanager.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_368",
+    "url": "https://wordpress.org//i0.wp.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_369",
+    "url": "https://wordpress.org/showcase/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_370",
+    "url": "https://wordpress.org/plugins/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_371",
+    "url": "https://wordpress.org/themes/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_372",
+    "url": "https://wordpress.org/hosting/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wordpress.org"
+  },
+  {
+    "id": "deep_b_373",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=subtitle",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_374",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=cardTitle",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_375",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=description",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_376",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=shortDescription",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_377",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=ctas%5B2u25ddjvjn%5D",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_378",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=ctas%5B0412463yth%5D",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_379",
+    "url": "https://mas.adobe.com/studio.html#content-type=merch-card&#x26;page=content&#x26;path=acom&#x26;query=4e3e071a-1d80-47a8-ab9f-d25ca2eb3592&#x26;field=callout",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "adobe.com"
+  },
+  {
+    "id": "deep_b_380",
+    "url": "https://office.com//portal.office.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_381",
+    "url": "https://office.com//outlook.office.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_382",
+    "url": "https://office.com//login.microsoftonline.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_383",
+    "url": "https://office.com//shell.cdn.office.net",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_384",
+    "url": "https://office.com//appsforoffice.microsoft.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_385",
+    "url": "https://office.com//ocws.officeapps.live.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_386",
+    "url": "https://office.com//graph.microsoft.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "office.com"
+  },
+  {
+    "id": "deep_b_387",
+    "url": "https://www.yahoo.com/news/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_388",
+    "url": "https://www.yahoo.com/trending/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_389",
+    "url": "https://yahoo.com/finance/personal-finance/investing/article/is-the-stock-market-open-on-columbus-day-indigenous-peoples-day-201643764.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_390",
+    "url": "https://yahoo.com/entertainment/celebrity/article/kelly-clarksons-beef-with-a-brooklyn-store-has-gone-viral-neither-side-is-backing-down-120356065.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_391",
+    "url": "https://yahoo.com/news/politics/articles/fox-news-veteran-slams-network-131623540.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_392",
+    "url": "https://yahoo.com/news/weather-news/articles/isaias-lashes-southeast-making-landfall-063144507.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_393",
+    "url": "https://yahoo.com/news/us/article/social-security-payments-could-rise-by-75-a-month-the-official-number-comes-wednesday-140506221.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "yahoo.com"
+  },
+  {
+    "id": "deep_b_394",
+    "url": "https://bing.com/images?FORM=Z9LH",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_395",
+    "url": "https://bing.com/videos?FORM=Z9LH1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_396",
+    "url": "https://bing.com/shop?FORM=Z9LHS4",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_397",
+    "url": "https://bing.com/maps?FORM=Z9LH2",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_398",
+    "url": "https://bing.com//www.msn.com/?ocid=BHEA000",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_399",
+    "url": "https://bing.com//outlook.com/?WT.mc_id=O16_BingHP",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_400",
+    "url": "https://bing.com//microsoft365.com/start/Word.aspx?WT.mc_id=O16_BingHP",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "bing.com"
+  },
+  {
+    "id": "deep_b_401",
+    "url": "https://www.dropbox.com/da_DK/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_402",
+    "url": "https://www.dropbox.com/de/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_403",
+    "url": "https://www.dropbox.com/en_GB/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_404",
+    "url": "https://www.dropbox.com/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_405",
+    "url": "https://www.dropbox.com/es_ES/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_406",
+    "url": "https://www.dropbox.com/fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_407",
+    "url": "https://www.dropbox.com/fr_CA/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "dropbox.com"
+  },
+  {
+    "id": "deep_b_408",
+    "url": "https://assets.twitch.tv/eppo/api/flag-config/v1/config?sdkName&#x3D;js-sdk-client&amp;sdkVersion&#x3D;3.1.2&amp;apiKey&#x3D;3mv-BKCSZJDyZrwfqK86har6u13NgxRh.ZWg9bTRsZHJnLmUuZXBwby5jbG91ZCZjcz1tNGxkcmc&amp;callback&#x3D;__setEppoConfig",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "twitch.tv"
+  },
+  {
+    "id": "deep_b_409",
+    "url": "https://twitch.tv/opensearch.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "twitch.tv"
+  },
+  {
+    "id": "deep_b_410",
+    "url": "https://miro.medium.com/v2/5d8de952517e8160e40ef9841c781cdc14a5db313057fa3c3de41c6f5b494b19",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_411",
+    "url": "https://medium.com/osd.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_412",
+    "url": "https://miro.medium.com/v2/resize:fill:304:304/10fd5c419ac61637245384e7099e131627900034828f4f386bdaa47a74eae156",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_413",
+    "url": "https://miro.medium.com/v2/resize:fill:240:240/10fd5c419ac61637245384e7099e131627900034828f4f386bdaa47a74eae156",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_414",
+    "url": "https://miro.medium.com/v2/resize:fill:152:152/10fd5c419ac61637245384e7099e131627900034828f4f386bdaa47a74eae156",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_415",
+    "url": "https://miro.medium.com/v2/resize:fill:120:120/10fd5c419ac61637245384e7099e131627900034828f4f386bdaa47a74eae156",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_416",
+    "url": "https://medium.com/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "medium.com"
+  },
+  {
+    "id": "deep_b_417",
+    "url": "https://www.bbc.co.uk/accessibility/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_418",
+    "url": "https://www.bbc.co.uk/schedules/p00fzl9m",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_419",
+    "url": "https://www.bbc.co.uk/sounds",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_420",
+    "url": "https://bbc.co.uk/news",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_421",
+    "url": "https://bbc.co.uk/news/live/ckvg75lj0xv4t",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_422",
+    "url": "https://bbc.co.uk/news/politics",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_423",
+    "url": "https://bbc.co.uk/news/live/cqe8ry0xxp85t",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bbc.co.uk"
+  },
+  {
+    "id": "deep_b_424",
+    "url": "https://cnn.com//tpc.googlesyndication.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_425",
+    "url": "https://cnn.com//pagead2.googlesyndication.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_426",
+    "url": "https://cnn.com//www.googletagservices.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_427",
+    "url": "https://cnn.com//www.google.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_428",
+    "url": "https://cnn.com//ib.adnxs.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_429",
+    "url": "https://cnn.com//cdn.adsafeprotected.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_430",
+    "url": "https://cnn.com//securepubads.g.doubleclick.net",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "cnn.com"
+  },
+  {
+    "id": "deep_b_431",
+    "url": "https://www.theguardian.com/international/rss",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_432",
+    "url": "https://support.theguardian.com/subscribe/weekly?REFPVID=undefined&amp;INTCMP=undefined&amp;acquisitionData=%7B%22source%22%3A%22GUARDIAN_WEB%22%2C%22componentId%22%3A%22PrintSubscriptionsHeaderLink%22%2C%22componentType%22%3A%22ACQUISITIONS_HEADER%22%2C%22referrerUrl%22%3A%22%22%7D",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_433",
+    "url": "https://profile.theguardian.com/signin?INTCMP=DOTCOM_NEWHEADER_SIGNIN&amp;ABCMP=ab-sign-in&amp;componentEventParams=componentType%3Didentityauthentication%26componentId%3Dguardian_signin_header",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_434",
+    "url": "https://theguardian.com/world/2026/oct/12/why-are-the-houthis-attacking-saudi-airports-riyadh-yemen",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_435",
+    "url": "https://theguardian.com/music/2026/oct/12/jay-z-in-8-hbo-documentary-series",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_436",
+    "url": "https://theguardian.com/commentisfree/2026/oct/12/marco-rubio-western-civilization",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_437",
+    "url": "https://theguardian.com/film/2026/oct/12/cinema-films-failed-british-revolutions-paul-greengrass-the-uprising",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "theguardian.com"
+  },
+  {
+    "id": "deep_b_438",
+    "url": "https://www.forbes.com/home_asia/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_439",
+    "url": "https://www.forbes.com/search/?q=",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_440",
+    "url": "https://account.forbes.com/newsletters/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_441",
+    "url": "https://www.forbes.com/games/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_442",
+    "url": "https://www.forbes.com/sites/forbesstaff/article/tips-and-confidential-sources/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_443",
+    "url": "https://www.forbes.com/news/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_444",
+    "url": "https://www.forbes.com/trump/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "forbes.com"
+  },
+  {
+    "id": "deep_b_445",
+    "url": "https://walmart.com/all-departments",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_446",
+    "url": "https://walmart.com/my-items",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_447",
+    "url": "https://walmart.com/lists",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_448",
+    "url": "https://walmart.com/my-registries",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_449",
+    "url": "https://walmart.com/orders",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_450",
+    "url": "https://walmart.com/plus",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_451",
+    "url": "https://walmart.com/cp/subscriptions/4191733",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "walmart.com"
+  },
+  {
+    "id": "deep_b_452",
+    "url": "https://target.com/l/target-circle/-/N-pzno9",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_453",
+    "url": "https://target.com/circlecard",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_454",
+    "url": "https://target.com/l/target-circle-360/-/N-2rguk",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_455",
+    "url": "https://target.com/gift-registry",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_456",
+    "url": "https://target.com/weekly-ad",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_457",
+    "url": "https://target.com/store-locator/find-stores",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_458",
+    "url": "https://target.com/c/shop-all-categories/-/N-5xsxf?prehydrateClick=true",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "target.com"
+  },
+  {
+    "id": "deep_b_459",
+    "url": "https://www.ikea.com/ee/et/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_460",
+    "url": "https://www.ikea.com/ee/en/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_461",
+    "url": "https://www.ikea.com/ee/ru/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_462",
+    "url": "https://www.ikea.com/lt/lt/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_463",
+    "url": "https://www.ikea.com/lt/ru/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_464",
+    "url": "https://www.ikea.com/lt/en/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_465",
+    "url": "https://www.ikea.com/lv/lv/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ikea.com"
+  },
+  {
+    "id": "deep_b_466",
+    "url": "https://aliexpress.com//g.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_467",
+    "url": "https://aliexpress.com//assets.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_468",
+    "url": "https://aliexpress.com//o.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_469",
+    "url": "https://aliexpress.com//is.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_470",
+    "url": "https://aliexpress.com//aeis.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_471",
+    "url": "https://aliexpress.com//ae01.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_472",
+    "url": "https://aliexpress.com//ae04.alicdn.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "aliexpress.com"
+  },
+  {
+    "id": "deep_b_473",
+    "url": "https://tripadvisor.com/Rewards",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_474",
+    "url": "https://tripadvisor.com/ForumHome",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_475",
+    "url": "https://www.tripadvisor.com/Articles-lDd1Rn5skv10-Summers_counting_on_you.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_476",
+    "url": "https://tripadvisor.com/Attractions-h1-Outdoor_Activities.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_477",
+    "url": "https://tripadvisor.com/Attractions-h2-Food_Activities.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_478",
+    "url": "https://tripadvisor.com/Attractions-h3-Culture_Activities.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_479",
+    "url": "https://tripadvisor.com/Attractions-h4-Water_Activities.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "tripadvisor.com"
+  },
+  {
+    "id": "deep_b_480",
+    "url": "https://www.paypal.com/in/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_481",
+    "url": "https://paypal.com/in/home?locale.x=en_GB",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_482",
+    "url": "https://paypal.com/in/digital-wallet/ways-to-pay/checkout-with-paypal?locale.x=en_GB",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_483",
+    "url": "https://paypal.com/in/digital-wallet/send-receive-money/send-money?locale.x=en_GB",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_484",
+    "url": "https://paypal.com/in/digital-wallet/security-and-protection?locale.x=en_GB",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_485",
+    "url": "https://paypal.com/in/digital-wallet?locale.x=en_GB",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_486",
+    "url": "https://paypal.com/in/business?locale.x=en_GB",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "paypal.com"
+  },
+  {
+    "id": "deep_b_487",
+    "url": "https://stripe.com/in",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_488",
+    "url": "https://stripe.com/es-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_489",
+    "url": "https://stripe.com/zh-us",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_490",
+    "url": "https://stripe.com/ae",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_491",
+    "url": "https://stripe.com/at",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_492",
+    "url": "https://stripe.com/en-at",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_493",
+    "url": "https://stripe.com/au",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stripe.com"
+  },
+  {
+    "id": "deep_b_494",
+    "url": "https://chase.com/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "chase.com"
+  },
+  {
+    "id": "deep_b_495",
+    "url": "https://chase.com/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "chase.com"
+  },
+  {
+    "id": "deep_b_496",
+    "url": "https://chase.com/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "chase.com"
+  },
+  {
+    "id": "deep_b_497",
+    "url": "https://chase.com/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "chase.com"
+  },
+  {
+    "id": "deep_b_498",
+    "url": "https://chase.com/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "chase.com"
+  },
+  {
+    "id": "deep_b_499",
+    "url": "https://www.bankofamerica.com/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_500",
+    "url": "https://bankofamerica.com/online-banking/iphone-banking-app.go",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_501",
+    "url": "https://promo.bankofamerica.com/hp-oaa2/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_502",
+    "url": "https://bankofamerica.com/deposits/checking/checking-accounts/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_503",
+    "url": "https://bankofamerica.com/deposits/savings/savings-accounts/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_504",
+    "url": "https://bankofamerica.com/credit-cards/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_505",
+    "url": "https://bankofamerica.com/mortgage/home-mortgage/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bankofamerica.com"
+  },
+  {
+    "id": "deep_b_506",
+    "url": "https://www.wellsfargo.com/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_507",
+    "url": "https://locations.wellsfargo.com/search",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_508",
+    "url": "https://wellsfargo.com/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_509",
+    "url": "https://connect.secure.wellsfargo.com/auth/login/present?origin=cob&LOB=CONS",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_510",
+    "url": "https://appointments.wellsfargo.com/maa/appointment/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_511",
+    "url": "https://wellsfargo.com/help/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_512",
+    "url": "https://wellsfargo.com/help/routing-number/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "wellsfargo.com"
+  },
+  {
+    "id": "deep_b_513",
+    "url": "https://citi.com//www.googletagmanager.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "citi.com"
+  },
+  {
+    "id": "deep_b_514",
+    "url": "https://citi.com//online.citi.com/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "citi.com"
+  },
+  {
+    "id": "deep_b_515",
+    "url": "https://capitalone.com/assets/shell/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_516",
+    "url": "https://verified.capitalone.com/auth/signin",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_517",
+    "url": "https://www.capitalone.com/credit-cards/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_518",
+    "url": "https://www.capitalone.com/bank/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_519",
+    "url": "https://www.capitalone.com/cars/auto-financing",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_520",
+    "url": "https://www.capitalone.com/small-business/homepage/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_521",
+    "url": "https://www.capitalone.com/commercial/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "capitalone.com"
+  },
+  {
+    "id": "deep_b_522",
+    "url": "https://barclays.co.uk/premier-banking/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_523",
+    "url": "https://barclays.co.uk/business-banking/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_524",
+    "url": "https://barclays.co.uk/help/contact-us/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_525",
+    "url": "https://barclays.co.uk/branch-finder/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_526",
+    "url": "https://barclays.co.uk/help/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_527",
+    "url": "https://bank.barclays.co.uk/olb/authlogin/loginAppContainer.do",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_528",
+    "url": "https://barclays.co.uk/current-accounts/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "barclays.co.uk"
+  },
+  {
+    "id": "deep_b_529",
+    "url": "https://hsbc.co.uk/etc.clientlibs/dpws/clientlibs-public/clientlib-site/resources/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_530",
+    "url": "https://hsbc.co.uk/register/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_531",
+    "url": "https://www.hsbc.co.uk/online/dashboard/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_532",
+    "url": "https://www.hsbc.co.uk/current-accounts/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_533",
+    "url": "https://hsbc.co.uk/current-accounts/products/premier/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_534",
+    "url": "https://www.hsbc.co.uk/current-accounts/products/bank-account/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_535",
+    "url": "https://www.hsbc.co.uk/current-accounts/products/student/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "hsbc.co.uk"
+  },
+  {
+    "id": "deep_b_536",
+    "url": "https://lloydsbank.com/help-guidance/accessibility.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_537",
+    "url": "https://lloydsbank.com/sitemap.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_538",
+    "url": "https://lloydsbank.com/business/home.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_539",
+    "url": "https://lloydsbank.com/private-banking.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_540",
+    "url": "https://lloydsbank.com/international.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_541",
+    "url": "https://lloydsbank.com/help-guidance/everyday-banking/mobile-banking-app.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_542",
+    "url": "https://lloydsbank.com/help-guidance/everyday-banking/mobile-banking-app/app-download.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "lloydsbank.com"
+  },
+  {
+    "id": "deep_b_543",
+    "url": "https://s3.tradingview.com/conversions_en.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_544",
+    "url": "https://scanner-backend.tradingview.com/enum/ordered?id=metrics_full_name,metrics&lang=en&label-product=ytm-metrics-plan.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_545",
+    "url": "https://static.tradingview.com/static/images/favicon/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_546",
+    "url": "https://tradingview.com/chart/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_547",
+    "url": "https://tradingview.com/ideas/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_548",
+    "url": "https://tradingview.com/markets/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_549",
+    "url": "https://tradingview.com/brokers/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "tradingview.com"
+  },
+  {
+    "id": "deep_b_550",
+    "url": "https://cdc.gov/TemplatePackage/5.0/json/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_551",
+    "url": "https://www.cdc.gov/index.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_552",
+    "url": "https://www.cdc.gov/spanish/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_553",
+    "url": "https://www.cdc.gov/health-topics.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_554",
+    "url": "https://www.cdc.gov/outbreaks/index.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_555",
+    "url": "https://www.cdc.gov/about/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_556",
+    "url": "https://cdc.gov/vaccines-adults/recommended-vaccines/index.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "cdc.gov"
+  },
+  {
+    "id": "deep_b_557",
+    "url": "https://who.int/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_558",
+    "url": "https://www.who.int/southeastasia",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_559",
+    "url": "https://www.who.int/europe/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_560",
+    "url": "http://www.emro.who.int/index.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_561",
+    "url": "https://www.who.int/westernpacific/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_562",
+    "url": "https://who.int/mega-menu/health-topics",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_563",
+    "url": "https://who.int/health-topics/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "who.int"
+  },
+  {
+    "id": "deep_b_564",
+    "url": "https://www.un.org/ar/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_565",
+    "url": "https://www.un.org/zh/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_566",
+    "url": "https://www.un.org/en/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_567",
+    "url": "https://www.un.org/fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_568",
+    "url": "https://www.un.org/ru/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_569",
+    "url": "https://www.un.org/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_570",
+    "url": "https://un.org/ar/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "un.org"
+  },
+  {
+    "id": "deep_b_571",
+    "url": "https://european-union.europa.eu/index_en",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_572",
+    "url": "https://european-union.europa.eu/index_bg",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_573",
+    "url": "https://european-union.europa.eu/index_es",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_574",
+    "url": "https://european-union.europa.eu/index_cs",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_575",
+    "url": "https://european-union.europa.eu/index_da",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_576",
+    "url": "https://european-union.europa.eu/index_de",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_577",
+    "url": "https://european-union.europa.eu/index_et",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "europa.eu"
+  },
+  {
+    "id": "deep_b_578",
+    "url": "https://nasa.gov//cdn.parsely.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_579",
+    "url": "https://www.nasa.gov/feed/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_580",
+    "url": "https://www.nasa.gov/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.nasa.gov%2F",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_581",
+    "url": "https://www.nasa.gov/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.nasa.gov%2F&#038;format=xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_582",
+    "url": "https://www.nasa.gov/wp-content/plugins/nasa-hds-core-setup/assets/favicons/site.webmanifest",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_583",
+    "url": "https://www.nasa.gov/_static/??-eJyNjssKwjAQRX/IGFIQcSHu3PoNk+nYhk4eZJKW/r2lKohd6Gq4wzmXq6ekMIZCoWhktxzlq0pcOxdEV5laUfcMnqaYh2fWtjputZSZSfYostMfJW8VEEnEWceuzAp7woHyS10cLfkWeL7G7KFsSkpPnkQHEFjhjqMFVgHGnyiNy3c76xuDjL0bSVkIgfJPPMVUk/Iw/MH20VOCbunmiMM65eLP5ngyTdMcjHkAn3yKjA==",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_584",
+    "url": "https://www.nasa.gov/wp-json/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nasa.gov"
+  },
+  {
+    "id": "deep_b_585",
+    "url": "https://mit.edu/themes/mit/assets/favicon/manifest.webmanifest",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_586",
+    "url": "https://mit.edu/education",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_587",
+    "url": "https://mit.edu/research",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_588",
+    "url": "https://mit.edu/innovation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_589",
+    "url": "https://mit.edu/admissions-aid",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_590",
+    "url": "https://mit.edu/campus-life",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_591",
+    "url": "https://mit.edu/alumni",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mit.edu"
+  },
+  {
+    "id": "deep_b_592",
+    "url": "https://www.stanford.edu/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_593",
+    "url": "https://stanford.edu/civics",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_594",
+    "url": "https://stanford.edu/cancer-research",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_595",
+    "url": "https://stanford.edu/artificial-intelligence",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_596",
+    "url": "https://stanford.edu/about/impact",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_597",
+    "url": "https://stanford.edu/about",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_598",
+    "url": "https://stanford.edu/about/history",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "stanford.edu"
+  },
+  {
+    "id": "deep_b_599",
+    "url": "https://www.harvard.edu/xmlrpc.php",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_600",
+    "url": "https://harvard.edu//cdn.parsely.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_601",
+    "url": "https://www.harvard.edu/_static/??-eJyVjEkKgDAMAD9kG9tL6UF8S6kRA11CE/D79qAP8DYwzMDNJvem2BT0wooCuQ+EJII6WQQOktdBYjbae1FiW6nZqRf4dTipKA756r1uLsTVBe+jewCKqTMT",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_602",
+    "url": "https://www.harvard.edu/federal-lawsuits/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_603",
+    "url": "https://www.harvard.edu/a-to-z/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_604",
+    "url": "https://www.harvard.edu/academics/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_605",
+    "url": "https://www.harvard.edu//programs/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "harvard.edu"
+  },
+  {
+    "id": "deep_b_606",
+    "url": "https://cam.ac.uk/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "cam.ac.uk"
+  },
+  {
+    "id": "deep_b_607",
+    "url": "https://cam.ac.uk/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "cam.ac.uk"
+  },
+  {
+    "id": "deep_b_608",
+    "url": "https://cam.ac.uk/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "cam.ac.uk"
+  },
+  {
+    "id": "deep_b_609",
+    "url": "https://cam.ac.uk/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "cam.ac.uk"
+  },
+  {
+    "id": "deep_b_610",
+    "url": "https://cam.ac.uk/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "test",
+    "registeredDomain": "cam.ac.uk"
+  },
+  {
+    "id": "deep_b_611",
+    "url": "https://berkeley.edu//www.youtube.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_612",
+    "url": "https://www.berkeley.edu/feed/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_613",
+    "url": "https://www.berkeley.edu/comments/feed/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_614",
+    "url": "https://www.berkeley.edu/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.berkeley.edu%2F",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_615",
+    "url": "https://www.berkeley.edu/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.berkeley.edu%2F&#038;format=xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_616",
+    "url": "https://www.berkeley.edu/wp-json/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_617",
+    "url": "https://www.berkeley.edu/wp-json/wp/v2/pages/6634",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "berkeley.edu"
+  },
+  {
+    "id": "deep_b_618",
+    "url": "https://www.mozilla.org/en-US/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_619",
+    "url": "https://www.mozilla.org/an/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_620",
+    "url": "https://www.mozilla.org/ar/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_621",
+    "url": "https://www.mozilla.org/az/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_622",
+    "url": "https://www.mozilla.org/be/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_623",
+    "url": "https://www.mozilla.org/bg/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_624",
+    "url": "https://www.mozilla.org/bn/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "mozilla.org"
+  },
+  {
+    "id": "deep_b_625",
+    "url": "https://apache.org/favicons/manifest.json",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_626",
+    "url": "https://news.apache.org/foundation/entry/introducing-the-asfs-new-logo",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_627",
+    "url": "https://community.apache.org/contributors/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_628",
+    "url": "https://apache.org/foundation/policies/conduct",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_629",
+    "url": "https://apache.org/community-resources/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_630",
+    "url": "https://apache.org/foundation/buy_stuff",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_631",
+    "url": "https://apache.org/projects",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "apache.org"
+  },
+  {
+    "id": "deep_b_632",
+    "url": "https://python.org/humans.txt",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_633",
+    "url": "https://peps.python.org/peps.rss",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_634",
+    "url": "https://www.python.org/jobs/feed/rss/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_635",
+    "url": "https://blog.python.org/feeds/posts/default?alt=rss",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_636",
+    "url": "https://www.python.org/downloads/feed.rss",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_637",
+    "url": "https://www.python.org/psf/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_638",
+    "url": "https://python.org/jobs/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "python.org"
+  },
+  {
+    "id": "deep_b_639",
+    "url": "https://nodejs.org/en",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_640",
+    "url": "https://nodejs.org/es",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_641",
+    "url": "https://nodejs.org/fr",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_642",
+    "url": "https://nodejs.org/id",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_643",
+    "url": "https://nodejs.org/ja",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_644",
+    "url": "https://nodejs.org/ko",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_645",
+    "url": "https://nodejs.org/pt-br",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "nodejs.org"
+  },
+  {
+    "id": "deep_b_646",
+    "url": "https://gnu.org/about?utm_source=direct&utm_medium=web",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "gnu.org"
+  },
+  {
+    "id": "deep_b_647",
+    "url": "https://gnu.org/help/faq?category=general&ref=footer",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "gnu.org"
+  },
+  {
+    "id": "deep_b_648",
+    "url": "https://gnu.org/privacy-policy?lang=en&version=2024",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "gnu.org"
+  },
+  {
+    "id": "deep_b_649",
+    "url": "https://gnu.org/terms-of-service?redirect=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "gnu.org"
+  },
+  {
+    "id": "deep_b_650",
+    "url": "https://gnu.org/contact-us?dept=support&ticket=new",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "service_path_directory:fallback",
+    "split": "dev",
+    "registeredDomain": "gnu.org"
+  },
+  {
+    "id": "deep_b_651",
+    "url": "https://www.kernel.org/feeds/all.atom.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_652",
+    "url": "https://www.kernel.org/feeds/kdist.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_653",
+    "url": "https://www.kernel.org/category/about.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_654",
+    "url": "https://www.kernel.org/category/contact-us.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_655",
+    "url": "https://www.kernel.org/category/faq.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_656",
+    "url": "https://www.kernel.org/category/releases.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_657",
+    "url": "https://www.kernel.org/category/signatures.html",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "kernel.org"
+  },
+  {
+    "id": "deep_b_658",
+    "url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "debian.org"
+  },
+  {
+    "id": "deep_b_659",
+    "url": "https://salsa.debian.org/webmaster-team/webwml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "debian.org"
+  },
+  {
+    "id": "deep_b_660",
+    "url": "https://ubuntu.com/llms.txt",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_661",
+    "url": "https://ubuntu.com/static/files/site.webmanifest?v=fbabd71",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_662",
+    "url": "https://ubuntu.com/search",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_663",
+    "url": "https://ubuntu.com/navigation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_664",
+    "url": "https://ubuntu.com/navigation#products-navigation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_665",
+    "url": "https://ubuntu.com/navigation#use-case-navigation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_666",
+    "url": "https://ubuntu.com/navigation#support-navigation",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "ubuntu.com"
+  },
+  {
+    "id": "deep_b_667",
+    "url": "https://www.redhat.com/en",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_668",
+    "url": "https://www.redhat.com/en/home-page.md",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_669",
+    "url": "https://www.redhat.com/zh-cn",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_670",
+    "url": "https://www.redhat.com/zh-tw",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_671",
+    "url": "https://www.redhat.com/fr",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_672",
+    "url": "https://www.redhat.com/de",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_673",
+    "url": "https://www.redhat.com/it",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "redhat.com"
+  },
+  {
+    "id": "deep_b_674",
+    "url": "https://www.salesforce.com/in/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_675",
+    "url": "https://salesforce.com//www.googletagmanager.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_676",
+    "url": "https://salesforce.com//geolocation.onetrust.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_677",
+    "url": "https://salesforce.com//cdn.krxd.net",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_678",
+    "url": "https://salesforce.com//dpm.demdex.net",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_679",
+    "url": "https://salesforce.com//cdn.evgnet.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_680",
+    "url": "https://salesforce.com//salesforce.us-1.evergage.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "salesforce.com"
+  },
+  {
+    "id": "deep_b_681",
+    "url": "https://zoom.us/pricing",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_682",
+    "url": "https://zoom.us/signin",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_683",
+    "url": "https://zoom.us/signup?signUpFrom=homepage",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_684",
+    "url": "https://zoom.us/download",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_685",
+    "url": "https://zoom.us/join",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_686",
+    "url": "https://zoom.us/start/videomeeting",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_687",
+    "url": "https://zoom.us/meeting/schedule",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "zoom.us"
+  },
+  {
+    "id": "deep_b_688",
+    "url": "https://slack.com/intl/en-in",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_689",
+    "url": "https://slack.com/intl/en-au",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_690",
+    "url": "https://slack.com/intl/en-gb",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_691",
+    "url": "https://slack.com/intl/fr-ca",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_692",
+    "url": "https://slack.com/intl/fr-fr",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_693",
+    "url": "https://slack.com/intl/de-de",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_694",
+    "url": "https://slack.com/intl/es-es",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "slack.com"
+  },
+  {
+    "id": "deep_b_695",
+    "url": "https://www.atlassian.com/ja/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_696",
+    "url": "https://www.atlassian.com/fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_697",
+    "url": "https://www.atlassian.com/de/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_698",
+    "url": "https://www.atlassian.com/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_699",
+    "url": "https://www.atlassian.com/br/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_700",
+    "url": "https://www.atlassian.com/zh/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_701",
+    "url": "https://www.atlassian.com/ko/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "atlassian.com"
+  },
+  {
+    "id": "deep_b_702",
+    "url": "https://www.shopify.com/ar",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_703",
+    "url": "https://www.shopify.com/au",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_704",
+    "url": "https://www.shopify.com/at",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_705",
+    "url": "https://www.shopify.com/bd",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_706",
+    "url": "https://www.shopify.com/by",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_707",
+    "url": "https://www.shopify.com/be",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_708",
+    "url": "https://www.shopify.com/be-de",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "shopify.com"
+  },
+  {
+    "id": "deep_b_709",
+    "url": "https://www.canva.com/af_za/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_710",
+    "url": "https://www.canva.com/am_et/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_711",
+    "url": "https://www.canva.com/ar_eg/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_712",
+    "url": "https://www.canva.com/as_in/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_713",
+    "url": "https://www.canva.com/az_az/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_714",
+    "url": "https://www.canva.com/bg_bg/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_715",
+    "url": "https://www.canva.com/bn_bd/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "canva.com"
+  },
+  {
+    "id": "deep_b_716",
+    "url": "https://figma.com/api/user",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_717",
+    "url": "https://figma.com/manifest.json?v=1",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_718",
+    "url": "https://www.figma.com/de-de/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_719",
+    "url": "https://www.figma.com/es-es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_720",
+    "url": "https://www.figma.com/es-la/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_721",
+    "url": "https://www.figma.com/fr-fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_722",
+    "url": "https://www.figma.com/hi-in/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "figma.com"
+  },
+  {
+    "id": "deep_b_723",
+    "url": "https://notion.so/product",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_724",
+    "url": "https://notion.so/product/features",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_725",
+    "url": "https://notion.so/product/features#capture",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_726",
+    "url": "https://notion.so/product/features#find",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_727",
+    "url": "https://notion.so/product/features#automate",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_728",
+    "url": "https://notion.so/releases",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_729",
+    "url": "https://notion.so/download",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "notion.so"
+  },
+  {
+    "id": "deep_b_730",
+    "url": "https://www.trello.com/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_731",
+    "url": "https://www.trello.com/ja/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_732",
+    "url": "https://www.trello.com/fr/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_733",
+    "url": "https://www.trello.com/de/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_734",
+    "url": "https://www.trello.com/es/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_735",
+    "url": "https://www.trello.com/br/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_736",
+    "url": "https://www.trello.com/zh/home",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "trello.com"
+  },
+  {
+    "id": "deep_b_737",
+    "url": "https://gitlab.com/_payload.json?2f8cc788-f88e-44e9-b600-c9272b4fc6ef",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_738",
+    "url": "https://gitlab.com/releases.xml",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_739",
+    "url": "https://about.gitlab.com/de-de/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_740",
+    "url": "https://about.gitlab.com/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_741",
+    "url": "https://about.gitlab.com/fr-fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_742",
+    "url": "https://about.gitlab.com/it-it/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_743",
+    "url": "https://about.gitlab.com/ja-jp/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "gitlab.com"
+  },
+  {
+    "id": "deep_b_744",
+    "url": "https://bitbucket.org/ja/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_745",
+    "url": "https://bitbucket.org/fr/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_746",
+    "url": "https://bitbucket.org/de/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_747",
+    "url": "https://bitbucket.org/es/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_748",
+    "url": "https://bitbucket.org/br/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_749",
+    "url": "https://bitbucket.org/zh/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_750",
+    "url": "https://bitbucket.org/ko/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "test",
+    "registeredDomain": "bitbucket.org"
+  },
+  {
+    "id": "deep_b_751",
+    "url": "https://docker.com//www.google.com",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  },
+  {
+    "id": "deep_b_752",
+    "url": "https://www.docker.com/feed/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  },
+  {
+    "id": "deep_b_753",
+    "url": "https://www.docker.com/wp-json/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  },
+  {
+    "id": "deep_b_754",
+    "url": "https://www.docker.com/wp-json/wp/v2/pages/69521",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  },
+  {
+    "id": "deep_b_755",
+    "url": "https://www.docker.com/wp/xmlrpc.php?rsd",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  },
+  {
+    "id": "deep_b_756",
+    "url": "https://www.docker.com/ja-jp/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  },
+  {
+    "id": "deep_b_757",
+    "url": "https://www.docker.com/typhoon-65/",
+    "label": "safe",
+    "category": "benign_deep",
+    "source": "sitemap_and_page_crawl:fallback",
+    "split": "dev",
+    "registeredDomain": "docker.com"
+  }
+]

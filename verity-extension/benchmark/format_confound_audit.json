@@ -1,0 +1,26 @@
+{
+  "distribution": {
+    "safe": {
+      "total": 1025,
+      "pctNonEmptyPath": "2.15%",
+      "pctWithQuery": "0.49%",
+      "meanUrlLength": "21.51",
+      "meanPathLength": "1.32"
+    },
+    "phishing": {
+      "total": 750,
+      "pctNonEmptyPath": "82.00%",
+      "pctWithQuery": "15.60%",
+      "meanUrlLength": "74.50",
+      "meanPathLength": "29.97"
+    },
+    "malware": {
+      "total": 637,
+      "pctNonEmptyPath": "100.00%",
+      "pctWithQuery": "1.73%",
+      "meanUrlLength": "114.04",
+      "meanPathLength": "79.66"
+    }
+  },
+  "timestamp": "2026-10-12T15:48:37.016Z"
+}

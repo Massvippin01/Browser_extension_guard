@@ -1,16 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import { getDomain } from '../shared/psl.js';
 
 function getRegisteredDomain(urlStr) {
   try {
     const hostname = new URL(urlStr).hostname.toLowerCase();
-    const parts = hostname.split('.');
-    if (parts.length <= 2) return hostname;
-    const secondLast = parts[parts.length - 2];
-    if (['co', 'gov', 'com', 'org', 'net', 'edu', 'ac', 'mil'].includes(secondLast) && parts.length >= 3) {
-      return parts.slice(-3).join('.');
-    }
-    return parts.slice(-2).join('.');
+    const domain = getDomain(hostname);
+    return domain || hostname;
   } catch (e) {
     return urlStr;
   }

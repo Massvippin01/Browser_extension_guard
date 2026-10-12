@@ -1,7 +1,5 @@
-/**
- * brand-detector.js
- * Implements advanced Levenshtein Edit Distance for Typosquatting and Brand Impersonation detection.
- */
+import { getDomain, getPublicSuffix } from '../shared/psl.js';
+
 
 /**
  * Calculates the Levenshtein distance between two strings.
@@ -37,13 +35,16 @@ function levenshteinDistance(a, b) {
  * Strips www. and the TLD if possible to compare the root word.
  */
 function normalizeHostname(hostname) {
-  let clean = hostname.toLowerCase().replace(/^www\./, '');
-  // Very basic TLD strip for comparison (example.com -> example)
-  const parts = clean.split('.');
-  if (parts.length > 1) {
-    parts.pop(); // remove TLD
+  const clean = hostname.toLowerCase().replace(/^www\./, '');
+  const domain = getDomain(clean);
+  if (domain) {
+    const suffix = getPublicSuffix(clean);
+    if (suffix && domain.endsWith('.' + suffix)) {
+      return domain.slice(0, -(suffix.length + 1)).replace(/[^a-z0-9]/g, '');
+    }
+    return domain.replace(/[^a-z0-9]/g, '');
   }
-  return parts.join('');
+  return clean.replace(/[^a-z0-9]/g, '');
 }
 
 /**

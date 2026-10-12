@@ -109,6 +109,12 @@ NO_HTTPS_NO_IP_NAMES = [
     'double_slash', 'is_suspicious_tld', 'keyword_matches'
 ]
 
+HOST_ONLY_FEATURE_NAMES = [
+    'host_len', 'digit_ratio', 'host_digit_ratio', 'host_entropy',
+    'dot_count', 'hyphen_count', 'at_count', 'host_tokens',
+    'is_suspicious_tld', 'keyword_matches'
+]
+
 def run_group_cv(X, y, groups, model_builder, feature_set_name, n_splits=5):
     gkf = GroupKFold(n_splits=n_splits)
     metrics_35 = {'precision': [], 'recall': [], 'f1': [], 'fpr': []}
@@ -174,6 +180,7 @@ def main():
 
     X_all_dev = np.array([[fd[f] for f in ALL_FEATURE_NAMES] for fd in feat_dicts_dev], dtype=np.float32)
     X_no_dev = np.array([[fd[f] for f in NO_HTTPS_NO_IP_NAMES] for fd in feat_dicts_dev], dtype=np.float32)
+    X_host_dev = np.array([[fd[f] for f in HOST_ONLY_FEATURE_NAMES] for fd in feat_dicts_dev], dtype=np.float32)
 
     # 1. CV WITH is_https and is_ip features
     cv_with = run_group_cv(
@@ -187,6 +194,13 @@ def main():
         X_no_dev, y_dev, groups_dev,
         lambda: GradientBoostingClassifier(n_estimators=50, max_depth=3, learning_rate=0.1, random_state=42),
         "WITHOUT is_https and is_ip (16 features)"
+    )
+
+    # 3. CV HOST-ONLY features
+    cv_host = run_group_cv(
+        X_host_dev, y_dev, groups_dev,
+        lambda: GradientBoostingClassifier(n_estimators=50, max_depth=3, learning_rate=0.1, random_state=42),
+        "HOST-ONLY features (10 features)"
     )
 
     # Train final candidate model on all Dev data

@@ -517,16 +517,18 @@ loadUrlShorteners().catch(() => {});
 function initDownloadProtection() {
   initDownloadMonitor({
     brandsList,
+    getBrandsList: () => brandsList,
     calculateRisk,
     buildRuleSignals,
   });
 }
 
-// Initialize after brands are loaded so impersonation detection works
+// Synchronously register download listeners at top-level evaluation
+initDownloadProtection();
+
+// Load brands asynchronously
 Promise.all([
   loadBrands(),
   loadPaymentBrands(),
   loadUrlShorteners(),
-]).then(() => {
-  initDownloadProtection();
-}).catch(() => {});
+]).catch(() => {});

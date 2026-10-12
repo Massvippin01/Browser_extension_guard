@@ -19,8 +19,9 @@ let _buildRuleSignals = null;
  * Initialize the download monitor with shared dependencies.
  * Called once at service worker startup.
  */
-export function initDownloadMonitor({ brandsList, calculateRisk, buildRuleSignals }) {
+export function initDownloadMonitor({ brandsList, getBrandsList, calculateRisk, buildRuleSignals }) {
   _brandsList = brandsList;
+  if (getBrandsList) _brandsList = getBrandsList;
   _calculateRisk = calculateRisk;
   _buildRuleSignals = buildRuleSignals;
   registerListeners();
@@ -38,6 +39,15 @@ function registerListeners() {
   chrome.downloads.onChanged.addListener(async (delta) => {
     if (delta.danger && delta.danger.current && delta.danger.current !== 'safe') {
       await handleDangerChange(delta);
+    }
+    if (delta.filename && delta.filename.current) {
+      const [item] = await chrome.downloads.search({ id: delta.id });
+      if (item) {
+        const session = downloadSessions.get(delta.id);
+        if (!session || !session.analyzed) {
+          await runAnalysis(item);
+        }
+      }
     }
     // Clean up on terminal states
     if (delta.state && ['complete', 'interrupted'].includes(delta.state.current)) {
@@ -98,7 +108,7 @@ async function runAnalysis(downloadItem) {
   // Normalize the download object
   const normalized = {
     downloadId: id,
-    filename: getBasename(downloadItem.filename),
+    filename: getBasename(downloadItem.filename, downloadItem.url),
     url: downloadItem.url || '',
     finalUrl: downloadItem.finalUrl || downloadItem.url || '',
     referrer: downloadItem.referrer || '',
@@ -112,9 +122,10 @@ async function runAnalysis(downloadItem) {
   const sourceUrl = normalized.referrer || normalized.url;
   const ruleSignals = _buildRuleSignals ? _buildRuleSignals(sourceUrl) : [];
 
+  const activeBrands = typeof _brandsList === 'function' ? _brandsList() : _brandsList;
   const { verdict, downloadSignals } = await analyzeDownload(
     normalized,
-    _brandsList,
+    activeBrands,
     _calculateRisk,
     ruleSignals
   );
@@ -162,13 +173,24 @@ function buildSignalsList(ds) {
 }
 
 async function notifyTab(tabId, payload) {
-  if (!tabId || tabId < 0) return;
-
   // Only notify on warn/block — silent on allow
   if (payload.action === 'allow' && !payload.chromeSaysDangerous) return;
 
+  let targetTabId = tabId;
+  if (!targetTabId || targetTabId < 0) {
+    try {
+      if (chrome.tabs && chrome.tabs.query) {
+        const tabs = await chrome.tabs.query({ active: true });
+        const activeTab = tabs && tabs[0];
+        if (activeTab && activeTab.id) targetTabId = activeTab.id;
+      }
+    } catch {}
+  }
+
+  if (!targetTabId || targetTabId < 0) return;
+
   try {
-    await chrome.tabs.sendMessage(tabId, {
+    await chrome.tabs.sendMessage(targetTabId, {
       action: 'DOWNLOAD_VERDICT',
       payload,
     });
@@ -190,9 +212,19 @@ function cleanup(id) {
   downloadSessions.delete(id);
 }
 
-function getBasename(filepath) {
-  if (!filepath) return '';
-  return filepath.replace(/\\/g, '/').split('/').pop() || filepath;
+function getBasename(filepath, url) {
+  if (filepath) {
+    const base = filepath.replace(/\\/g, '/').split('/').pop();
+    if (base && !base.endsWith('.crdownload')) return base;
+  }
+  if (url) {
+    try {
+      const pathname = new URL(url).pathname;
+      const base = pathname.split('/').pop();
+      if (base && base.includes('.')) return base;
+    } catch {}
+  }
+  return filepath || '';
 }
 
 function safeHostname(urlStr) {

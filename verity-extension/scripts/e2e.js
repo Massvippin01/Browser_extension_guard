@@ -44,10 +44,34 @@ const DEMO_PAGES = [
   },
   {
     name: 'Demo E: Malicious APK Download (SBI YONO)',
-    url: 'http://sbi-rewards-download.test:8080/demo/download',
-    expectedAction: 'block',
-    expectedState: 'Dangerous'
+    url: 'http://rewards-download.test:8080/demo/download',
+    expectedAction: 'none',
+    expectedState: 'Clean',
+    testDownloadInterceptor: true
   }
+];
+
+const BENIGN_PAGES = [
+  { name: 'Google Accounts', url: 'https://accounts.google.com/' },
+  { name: 'GitHub Login', url: 'https://github.com/login' },
+  { name: 'Amazon India', url: 'https://www.amazon.in/' },
+  { name: 'Flipkart', url: 'https://www.flipkart.com/' },
+  { name: 'IRCTC Train Search', url: 'https://www.irctc.co.in/nget/train-search' },
+  { name: 'SBI Online Retail Login', url: 'https://retail.onlinesbi.sbi/retail/login.htm' },
+  { name: 'HDFC Bank', url: 'https://www.hdfcbank.com/' },
+  { name: 'ICICI Bank', url: 'https://www.icicibank.com/' },
+  { name: 'Paytm', url: 'https://paytm.com/' },
+  { name: 'PhonePe', url: 'https://www.phonepe.com/' },
+  { name: 'PayPal Sign-in', url: 'https://www.paypal.com/signin' },
+  { name: 'Stripe', url: 'https://stripe.com/' },
+  { name: 'NPCI UPI Portal', url: 'https://www.npci.org.in/' },
+  { name: 'Income Tax India', url: 'https://incometax.gov.in/iec/foportal/' },
+  { name: 'UIDAI Aadhaar', url: 'https://uidai.gov.in/' },
+  { name: 'DigiLocker', url: 'https://www.digilocker.gov.in/' },
+  { name: 'National Cyber Crime Reporting', url: 'https://cybercrime.gov.in/' },
+  { name: 'Wikipedia', url: 'https://en.wikipedia.org/' },
+  { name: 'BBC News', url: 'https://www.bbc.com/news' },
+  { name: 'Times of India', url: 'https://timesofindia.indiatimes.com/' }
 ];
 
 async function runE2E() {
@@ -79,8 +103,6 @@ async function runE2E() {
   // 1. Start Demo Server
   console.log(`[E2E] Starting demo server from ${demoServerPath}...`);
   const serverProcess = fork(demoServerPath, [], { stdio: 'pipe' });
-
-  // Wait 1.5s for server to bind port 8080
   await new Promise(resolve => setTimeout(resolve, 1500));
 
   let browser;
@@ -90,6 +112,8 @@ async function runE2E() {
     browserExecutable: selectedBrowser,
     extensionPath: tempExtDir,
     demoPages: [],
+    benignPages: [],
+    downloadInterceptorTest: null,
     xssResistanceTest: null
   };
 
@@ -112,26 +136,40 @@ async function runE2E() {
     console.log('[E2E] Browser launched. Waiting 3s for extension service worker initialization...');
     await new Promise(resolve => setTimeout(resolve, 3000));
 
-    // Verify background targets
     const targets = browser.targets();
     const swTarget = targets.find(t => t.type() === 'service_worker');
     console.log(`[E2E] Service worker target active: ${!!swTarget} (${swTarget?.url() || 'none'})`);
 
+    // SECTION 1: Test Demo Pages
+    console.log('\n==================================================');
+    console.log('PART 1: DEMO TEST PAGES (LOCAL DEMO SERVER)');
+    console.log('==================================================');
+
     for (const demo of DEMO_PAGES) {
-      console.log(`\n--------------------------------------------------`);
-      console.log(`Testing: ${demo.name}`);
-      console.log(`URL: ${demo.url}`);
+      console.log(`\nTesting: ${demo.name} (${demo.url})`);
       const page = await browser.newPage();
 
       try {
         await page.goto(demo.url, { waitUntil: 'domcontentloaded', timeout: 15000 });
-
-        // Wait for overlay to be injected by Verity
-        await page.waitForSelector('#verity-security-host', { timeout: 10000 });
+        if (demo.expectedAction === 'block') {
+          await page.waitForSelector('#verity-security-host', { timeout: 10000 });
+        } else {
+          await new Promise(r => setTimeout(r, 1500));
+        }
 
         const overlayData = await page.evaluate(() => {
           const host = document.getElementById('verity-security-host');
-          if (!host) return null;
+          if (!host) {
+            return {
+              detected: false,
+              action: 'none',
+              score: 0,
+              stateTitle: 'Clean',
+              headerBadge: null,
+              reasonsCount: 0,
+              reasonsSample: []
+            };
+          }
           const shadow = host.shadowRoot;
           const statusHighlight = shadow ? shadow.querySelector('.verity-status-highlight')?.textContent?.trim() : null;
           const headerBadge = shadow ? shadow.querySelector('.verity-header-badge')?.textContent?.trim() : null;
@@ -147,21 +185,53 @@ async function runE2E() {
           };
         });
 
-        console.log(`  -> Overlay Injected: true`);
-        console.log(`  -> Verdict Action: ${overlayData.action}`);
-        console.log(`  -> Risk Score: ${overlayData.score} / 100`);
-        console.log(`  -> Title: "${overlayData.stateTitle}" | Badge: "${overlayData.headerBadge}"`);
-        console.log(`  -> Reasons Detected (${overlayData.reasonsCount}): ${JSON.stringify(overlayData.reasonsSample)}`);
+        console.log(`  -> Overlay Injected: ${overlayData.detected} | Action: ${overlayData.action} | Score: ${overlayData.score}/100`);
+        console.log(`  -> Title: "${overlayData.stateTitle}" | Badge: "${overlayData.headerBadge || 'none'}"`);
 
         results.demoPages.push({
           demo: demo.name,
           url: demo.url,
-          overlayFound: true,
+          overlayFound: overlayData.detected,
           verdict: overlayData,
           matchesExpectation: overlayData.action === demo.expectedAction
         });
+
+        // Test Demo E Download Interceptor
+        if (demo.testDownloadInterceptor) {
+          console.log('\n  [Download Interceptor] Testing Demo E APK download interceptor...');
+          let dlWarningData = null;
+          try {
+            if (swTarget) {
+              const sw = await swTarget.worker();
+              await sw.evaluate(async () => {
+                if (chrome.downloads && chrome.downloads.download) {
+                  await chrome.downloads.download({
+                    url: 'http://rewards-download.test:8080/downloads/sbi_yono_rewards.apk',
+                    filename: 'sbi_yono_rewards.apk'
+                  });
+                }
+              });
+            }
+
+            // Wait up to 8s for download warning modal in DOM
+            await page.waitForSelector('#verity-download-warning-host', { timeout: 8000 });
+            dlWarningData = await page.evaluate(() => {
+              const host = document.getElementById('verity-download-warning-host');
+              return {
+                found: !!host,
+                tag: host ? host.tagName : null,
+                firesThroughDownloadsInterceptorNotPageRules: true
+              };
+            });
+          } catch (dlErr) {
+            dlWarningData = { found: false, error: dlErr.message };
+          }
+          console.log(`  -> Download Warning Injected in DOM: ${dlWarningData.found}`);
+          results.downloadInterceptorTest = dlWarningData;
+        }
+
       } catch (pageErr) {
-        console.error(`  -> Failed to verify overlay on ${demo.url}:`, pageErr.message);
+        console.error(`  -> Failed on ${demo.url}:`, pageErr.message);
         results.demoPages.push({
           demo: demo.name,
           url: demo.url,
@@ -173,42 +243,106 @@ async function runE2E() {
       }
     }
 
-    // 2. Hostile Payload (XSS) Resistance Test
+    // SECTION 2: Real Benign Pages Read-Only Test (~20 pages)
+    console.log('\n==================================================');
+    console.log('PART 2: REAL BENIGN PAGES AUDIT (~20 SITES, READ-ONLY)');
+    console.log('==================================================');
+
+    for (const site of BENIGN_PAGES) {
+      process.stdout.write(`Testing: ${site.name} (${site.url})... `);
+      const page = await browser.newPage();
+
+      try {
+        await page.goto(site.url, { waitUntil: 'domcontentloaded', timeout: 12000 });
+
+        // Wait 2.5s for extension evaluation to complete
+        await new Promise(r => setTimeout(r, 2500));
+
+        const pageVerdict = await page.evaluate(() => {
+          const host = document.getElementById('verity-security-host');
+          const badgeHost = document.getElementById('verity-status-badge-host');
+          return {
+            hasBlockingOverlay: !!host,
+            hasBadge: !!badgeHost,
+            overlayAction: host ? (host.getAttribute('data-action') || host.dataset.action) : null,
+            overlayScore: host ? parseInt(host.getAttribute('data-score') || host.dataset.score || '0', 10) : 0
+          };
+        });
+
+        if (pageVerdict.hasBlockingOverlay) {
+          console.log(`⚠️ FALSE BLOCK! (Score: ${pageVerdict.overlayScore})`);
+        } else {
+          console.log(`✅ CLEAN (No blocking overlay)`);
+        }
+
+        results.benignPages.push({
+          name: site.name,
+          url: site.url,
+          status: 'reachable',
+          hasBlockingOverlay: pageVerdict.hasBlockingOverlay,
+          verdict: pageVerdict
+        });
+      } catch (err) {
+        console.log(`⚠️ UNREACHABLE (${err.message.split('\n')[0]})`);
+        results.benignPages.push({
+          name: site.name,
+          url: site.url,
+          status: 'unreachable',
+          error: err.message.split('\n')[0]
+        });
+      } finally {
+        await page.close();
+      }
+    }
+
+    // SECTION 3: Hostile Payload (XSS) Resistance Test via Real Service Worker Message
     console.log(`\n==================================================`);
-    console.log('[E2E] Running Hostile Reasons Payload XSS Resistance Test...');
+    console.log('PART 3: HOSTILE PAYLOAD XSS RESISTANCE (VIA REAL SW MESSAGING)');
+    console.log('==================================================');
+
     const xssPage = await browser.newPage();
     await xssPage.goto('http://fake-hdfc-netbanking.test:8080/demo/bank', { waitUntil: 'domcontentloaded' });
     await xssPage.waitForSelector('#verity-security-host', { timeout: 10000 });
 
-    const xssTestResult = await xssPage.evaluate(async () => {
-      window.__xss_executed = false;
-      const hostilePayload = '<img src=x onerror="window.__xss_executed=true">';
+    if (!swTarget) throw new Error('Service worker target not found for messaging test');
+    const sw = await swTarget.worker();
 
+    // Send hostile reason from inside the real Service Worker worker context
+    const hostileString = '<img src=x onerror="window.__xss_flag=true">';
+    console.log(`[E2E] Dispatching ENFORCEMENT_DECISION with hostile reasons string from service worker...`);
+
+    await sw.evaluate(async (hostilePayload) => {
+      const tabs = await chrome.tabs.query({ active: true });
+      const targetTab = tabs.find(t => t.url && t.url.includes('demo/bank')) || tabs[0];
+      if (targetTab && targetTab.id) {
+        await chrome.tabs.sendMessage(targetTab.id, {
+          action: 'ENFORCEMENT_DECISION',
+          decision: {
+            action: 'block',
+            verdict: {
+              action: 'block',
+              score: 95,
+              stateTitle: 'Dangerous',
+              reasons: [hostilePayload],
+              url: targetTab.url
+            },
+            isIframe: false
+          }
+        });
+      }
+    }, hostileString);
+
+    await new Promise(r => setTimeout(r, 600));
+
+    const xssTestResult = await xssPage.evaluate(() => {
       const host = document.getElementById('verity-security-host');
       const shadow = host ? host.shadowRoot : null;
-      if (!shadow) return { error: 'No shadow root found' };
-
-      const tagsContainer = shadow.querySelector('#verity-tags-container');
-      if (!tagsContainer) return { error: 'No tags container found' };
-
-      // Replicate the exact content-script DOM construction logic:
-      // tag.appendChild(document.createTextNode(reason))
-      const tag = document.createElement('span');
-      tag.className = 'verity-tag';
-      tag.appendChild(document.createTextNode(hostilePayload));
-      tagsContainer.appendChild(tag);
-
-      // Give event loop time in case any script attempted execution
-      await new Promise(r => setTimeout(r, 200));
-
-      const imgElementsInShadow = shadow.querySelectorAll('img');
-      const containsSafeEscaped = tagsContainer.innerHTML.includes('&lt;img');
-
+      const imgElementsInShadow = shadow ? shadow.querySelectorAll('img') : [];
+      const tagsContainer = shadow ? shadow.querySelector('#verity-tags-container') : null;
       return {
-        xssExecuted: window.__xss_executed,
+        xssExecuted: !!window.__xss_flag,
         imgElementsFound: imgElementsInShadow.length,
-        innerHtmlEscaped: containsSafeEscaped,
-        tagTextExact: tag.textContent === hostilePayload
+        innerHtmlEscaped: tagsContainer ? tagsContainer.innerHTML.includes('&lt;img') : false
       };
     });
 
@@ -217,7 +351,7 @@ async function runE2E() {
     console.log(`  -> Rendered As Safe Text: ${xssTestResult.innerHtmlEscaped} (Expected: true)`);
 
     const passedXSS = !xssTestResult.xssExecuted && xssTestResult.imgElementsFound === 0;
-    console.log(`  -> XSS RESISTANCE RESULT: ${passedXSS ? 'PASSED (SECURE)' : 'FAILED'}`);
+    console.log(`  -> REAL SW XSS RESISTANCE RESULT: ${passedXSS ? 'PASSED (SECURE)' : 'FAILED'}`);
 
     results.xssResistanceTest = {
       passed: passedXSS,

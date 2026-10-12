@@ -1,0 +1,78 @@
+[
+  {
+    "domain": "hdfcbank.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "icicibank.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "axisbank.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "kotak.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "sbi.co.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "onlinesbi.sbi",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "bhimupi.org.in",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "npci.org.in",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "chase.com",
+    "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
+  },
+  {
+    "domain": "bankofamerica.com",
+    "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
+  },
+  {
+    "domain": "wellsfargo.com",
+    "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
+  },
+  {
+    "domain": "citi.com",
+    "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
+  },
+  {
+    "domain": "citibank.com",
+    "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
+  },
+  {
+    "domain": "capitalone.com",
+    "source": "https://banks.data.fdic.gov/bankfind-suite/bankfind"
+  },
+  {
+    "domain": "barclays.co.uk",
+    "source": "https://register.fca.org.uk/"
+  },
+  {
+    "domain": "hsbc.co.uk",
+    "source": "https://register.fca.org.uk/"
+  },
+  {
+    "domain": "lloydsbank.com",
+    "source": "https://register.fca.org.uk/"
+  },
+  {
+    "domain": "investopedia.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "tradingview.com",
+    "source": "https://tranco-list.eu/"
+  }
+]
