@@ -318,103 +318,78 @@ function handleSpaDomMutation() {
 
 // ─── Live Status Badge ──────────────────────────────────────────────────────
 
+
+// ─── Design System & Production UI Implementation ───────────────────────────
+
+const VERITY_UI_CSS = '/**\n * content/verity-ui.css - Production-Grade Shadow DOM Styles for Verity\n * Covers: Warning Overlay Dialog, Download Modal, Popup Toasts, Status Badge.\n * Design language: shadcn/ui, Linear, Vercel — calm, precise, trustworthy.\n */\n\n@font-face {\n  font-family: \'Inter Variable\';\n  font-style: normal;\n  font-weight: 100 900;\n  font-display: swap;\n  src: url(\'/shared/fonts/InterVariable.woff2\') format(\'woff2\');\n}\n\n/* ─── Design Tokens ────────────────────────────────────────────────────────── */\n:host,\n.verity-root,\n[data-theme="light"] {\n  --v-bg: #ffffff;\n  --v-fg: #09090b;\n  --v-card: #ffffff;\n  --v-card-fg: #09090b;\n  --v-muted: #f4f4f5;\n  --v-muted-fg: #52525b; /* 7.03:1 contrast */\n  --v-border: #e4e4e7;\n  --v-input: #e4e4e7;\n  --v-ring: #18181b;\n\n  --v-primary: #18181b;\n  --v-primary-fg: #fafafa;\n  --v-secondary: #f4f4f5;\n  --v-secondary-fg: #18181b;\n\n  --v-destructive: #dc2626;\n  --v-destructive-fg: #ffffff;\n  --v-destructive-subtle: #fef2f2;\n  --v-destructive-border: #fecaca;\n  --v-destructive-text: #991b1b;\n\n  --v-warning: #d97706;\n  --v-warning-fg: #ffffff;\n  --v-warning-subtle: #fffbeb;\n  --v-warning-border: #fde68a;\n  --v-warning-text: #92400e;\n\n  --v-success: #16a34a;\n  --v-success-fg: #ffffff;\n  --v-success-subtle: #f0fdf4;\n  --v-success-border: #bbf7d0;\n  --v-success-text: #166534;\n\n  --v-radius: 0.625rem;\n  --v-radius-sm: 0.375rem;\n  --v-radius-md: 0.5rem;\n  --v-radius-lg: 0.75rem;\n  --v-radius-full: 9999px;\n\n  --v-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);\n  --v-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);\n  --v-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);\n  --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08);\n\n  --v-font: \'Inter Variable\', \'Inter\', -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Noto Sans\', system-ui, sans-serif;\n  --v-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;\n\n  --v-dur-fast: 120ms;\n  --v-dur-base: 200ms;\n  --v-ease-out: cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n@media (prefers-color-scheme: dark) {\n  :host:not([data-theme="light"]),\n  .verity-root:not([data-theme="light"]) {\n    --v-bg: #09090b;\n    --v-fg: #fafafa;\n    --v-card: #121215;\n    --v-card-fg: #fafafa;\n    --v-muted: #27272a;\n    --v-muted-fg: #a1a1aa; /* 5.81:1 contrast */\n    --v-border: #27272a;\n    --v-input: #27272a;\n    --v-ring: #d4d4d8;\n\n    --v-primary: #fafafa;\n    --v-primary-fg: #18181b;\n    --v-secondary: #27272a;\n    --v-secondary-fg: #fafafa;\n\n    --v-destructive: #ef4444;\n    --v-destructive-fg: #09090b;\n    --v-destructive-subtle: rgba(239, 68, 68, 0.12);\n    --v-destructive-border: rgba(239, 68, 68, 0.3);\n    --v-destructive-text: #fca5a5;\n\n    --v-warning: #f59e0b;\n    --v-warning-fg: #09090b;\n    --v-warning-subtle: rgba(245, 158, 11, 0.12);\n    --v-warning-border: rgba(245, 158, 11, 0.3);\n    --v-warning-text: #fde68a;\n\n    --v-success: #22c55e;\n    --v-success-fg: #09090b;\n    --v-success-subtle: rgba(34, 197, 94, 0.12);\n    --v-success-border: rgba(34, 197, 94, 0.3);\n    --v-success-text: #86efac;\n\n    --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);\n  }\n}\n\n[data-theme="dark"] {\n  --v-bg: #09090b;\n  --v-fg: #fafafa;\n  --v-card: #121215;\n  --v-card-fg: #fafafa;\n  --v-muted: #27272a;\n  --v-muted-fg: #a1a1aa;\n  --v-border: #27272a;\n  --v-input: #27272a;\n  --v-ring: #d4d4d8;\n\n  --v-primary: #fafafa;\n  --v-primary-fg: #18181b;\n  --v-secondary: #27272a;\n  --v-secondary-fg: #fafafa;\n\n  --v-destructive: #ef4444;\n  --v-destructive-fg: #09090b;\n  --v-destructive-subtle: rgba(239, 68, 68, 0.12);\n  --v-destructive-border: rgba(239, 68, 68, 0.3);\n  --v-destructive-text: #fca5a5;\n\n  --v-warning: #f59e0b;\n  --v-warning-fg: #09090b;\n  --v-warning-subtle: rgba(245, 158, 11, 0.12);\n  --v-warning-border: rgba(245, 158, 11, 0.3);\n  --v-warning-text: #fde68a;\n\n  --v-success: #22c55e;\n  --v-success-fg: #09090b;\n  --v-success-subtle: rgba(34, 197, 94, 0.12);\n  --v-success-border: rgba(34, 197, 94, 0.3);\n  --v-success-text: #86efac;\n\n  --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);\n}\n\n/* ─── Host & Global Reset ──────────────────────────────────────────────────── */\n:host {\n  all: initial;\n  display: block;\n  font-family: var(--v-font);\n  font-size: 14px;\n  line-height: 1.5;\n  color: var(--v-fg);\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n*, *::before, *::after {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\n/* ─── Custom Scrollbar (.v-scroll) ─────────────────────────────────────────── */\n.v-scroll {\n  overflow-y: auto;\n  overflow-x: hidden;\n  scrollbar-width: thin;\n  scrollbar-color: var(--v-border) transparent;\n  scrollbar-gutter: stable;\n  overscroll-behavior: contain;\n  transition: scrollbar-color var(--v-dur-base) var(--v-ease-out);\n}\n\n.v-scroll:hover {\n  scrollbar-color: var(--v-muted-fg) transparent;\n}\n\n.v-scroll::-webkit-scrollbar {\n  width: 8px;\n  height: 8px;\n  background: transparent;\n}\n\n.v-scroll::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n.v-scroll::-webkit-scrollbar-thumb {\n  background-color: var(--v-border);\n  background-clip: padding-box;\n  border: 2px solid transparent;\n  border-radius: var(--v-radius-full);\n  transition: background-color var(--v-dur-base) var(--v-ease-out);\n}\n\n.v-scroll:hover::-webkit-scrollbar-thumb,\n.v-scroll:active::-webkit-scrollbar-thumb {\n  background-color: var(--v-muted-fg);\n}\n\n.v-scroll::-webkit-scrollbar-corner {\n  background: transparent;\n}\n\n/* ─── Buttons (.v-btn) ─────────────────────────────────────────────────────── */\n.v-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  font-family: inherit;\n  font-size: 13px;\n  font-weight: 500;\n  line-height: 1;\n  white-space: nowrap;\n  border-radius: var(--v-radius-md);\n  border: 1px solid transparent;\n  cursor: pointer;\n  user-select: none;\n  background: transparent;\n  color: var(--v-fg);\n  transition: background-color var(--v-dur-fast) var(--v-ease-out),\n              border-color var(--v-dur-fast) var(--v-ease-out),\n              color var(--v-dur-fast) var(--v-ease-out),\n              box-shadow var(--v-dur-fast) var(--v-ease-out),\n              transform var(--v-dur-fast) var(--v-ease-out);\n}\n\n.v-btn:focus-visible {\n  outline: 2px solid var(--v-ring);\n  outline-offset: 2px;\n}\n\n.v-btn:disabled,\n.v-btn[disabled] {\n  opacity: 0.5;\n  pointer-events: none;\n  cursor: not-allowed;\n}\n\n.v-btn-sm {\n  height: 32px;\n  padding: 0 12px;\n  font-size: 12px;\n}\n\n.v-btn-md {\n  height: 38px;\n  padding: 0 16px;\n  font-size: 13px;\n}\n\n.v-btn-lg {\n  height: 44px;\n  padding: 0 22px;\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.v-btn-primary {\n  background-color: var(--v-primary);\n  color: var(--v-primary-fg);\n  box-shadow: var(--v-shadow-sm);\n}\n.v-btn-primary:hover {\n  opacity: 0.9;\n}\n.v-btn-primary:active {\n  transform: scale(0.98);\n}\n\n.v-btn-secondary {\n  background-color: var(--v-secondary);\n  color: var(--v-secondary-fg);\n}\n.v-btn-secondary:hover {\n  background-color: var(--v-border);\n}\n\n.v-btn-outline {\n  border-color: var(--v-border);\n  background: transparent;\n  color: var(--v-fg);\n}\n.v-btn-outline:hover {\n  background-color: var(--v-muted);\n}\n\n.v-btn-ghost {\n  background: transparent;\n  color: var(--v-muted-fg);\n}\n.v-btn-ghost:hover {\n  background-color: var(--v-muted);\n  color: var(--v-fg);\n}\n\n.v-btn-destructive {\n  background-color: var(--v-destructive);\n  color: var(--v-destructive-fg);\n  box-shadow: var(--v-shadow-sm);\n}\n.v-btn-destructive:hover {\n  opacity: 0.92;\n}\n\n/* ─── Badges / Pills (.v-badge) ────────────────────────────────────────────── */\n.v-badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 3px 10px;\n  border-radius: var(--v-radius-full);\n  font-size: 12px;\n  font-weight: 600;\n  line-height: 1.3;\n  border: 1px solid transparent;\n  white-space: nowrap;\n}\n.v-badge-safe {\n  background-color: var(--v-success-subtle);\n  color: var(--v-success-text);\n  border-color: var(--v-success-border);\n}\n.v-badge-caution {\n  background-color: var(--v-warning-subtle);\n  color: var(--v-warning-text);\n  border-color: var(--v-warning-border);\n}\n.v-badge-danger {\n  background-color: var(--v-destructive-subtle);\n  color: var(--v-destructive-text);\n  border-color: var(--v-destructive-border);\n}\n\n/* ─── Monospace Chip (.v-chip-mono) ────────────────────────────────────────── */\n.v-chip-mono {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  font-family: var(--v-mono);\n  font-size: 12px;\n  line-height: 1.4;\n  padding: 4px 10px;\n  border-radius: var(--v-radius-sm);\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  color: var(--v-fg);\n  word-break: break-all;\n  max-width: 100%;\n}\n.v-chip-mono-muted {\n  color: var(--v-muted-fg);\n  font-weight: 400;\n}\n.v-chip-mono-emphasis {\n  color: var(--v-fg);\n  font-weight: 700;\n}\n\n/* ─── Fullscreen Backdrop & Centered Dialog ────────────────────────────────── */\n.verity-overlay {\n  position: fixed;\n  inset: 0;\n  width: 100vw;\n  height: 100vh;\n  z-index: 2147483647;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: 20px;\n  background-color: rgba(9, 9, 11, 0.72);\n  backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n  overflow-y: auto;\n  overscroll-behavior: contain;\n}\n\n@supports not (backdrop-filter: blur(12px)) {\n  .verity-overlay {\n    background-color: rgba(9, 9, 11, 0.94);\n  }\n}\n\n.v-dialog-card {\n  position: relative;\n  width: 100%;\n  max-width: 620px;\n  max-height: calc(100vh - 40px);\n  display: flex;\n  flex-direction: column;\n  background-color: var(--v-card);\n  color: var(--v-card-fg);\n  border-radius: var(--v-radius-lg);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-dialog);\n  overflow: hidden;\n  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;\n}\n\n.v-card-danger {\n  border-top: 3px solid var(--v-destructive);\n}\n.v-card-warning {\n  border-top: 3px solid var(--v-warning);\n}\n\n.v-dialog-inner {\n  padding: 32px 36px;\n  display: flex;\n  flex-direction: column;\n  overflow-y: auto;\n}\n\n/* Dialog Header Top */\n.v-dialog-header-top {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 20px;\n}\n\n.v-icon-badge-wrap {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n.v-icon-circle {\n  width: 44px;\n  height: 44px;\n  border-radius: var(--v-radius-full);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n}\n.v-icon-circle-danger {\n  background-color: var(--v-destructive-subtle);\n  color: var(--v-destructive);\n  border: 1px solid var(--v-destructive-border);\n}\n.v-icon-circle-warning {\n  background-color: var(--v-warning-subtle);\n  color: var(--v-warning);\n  border: 1px solid var(--v-warning-border);\n}\n\n.v-brand-mark {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--v-muted-fg);\n}\n\n/* Dialog Title & Message */\n.v-dialog-title {\n  font-size: 20px;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--v-fg);\n  margin-bottom: 8px;\n  letter-spacing: -0.01em;\n}\n\n.verity-status-highlight {\n  font-weight: 700;\n}\n.v-card-danger .verity-status-highlight {\n  color: var(--v-destructive);\n}\n.v-card-warning .verity-status-highlight {\n  color: var(--v-warning);\n}\n\n.verity-message {\n  font-size: 14px;\n  line-height: 1.55;\n  color: var(--v-muted-fg);\n  margin-bottom: 16px;\n}\n\n/* Critical Alerts inside Dialog */\n.v-payment-alert {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 12px 14px;\n  border-radius: var(--v-radius-md);\n  background-color: var(--v-destructive-subtle);\n  border: 1px solid var(--v-destructive-border);\n  color: var(--v-destructive-text);\n  font-size: 13px;\n  line-height: 1.45;\n  margin-bottom: 16px;\n}\n.v-payment-alert strong {\n  font-weight: 700;\n}\n\n/* Chain Box */\n.v-chain-box {\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  border-radius: var(--v-radius-md);\n  padding: 12px 14px;\n  margin-bottom: 16px;\n  font-size: 12px;\n}\n.v-chain-title {\n  font-weight: 600;\n  color: var(--v-muted-fg);\n  font-size: 11px;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  margin-bottom: 8px;\n}\n.v-chain-item {\n  font-family: var(--v-mono);\n  color: var(--v-fg);\n  padding: 2px 0;\n}\n\n/* Collapsible Accordion */\n.v-accordion-item {\n  border: 1px solid var(--v-border);\n  border-radius: var(--v-radius-md);\n  background-color: var(--v-card);\n  margin-bottom: 24px;\n  overflow: hidden;\n}\n\n.v-accordion-trigger {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 12px 16px;\n  background: var(--v-muted);\n  border: none;\n  font-family: inherit;\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--v-fg);\n  cursor: pointer;\n  text-align: left;\n  transition: background-color var(--v-dur-fast) var(--v-ease-out);\n}\n.v-accordion-trigger:hover {\n  background-color: var(--v-border);\n}\n.v-accordion-trigger:focus-visible {\n  outline: 2px solid var(--v-ring);\n  outline-offset: -2px;\n}\n\n.v-accordion-icon {\n  transition: transform var(--v-dur-base) var(--v-ease-out);\n  color: var(--v-muted-fg);\n}\n.v-accordion-trigger[aria-expanded="false"] .v-accordion-icon {\n  transform: rotate(-90deg);\n}\n\n.v-accordion-content {\n  padding: 10px 14px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  max-height: 38vh;\n  transition: max-height var(--v-dur-base) var(--v-ease-out);\n}\n.v-accordion-trigger[aria-expanded="false"] + .v-accordion-content {\n  display: none;\n}\n\n/* Reason Rows (.verity-tag) */\n.verity-tag {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px 12px;\n  border-radius: var(--v-radius-sm);\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  color: var(--v-fg);\n  font-size: 13px;\n  line-height: 1.4;\n  word-break: break-word;\n}\n.v-reason-icon {\n  display: inline-flex;\n  align-items: center;\n  color: var(--v-muted-fg);\n  flex-shrink: 0;\n}\n.v-reason-text {\n  flex: 1;\n}\n.v-reason-dot {\n  width: 6px;\n  height: 6px;\n  border-radius: var(--v-radius-full);\n  flex-shrink: 0;\n}\n.v-dot-danger {\n  background-color: var(--v-destructive);\n}\n.v-dot-warning {\n  background-color: var(--v-warning);\n}\n\n.v-score-tag {\n  font-weight: 600;\n  font-size: 12px;\n  border-color: var(--v-border);\n  background: transparent;\n  color: var(--v-muted-fg);\n  justify-content: flex-end;\n}\n\n/* Action Rows */\n.v-dialog-actions {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n  gap: 12px;\n  margin-top: 4px;\n  margin-bottom: 12px;\n}\n\n.v-dialog-footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-top: 14px;\n  border-top: 1px solid var(--v-border);\n  font-size: 11px;\n  color: var(--v-muted-fg);\n}\n.v-footer-brand {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n}\n.v-footer-link {\n  color: var(--v-muted-fg);\n  text-decoration: underline;\n  cursor: pointer;\n  background: none;\n  border: none;\n  font-size: 11px;\n}\n.v-footer-link:hover {\n  color: var(--v-fg);\n}\n\n/* Confirmation View Cooldown Bar */\n.v-cooldown-bar {\n  position: relative;\n  width: 100%;\n  height: 3px;\n  background-color: var(--v-border);\n  border-radius: var(--v-radius-full);\n  overflow: hidden;\n  margin: 12px 0;\n}\n.v-cooldown-progress {\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 0%;\n  background-color: var(--v-destructive);\n  transition: width 1500ms linear;\n}\n\n/* ─── Download Warning Modal ───────────────────────────────────────────────── */\n#verity-download-warning-host {\n  all: initial;\n  position: fixed;\n  top: 24px;\n  right: 24px;\n  z-index: 2147483645;\n  pointer-events: auto;\n  max-width: 400px;\n  width: calc(100vw - 32px);\n  font-family: var(--v-font);\n}\n\n.v-dw-card {\n  background-color: var(--v-card);\n  color: var(--v-card-fg);\n  border-radius: var(--v-radius-lg);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-dialog);\n  padding: 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;\n}\n\n.v-dw-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.v-dw-title-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n.v-dw-title {\n  font-size: 14px;\n  font-weight: 700;\n  color: var(--v-fg);\n}\n\n.v-dw-meta {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  border-radius: var(--v-radius-md);\n  padding: 10px 12px;\n}\n\n.v-dw-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 12px;\n}\n.v-dw-label {\n  color: var(--v-muted-fg);\n  width: 52px;\n  flex-shrink: 0;\n}\n\n/* ─── Popup Blocked Toast Stacking ─────────────────────────────────────────── */\n.v-toast-container {\n  position: fixed;\n  bottom: 24px;\n  right: 24px;\n  z-index: 2147483647;\n  display: flex;\n  flex-direction: column-reverse;\n  gap: 8px;\n  pointer-events: none;\n  max-width: 380px;\n  width: calc(100vw - 32px);\n}\n\n@media (max-width: 480px) {\n  .v-toast-container {\n    bottom: 16px;\n    right: 16px;\n    left: 16px;\n    width: auto;\n    align-items: center;\n  }\n}\n\n.v-toast-card {\n  pointer-events: auto;\n  background-color: var(--v-card);\n  color: var(--v-card-fg);\n  border-radius: var(--v-radius-md);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-lg);\n  padding: 12px 14px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  font-size: 13px;\n  line-height: 1.4;\n  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;\n  transition: transform var(--v-dur-base) var(--v-ease-out), opacity var(--v-dur-base) var(--v-ease-out);\n}\n\n.v-toast-content {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  min-width: 0;\n}\n.v-toast-icon {\n  color: var(--v-destructive);\n  flex-shrink: 0;\n}\n.v-toast-text {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.v-toast-dismiss {\n  border: none;\n  background: transparent;\n  color: var(--v-muted-fg);\n  cursor: pointer;\n  padding: 2px;\n  border-radius: var(--v-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: color var(--v-dur-fast) var(--v-ease-out);\n}\n.v-toast-dismiss:hover {\n  color: var(--v-fg);\n}\n\n/* ─── Floating Page Status Badge ───────────────────────────────────────────── */\n.verity-badge {\n  width: 28px;\n  height: 28px;\n  border-radius: var(--v-radius-full);\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-md);\n  cursor: pointer;\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: transform var(--v-dur-fast) var(--v-ease-out), box-shadow var(--v-dur-fast) var(--v-ease-out);\n}\n.verity-badge:hover {\n  transform: scale(1.1);\n}\n\n.verity-badge.safe {\n  background-color: var(--v-success-subtle);\n  border-color: var(--v-success-border);\n  color: var(--v-success-text);\n}\n.verity-badge.caution {\n  background-color: var(--v-warning-subtle);\n  border-color: var(--v-warning-border);\n  color: var(--v-warning-text);\n}\n.verity-badge.danger {\n  background-color: var(--v-destructive-subtle);\n  border-color: var(--v-destructive-border);\n  color: var(--v-destructive-text);\n}\n\n.verity-tooltip {\n  position: absolute;\n  top: 36px;\n  right: 0;\n  background-color: var(--v-primary);\n  color: var(--v-primary-fg);\n  font-family: var(--v-font);\n  font-size: 11px;\n  font-weight: 500;\n  line-height: 1.4;\n  padding: 8px 12px;\n  border-radius: var(--v-radius-sm);\n  white-space: normal;\n  width: 220px;\n  opacity: 0;\n  pointer-events: none;\n  transform: translateY(-4px);\n  transition: opacity var(--v-dur-fast) var(--v-ease-out), transform var(--v-dur-fast) var(--v-ease-out);\n  box-shadow: var(--v-shadow-md);\n  z-index: 50;\n}\n.verity-badge:hover .verity-tooltip {\n  opacity: 1;\n  transform: translateY(0);\n}\n\n/* ─── Responsive Media Queries ─────────────────────────────────────────────── */\n@media (max-width: 640px) {\n  .v-dialog-inner {\n    padding: 24px 20px;\n  }\n  .v-dialog-actions {\n    flex-direction: column-reverse;\n    align-items: stretch;\n  }\n  .v-btn-lg, .v-btn-md {\n    width: 100%;\n    justify-content: center;\n  }\n}\n\n/* ─── Prefers-Reduced-Motion ───────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n    scroll-behavior: auto !important;\n    transform: none !important;\n  }\n}\n';
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function extractDomainParts(urlString) {
+  try {
+    const url = new URL(urlString);
+    const host = url.hostname.toLowerCase();
+    const parts = host.split('.');
+    if (parts.length <= 2) {
+      return { host, subdomain: '', registeredDomain: host };
+    }
+    const secondTld = parts[parts.length - 2];
+    const isMultiPartTld = ['co', 'gov', 'ac', 'com', 'org', 'net', 'edu'].includes(secondTld) && parts[parts.length - 1].length <= 3;
+    const splitIndex = isMultiPartTld ? parts.length - 3 : parts.length - 2;
+    if (splitIndex <= 0) {
+      return { host, subdomain: '', registeredDomain: host };
+    }
+    const registeredDomain = parts.slice(splitIndex).join('.');
+    const subdomain = parts.slice(0, splitIndex).join('.') + '.';
+    return { host, subdomain, registeredDomain };
+  } catch (e) {
+    return { host: urlString, subdomain: '', registeredDomain: urlString };
+  }
+}
+
+// ─── Floating Page Status Badge ─────────────────────────────────────────────
+
 function injectStatusBadge() {
-  if (window.self !== window.top) return null; // Skip floating status badge inside embedded iframes
-  if (document.getElementById('verity-status-badge-host')) return;
+  if (window.self !== window.top) return null; // Skip iframes
+  if (document.getElementById('verity-status-badge-host')) return null;
 
   const host = document.createElement('div');
   host.id = 'verity-status-badge-host';
   host.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2147483646;pointer-events:auto;';
   statusBadgeHost = host;
 
-  const shadow = host.attachShadow({ mode: 'closed' });
+  const shadow = host.attachShadow({ mode: 'open' });
 
-  const style = document.createElement('style');
-  style.textContent = `
-    .verity-badge {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #94a3b8;
-      border: 2px solid rgba(255,255,255,0.7);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 rgba(148,163,184,0.5);
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.4s ease;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .verity-badge:hover {
-      transform: scale(1.15);
-    }
-    .verity-badge.pulse {
-      animation: badgePulse 1.8s ease-out;
-    }
-    @keyframes badgePulse {
-      0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 var(--pulse-color, rgba(148,163,184,0.6)); }
-      60%  { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 10px rgba(0,0,0,0); }
-      100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 rgba(0,0,0,0); }
-    }
-    .verity-badge-scanning {
-      background: conic-gradient(#94a3b8 0%, #cbd5e1 50%, #94a3b8 100%);
-      animation: spin 1.2s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-    .verity-tooltip {
-      position: absolute;
-      top: 28px;
-      right: 0;
-      background: rgba(15,23,42,0.95);
-      color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      line-height: 1.5;
-      padding: 8px 12px;
-      border-radius: 8px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(-4px);
-      transition: opacity 0.2s, transform 0.2s;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      max-width: 240px;
-      white-space: normal;
-      text-align: left;
-    }
-    .verity-badge:hover .verity-tooltip {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .verity-badge-icon {
-      font-size: 11px;
-      line-height: 1;
-      user-select: none;
-    }
-  `;
-  shadow.appendChild(style);
+  const styleEl = document.createElement('style');
+  styleEl.textContent = VERITY_UI_CSS;
+  shadow.appendChild(styleEl);
 
   const badge = document.createElement('div');
-  badge.className = 'verity-badge verity-badge-scanning';
-  badge.innerHTML = `<div class="verity-tooltip">🛡️ Verity\nScanning…</div>`;
+  badge.className = 'verity-badge';
+  badge.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+    </svg>
+    <div class="verity-tooltip" role="tooltip">
+      <div style="font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+        <span>🛡️ VERITY</span>
+        <span style="opacity:0.75;">| Security</span>
+      </div>
+      <div class="v-tooltip-desc">Evaluating page safety…</div>
+    </div>
+  `;
   shadow.appendChild(badge);
 
-  // Append to documentElement immediately so it works at document_start
   const parent = document.documentElement || document.body;
   if (parent) parent.appendChild(host);
-
-  // Re-attach after body is available
-  if (!document.body) {
-    document.addEventListener('DOMContentLoaded', () => {
-      if (host.parentElement !== document.documentElement && document.documentElement) {
-        document.documentElement.appendChild(host);
-      }
-    });
-  }
 
   return shadow;
 }
@@ -424,147 +399,119 @@ const badgeShadow = injectStatusBadge();
 function updateStatusBadge(verdict) {
   if (!badgeShadow) return;
   const badge = badgeShadow.querySelector('.verity-badge');
-  const tooltip = badgeShadow.querySelector('.verity-tooltip');
-  if (!badge || !tooltip) return;
+  const tooltipDesc = badgeShadow.querySelector('.v-tooltip-desc');
+  if (!badge) return;
 
-  // Stop scanning spin
-  badge.className = 'verity-badge';
-
-  const severity = verdict.severity || verdict.state || 'safe';
+  const severity = verdict.severity || verdict.state || (verdict.action === 'block' ? 'danger' : (verdict.score >= 35 ? 'caution' : 'safe'));
   const score = verdict.score || verdict.riskScore || 0;
-  const shortener = verdict.shortenerDetected;
-  const chain = verdict.redirectChain;
 
-  let color, pulseColor, icon, label, detail;
+  badge.className = 'verity-badge ' + (severity === 'danger' ? 'danger' : (severity === 'caution' ? 'caution' : 'safe'));
 
-  if (severity === 'danger') {
-    color = '#ef4444';
-    pulseColor = 'rgba(239,68,68,0.5)';
-    icon = '🔴';
-    label = 'DANGEROUS';
-    detail = `Risk: ${score}/100`;
-  } else if (severity === 'caution') {
-    color = '#f59e0b';
-    pulseColor = 'rgba(245,158,11,0.5)';
-    icon = '🟡';
-    label = 'SUSPICIOUS';
-    detail = `Risk: ${score}/100`;
-  } else {
-    color = '#22c55e';
-    pulseColor = 'rgba(34,197,94,0.4)';
-    icon = '🟢';
-    label = 'SAFE';
-    detail = `Risk: ${score}/100`;
-  }
-
-  badge.style.background = color;
-  badge.style.setProperty('--pulse-color', pulseColor);
-  badge.classList.add('pulse');
-  badge.addEventListener('animationend', () => badge.classList.remove('pulse'), { once: true });
-
-  tooltip.textContent = '';
-  const headerDiv = document.createElement('div');
-  const strongEl = document.createElement('strong');
-  strongEl.textContent = '🛡️ Verity';
-  headerDiv.appendChild(strongEl);
-  headerDiv.appendChild(document.createTextNode(` — ${label}`));
-  tooltip.appendChild(headerDiv);
-
-  const detailDiv = document.createElement('div');
-  detailDiv.style.opacity = '0.8';
-  detailDiv.textContent = detail;
-  tooltip.appendChild(detailDiv);
-
-  if (shortener && chain && chain.length > 1) {
-    const chainStr = chain.map(u => { try { return new URL(u).hostname; } catch(e) { return u; } }).join(' → ');
-    const chainDiv = document.createElement('div');
-    chainDiv.style.cssText = 'margin-top:4px;opacity:0.8;font-size:10px;';
-    chainDiv.textContent = `🔗 ${chainStr}`;
-    tooltip.appendChild(chainDiv);
+  if (tooltipDesc) {
+    if (severity === 'danger') {
+      tooltipDesc.innerHTML = `<span style="color:#fca5a5;font-weight:700;">High Risk Detected</span><br>Risk Score: ${score}/100`;
+    } else if (severity === 'caution') {
+      tooltipDesc.innerHTML = `<span style="color:#fde68a;font-weight:700;">Suspicious Patterns Found</span><br>Risk Score: ${score}/100`;
+    } else {
+      tooltipDesc.innerHTML = `<span style="color:#86efac;font-weight:700;">Clean Reputation</span><br>Risk Score: ${score}/100`;
+    }
   }
 }
 
+// ─── Popup Blocked Toast Stacking ───────────────────────────────────────────
+let activeToasts = [];
+let toastHostEl = null;
+
+function ensureToastContainer() {
+  if (toastHostEl && toastHostEl.isConnected) {
+    return toastHostEl.shadowRoot.querySelector('.v-toast-container');
+  }
+  let host = document.getElementById('verity-toast-host');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'verity-toast-host';
+    host.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:2147483647;pointer-events:none;';
+    (document.documentElement || document.body).appendChild(host);
+  }
+  const shadow = host.attachShadow ? (host.shadowRoot || host.attachShadow({ mode: 'open' })) : host;
+  if (!shadow.querySelector('style')) {
+    const st = document.createElement('style');
+    st.textContent = VERITY_UI_CSS;
+    shadow.appendChild(st);
+  }
+  let container = shadow.querySelector('.v-toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'v-toast-container';
+    container.setAttribute('aria-live', 'polite');
+    container.id = 'verity-popup-toast-box';
+    shadow.appendChild(container);
+  }
+  toastHostEl = host;
+  return container;
+}
+
 function showPopupBlockedToast(hostname) {
-  if (!badgeShadow) return;
+  const container = ensureToastContainer();
+  if (!container) return;
 
-  // Pulse badge with red glow
-  const badge = badgeShadow.querySelector('.verity-badge');
-  if (badge) {
-    badge.style.setProperty('--pulse-color', 'rgba(239,68,68,0.7)');
-    badge.classList.add('pulse');
-    setTimeout(() => badge.classList.remove('pulse'), 2000);
+  // Max 3 toasts: remove oldest if limit reached
+  while (activeToasts.length >= 3) {
+    const oldest = activeToasts.shift();
+    if (oldest && oldest.element) oldest.element.remove();
   }
 
-  let toast = badgeShadow.querySelector('#verity-popup-toast-box');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'verity-popup-toast-box';
-    badgeShadow.appendChild(toast);
-  }
-
-  toast.textContent = '';
-
-  const styleEl = document.createElement('style');
-  styleEl.textContent = `
-    .verity-toast-panel {
-      position: fixed;
-      top: 46px;
-      right: 16px;
-      background: rgba(15, 23, 42, 0.96);
-      color: #f8fafc;
-      border: 2px solid #ef4444;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(239,68,68,0.4);
-      z-index: 2147483647;
-      transform-origin: top right;
-      animation: toastExpandShrink 4.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      pointer-events: auto;
-    }
-    @keyframes toastExpandShrink {
-      0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
-      12%  { transform: scale(1.08) translateY(0); opacity: 1; }
-      18%  { transform: scale(1) translateY(0); opacity: 1; }
-      85%  { transform: scale(1) translateY(0); opacity: 1; }
-      100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
-    }
+  const toastCard = document.createElement('div');
+  toastCard.className = 'v-toast-card';
+  toastCard.innerHTML = `
+    <div class="v-toast-content">
+      <div class="v-toast-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
+      </div>
+      <div class="v-toast-text">
+        <strong>Blocked pop-up:</strong> <span class="v-toast-host">${escapeHtml(hostname || 'Untrusted origin')}</span>
+      </div>
+    </div>
+    <button type="button" class="v-toast-dismiss" aria-label="Dismiss">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
   `;
-  toast.appendChild(styleEl);
 
-  const panel = document.createElement('div');
-  panel.className = 'verity-toast-panel';
+  let remainingMs = 6000;
+  let dismissTimer = null;
+  let startTime = Date.now();
 
-  const iconSpan = document.createElement('span');
-  iconSpan.style.fontSize = '16px';
-  iconSpan.textContent = '🚫';
-  panel.appendChild(iconSpan);
+  function startTimer() {
+    startTime = Date.now();
+    dismissTimer = setTimeout(dismissToast, remainingMs);
+  }
 
-  const textWrap = document.createElement('div');
+  function pauseTimer() {
+    clearTimeout(dismissTimer);
+    remainingMs -= (Date.now() - startTime);
+    if (remainingMs < 500) remainingMs = 500;
+  }
 
-  const titleDiv = document.createElement('div');
-  titleDiv.style.cssText = 'font-weight:800;color:#ef4444;font-size:11px;letter-spacing:0.5px;';
-  titleDiv.textContent = 'VERITY POP-UP BLOCKED';
-  textWrap.appendChild(titleDiv);
+  function dismissToast() {
+    clearTimeout(dismissTimer);
+    toastCard.style.opacity = '0';
+    toastCard.style.transform = 'translateY(6px)';
+    setTimeout(() => {
+      toastCard.remove();
+      activeToasts = activeToasts.filter(t => t.element !== toastCard);
+    }, 120);
+  }
 
-  const subDiv = document.createElement('div');
-  subDiv.style.cssText = 'color:#cbd5e1;font-size:11px;word-break:break-all;';
-  subDiv.appendChild(document.createTextNode('Blocked pop-under to '));
-  const strongEl = document.createElement('strong');
-  strongEl.textContent = hostname || 'Tracker';
-  subDiv.appendChild(strongEl);
-  textWrap.appendChild(subDiv);
+  toastCard.addEventListener('mouseenter', pauseTimer);
+  toastCard.addEventListener('mouseleave', startTimer);
+  toastCard.addEventListener('focusin', pauseTimer);
+  toastCard.addEventListener('focusout', startTimer);
 
-  panel.appendChild(textWrap);
-  toast.appendChild(panel);
+  toastCard.querySelector('.v-toast-dismiss')?.addEventListener('click', dismissToast);
 
-  setTimeout(() => {
-    if (toast) toast.textContent = '';
-  }, 4500);
+  container.appendChild(toastCard);
+  activeToasts.push({ element: toastCard, dismiss: dismissToast });
+  startTimer();
 }
 
 function handleEnforcementVerdict(verdict) {
@@ -572,7 +519,6 @@ function handleEnforcementVerdict(verdict) {
   try { window.__verityLastVerdict = verdict; } catch (e) {}
   updateStatusBadge(verdict);
   if (verdict.action === 'block') {
-
     isBlocked = true;
     if (statusBadgeHost) statusBadgeHost.style.display = 'none';
     injectOverlay(verdict);
@@ -585,30 +531,25 @@ function handleEnforcementVerdict(verdict) {
   }
 }
 
-// 3. Listen for enforcement decisions from Background
+// ─── Listeners from Background ──────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'POPUP_BLOCKED_TOAST') {
     showPopupBlockedToast(message.hostname || message.blockedUrl);
   } else if (message.action === 'ENFORCEMENT_DECISION') {
     handleEnforcementVerdict(message.decision.verdict);
   } else if (message.action === 'RE_ANALYZE') {
-    // Fired on SPA client-side navigations
     isBlocked = false;
     removeOverlay();
     if (statusBadgeHost) statusBadgeHost.style.display = 'block';
-    // Reset badge to scanning
-    if (badgeShadow) {
-      const badge = badgeShadow.querySelector('.verity-badge');
-      if (badge) badge.className = 'verity-badge verity-badge-scanning';
-    }
     triggerImmediateUrlScan();
     setTimeout(triggerFullScan, 500);
   } else if (message.action === 'DOWNLOAD_VERDICT') {
     injectDownloadWarning(message.payload);
+  } else if (message.action === 'OVERLAY_PREVIEW') {
+    injectOverlay(message.verdict);
   }
 });
 
-// Start immediately AFTER listener is registered to prevent race conditions
 triggerImmediateUrlScan();
 
 if (document.readyState === 'loading') {
@@ -617,190 +558,80 @@ if (document.readyState === 'loading') {
   triggerFullScan();
 }
 
-// ─── Download Warning UI ────────────────────────────────────────────────────
+// ─── Download Warning Modal ─────────────────────────────────────────────────
 let downloadWarningHost = null;
 
 function injectDownloadWarning(payload) {
   removeDownloadWarning();
 
   const { filename, sourceHostname, signals, riskScore, severity, action, cancelled, chromeSaysDangerous } = payload;
-
   const isDanger = severity === 'danger' || action === 'block';
-
-  const color   = isDanger ? '#ef4444' : '#f59e0b';
-  const bgColor = isDanger ? 'rgba(30,10,10,0.97)' : 'rgba(30,25,10,0.97)';
-  const icon    = isDanger ? '🛑' : '⚠️';
-  const title   = isDanger
-    ? (chromeSaysDangerous ? 'DANGEROUS DOWNLOAD' : 'HIGH-RISK DOWNLOAD BLOCKED')
-    : 'SUSPICIOUS DOWNLOAD DETECTED';
 
   const host = document.createElement('div');
   host.id = 'verity-download-warning-host';
-  host.style.cssText = 'position:fixed;top:60px;right:16px;z-index:2147483645;pointer-events:auto;max-width:380px;width:380px;';
+  host.style.cssText = 'all:initial;position:fixed;top:24px;right:24px;z-index:2147483645;pointer-events:auto;max-width:400px;width:calc(100vw - 32px);';
   downloadWarningHost = host;
 
-  const shadow = host.attachShadow({ mode: 'closed' });
+  const shadow = host.attachShadow({ mode: 'open' });
 
   const styleEl = document.createElement('style');
-  styleEl.textContent = `
-    .dw-panel {
-      background: ${bgColor};
-      border: 2px solid ${color};
-      border-radius: 16px;
-      padding: 18px 20px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 12px;
-      color: #f1f5f9;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px ${isDanger ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'};
-      transform-origin: top right;
-      animation: expandAndShrink 5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes expandAndShrink {
-      0%   { transform: scale(0.2) translateY(-20px); opacity: 0; }
-      12%  { transform: scale(1.06) translateY(0); opacity: 1; }
-      18%  { transform: scale(1) translateY(0); opacity: 1; }
-      85%  { transform: scale(1) translateY(0); opacity: 1; }
-      100% { transform: scale(0.2) translateY(-20px); opacity: 0; }
-    }
-    .dw-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-    .dw-icon { font-size:24px; animation: pulseIcon 1.5s infinite; }
-    @keyframes pulseIcon {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-    }
-    .dw-title { font-size:13px; font-weight:800; color:${color}; letter-spacing:0.5px; }
-    .dw-meta { background:rgba(255,255,255,0.06); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
-    .dw-meta-row { display:flex; gap:6px; margin-bottom:5px; font-size:11px; }
-    .dw-meta-label { color:#94a3b8; min-width:60px; flex-shrink:0; }
-    .dw-meta-value { color:#e2e8f0; word-break:break-all; font-weight:600; }
-    .dw-signals { margin-bottom:12px; font-size:11px; line-height:1.5; color:#cbd5e1; }
-    .dw-score { display:flex; justify-content:space-between; align-items:center; }
-    .dw-score-label { font-size:11px; color:#94a3b8; }
-    .dw-score-value { font-size:16px; font-weight:900; color:${color}; }
-    .dw-actions { display:flex; gap:10px; margin-top:14px; }
-    .dw-btn { flex:1; padding:9px; border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; transition: opacity 0.15s; }
-    .dw-btn-dismiss { background:rgba(255,255,255,0.1); color:#e2e8f0; }
-    .dw-btn-dismiss:hover { background:rgba(255,255,255,0.2); }
-    .dw-btn-action { background:${color}; color:white; font-weight:700; }
-    .dw-btn-action:hover { opacity:0.85; }
-  `;
+  styleEl.textContent = VERITY_UI_CSS;
   shadow.appendChild(styleEl);
 
-  const panel = document.createElement('div');
-  panel.className = 'dw-panel';
+  const card = document.createElement('div');
+  card.className = `v-dw-card ${isDanger ? 'v-card-danger' : 'v-card-warning'}`;
+  card.innerHTML = `
+    <div class="v-dw-header">
+      <div class="v-dw-title-row">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${isDanger ? '#ef4444' : '#f59e0b'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        <span class="v-dw-title">${isDanger ? (chromeSaysDangerous ? 'Dangerous File Blocked' : 'High-Risk Download Blocked') : 'Suspicious Download Detected'}</span>
+      </div>
+      <span class="v-badge ${isDanger ? 'v-badge-danger' : 'v-badge-caution'}">${isDanger ? 'Blocked' : 'Warning'}</span>
+    </div>
 
-  const header = document.createElement('div');
-  header.className = 'dw-header';
-  const iconEl = document.createElement('div');
-  iconEl.className = 'dw-icon';
-  iconEl.textContent = icon;
-  const titleEl = document.createElement('div');
-  titleEl.className = 'dw-title';
-  titleEl.textContent = title;
-  header.appendChild(iconEl);
-  header.appendChild(titleEl);
-  panel.appendChild(header);
+    <div class="v-dw-meta">
+      <div class="v-dw-row">
+        <span class="v-dw-label">File:</span>
+        <span class="v-chip-mono">${escapeHtml(filename || 'Unknown')}</span>
+      </div>
+      <div class="v-dw-row">
+        <span class="v-dw-label">Source:</span>
+        <span class="v-chip-mono">${escapeHtml(sourceHostname || 'Unknown')}</span>
+      </div>
+    </div>
 
-  const meta = document.createElement('div');
-  meta.className = 'dw-meta';
+    ${signals && signals.length > 0 ? `
+      <div class="v-scroll" style="max-height: 120px; display: flex; flex-direction: column; gap: 6px;">
+        ${signals.map(s => `
+          <div class="verity-tag" style="padding: 6px 10px; font-size: 12px;">
+            <span class="v-reason-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="v-reason-text">${escapeHtml(String(s))}</span>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
 
-  const fileRow = document.createElement('div');
-  fileRow.className = 'dw-meta-row';
-  const fileLbl = document.createElement('div');
-  fileLbl.className = 'dw-meta-label';
-  fileLbl.textContent = 'File:';
-  const fileVal = document.createElement('div');
-  fileVal.className = 'dw-meta-value';
-  fileVal.textContent = filename || 'Unknown';
-  fileRow.appendChild(fileLbl);
-  fileRow.appendChild(fileVal);
-  meta.appendChild(fileRow);
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--v-muted-fg);padding-top:4px;">
+      <span>Evaluation score:</span>
+      <span style="font-weight:700;color:${isDanger ? 'var(--v-destructive)' : 'var(--v-warning)'};">${riskScore || 0}/100</span>
+    </div>
 
-  const srcRow = document.createElement('div');
-  srcRow.className = 'dw-meta-row';
-  const srcLbl = document.createElement('div');
-  srcLbl.className = 'dw-meta-label';
-  srcLbl.textContent = 'Source:';
-  const srcVal = document.createElement('div');
-  srcVal.className = 'dw-meta-value';
-  srcVal.textContent = sourceHostname || 'Unknown';
-  srcRow.appendChild(srcLbl);
-  srcRow.appendChild(srcVal);
-  meta.appendChild(srcRow);
+    ${cancelled ? '<div class="v-payment-alert" style="margin-bottom:0;padding:8px 12px;font-size:12px;">Download cancelled automatically by Verity.</div>' : ''}
 
-  panel.appendChild(meta);
+    <div class="v-dialog-actions" style="margin-bottom:0;margin-top:6px;">
+      ${!cancelled ? '<button type="button" class="v-btn v-btn-ghost v-btn-sm" id="dw-open-dl">View downloads</button>' : ''}
+      <button type="button" class="v-btn v-btn-primary v-btn-sm" id="dw-dismiss">Dismiss</button>
+    </div>
+  `;
 
-  if (signals && signals.length > 0) {
-    const signalsContainer = document.createElement('div');
-    signalsContainer.className = 'dw-signals';
-    for (const s of signals) {
-      const sigRow = document.createElement('div');
-      sigRow.style.cssText = 'display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;';
-      const checkSpan = document.createElement('span');
-      checkSpan.style.cssText = `color:${color};font-size:13px;flex-shrink:0;`;
-      checkSpan.textContent = '✓';
-      const textSpan = document.createElement('span');
-      textSpan.textContent = String(s);
-      sigRow.appendChild(checkSpan);
-      sigRow.appendChild(textSpan);
-      signalsContainer.appendChild(sigRow);
-    }
-    panel.appendChild(signalsContainer);
-  }
-
-  const scoreRow = document.createElement('div');
-  scoreRow.className = 'dw-score';
-  const scoreLbl = document.createElement('span');
-  scoreLbl.className = 'dw-score-label';
-  scoreLbl.textContent = 'Risk Score';
-  const scoreValEl = document.createElement('span');
-  scoreValEl.className = 'dw-score-value';
-  scoreValEl.textContent = `${riskScore} / 100`;
-  scoreRow.appendChild(scoreLbl);
-  scoreRow.appendChild(scoreValEl);
-  panel.appendChild(scoreRow);
-
-  if (cancelled) {
-    const note = document.createElement('div');
-    note.style.cssText = 'margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.15);border-radius:6px;font-size:11px;color:#fca5a5;';
-    note.textContent = 'Download cancelled by Verity.';
-    panel.appendChild(note);
-  } else if (isDanger) {
-    const note = document.createElement('div');
-    note.style.cssText = 'margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:11px;color:#fca5a5;';
-    note.textContent = 'Verity recommends cancelling this download manually.';
-    panel.appendChild(note);
-  }
-
-  const actions = document.createElement('div');
-  actions.className = 'dw-actions';
-  const dismissBtn = document.createElement('button');
-  dismissBtn.className = 'dw-btn dw-btn-dismiss';
-  dismissBtn.id = 'dw-dismiss';
-  dismissBtn.textContent = 'Dismiss';
-  actions.appendChild(dismissBtn);
-
-  if (!cancelled) {
-    const actionBtn = document.createElement('button');
-    actionBtn.className = 'dw-btn dw-btn-action';
-    actionBtn.id = 'dw-open-dl';
-    actionBtn.textContent = '↓ View Downloads';
-    actions.appendChild(actionBtn);
-  }
-  panel.appendChild(actions);
-
-  shadow.appendChild(panel);
-
-  setTimeout(() => {
-    removeDownloadWarning();
-  }, 5100);
+  shadow.appendChild(card);
 
   shadow.getElementById('dw-dismiss')?.addEventListener('click', removeDownloadWarning);
   shadow.getElementById('dw-open-dl')?.addEventListener('click', () => {
     chrome.runtime.sendMessage({ action: 'OPEN_DOWNLOADS_PAGE' });
   });
 
-  document.documentElement.appendChild(host);
+  (document.documentElement || document.body).appendChild(host);
 
   // Auto-dismiss warn after 15s; danger stays until dismissed
   if (!isDanger) setTimeout(removeDownloadWarning, 15000);
@@ -813,7 +644,7 @@ function removeDownloadWarning() {
   }
 }
 
-// 4. Strong Overlay Enforcement
+// ─── Warning Overlay Enforcement ────────────────────────────────────────────
 function removeOverlay() {
   isBlocked = false;
   if (blockObserver) {
@@ -830,9 +661,7 @@ function removeOverlay() {
   if (document.body) {
     document.body.style.removeProperty('overflow');
   }
-  try {
-    window.onbeforeunload = null;
-  } catch (e) {}
+  try { window.onbeforeunload = null; } catch (e) {}
 }
 
 function injectOverlay(verdict) {
@@ -840,12 +669,8 @@ function injectOverlay(verdict) {
     return; // Already blocked
   }
 
-  // 1. Immediately HALT all network loading, page downloads & pending client redirects
-  try {
-    window.stop();
-  } catch (e) {}
-
-  // 2. Clear all active timeouts & intervals to kill delayed JS redirects
+  // Halt active redirects and page loading
+  try { window.stop(); } catch (e) {}
   try {
     let maxId = window.setTimeout(() => {}, 0);
     for (let i = 0; i <= maxId; i++) {
@@ -853,20 +678,16 @@ function injectOverlay(verdict) {
       window.clearInterval(i);
     }
   } catch (e) {}
-
-  // 3. Remove any <meta http-equiv="refresh"> redirect tags
   try {
     document.querySelectorAll('meta[http-equiv="refresh"]').forEach(el => el.remove());
   } catch (e) {}
-
-  // 4. Set onbeforeunload handler to warn/halt navigation attempts
   try {
     window.onbeforeunload = function() {
       return "Navigation blocked by Verity Web Protection.";
     };
   } catch (e) {}
 
-  // Freeze the underlying page scroll for main frame
+  // Lock scroll
   if (document.documentElement) {
     document.documentElement.style.setProperty('overflow', 'hidden', 'important');
   }
@@ -876,265 +697,44 @@ function injectOverlay(verdict) {
 
   const host = document.createElement('div');
   host.id = 'verity-security-host';
-  // Use inline styles to guarantee full screen and solid background BEFORE shadow DOM
+  host.style.setProperty('all', 'initial', 'important');
   host.style.setProperty('position', 'fixed', 'important');
   host.style.setProperty('top', '0', 'important');
   host.style.setProperty('left', '0', 'important');
   host.style.setProperty('width', '100vw', 'important');
   host.style.setProperty('height', '100vh', 'important');
   host.style.setProperty('z-index', '2147483647', 'important');
-  host.style.setProperty('background-color', '#FAFAFA', 'important');
+  host.style.setProperty('pointer-events', 'auto', 'important');
 
-  const shadow = host.attachShadow({ mode: 'open' });
-
-  // Determine State
-  const isDanger = verdict.action === 'block' || verdict.severity === 'danger';
+  const isDanger = verdict.severity !== 'caution' && (verdict.action === 'block' || verdict.severity === 'danger');
   const isPaymentPhishing = !!(verdict.paymentAnalysis && verdict.paymentAnalysis.isCriticalPaymentPhishing);
-  const stateColor = isDanger ? '#D32F2F' : '#F57C00';
-  const stateIconColor = isDanger ? '#EF5350' : '#FFCA28';
   const stateTitle = isPaymentPhishing ? 'Payment Phishing Blocked' : (isDanger ? 'Dangerous' : 'Suspicious');
 
   host.dataset.action = verdict.action;
   host.dataset.score = String(verdict.score || verdict.riskScore || 0);
   host.dataset.stateTitle = stateTitle;
 
-  // Extract primary threat category
-  let primaryCategory = 'Suspicious Website';
-  if (isPaymentPhishing) primaryCategory = 'Payment Phishing';
-  else if (verdict.categories) {
-    if (verdict.categories.phishing && verdict.categories.phishing.flagged) primaryCategory = 'Phishing';
-    else if (verdict.categories.malware && verdict.categories.malware.flagged) primaryCategory = 'Malware';
-    else if (verdict.categories.scamFraud && verdict.categories.scamFraud.flagged) primaryCategory = 'Scam / Fraud';
-  }
+  const shadow = host.attachShadow({ mode: 'open' });
 
-  const hardcodedCSS = `
-    :host {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-    }
-    * { box-sizing: border-box; }
-    .verity-overlay {
-      width: 100%;
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      background-color: #F8FAFC;
-      background-image: radial-gradient(circle at 10% 10%, rgba(239, 68, 68, 0.07), transparent 45%),
-                        radial-gradient(circle at 90% 90%, rgba(37, 99, 235, 0.05), transparent 45%);
-      color: #0F172A;
-      overflow-y: auto;
-    }
-    .verity-header {
-      padding: 32px 50px;
-      font-size: 22px;
-      font-weight: 800;
-      color: #0F172A;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(8px);
-    }
-    .verity-header-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .verity-header-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #EF4444, #DC2626);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 900;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    }
-    .verity-header-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: #0F172A;
-      letter-spacing: -0.5px;
-    }
-    .verity-header-pipe { color: #CBD5E1; margin: 0 8px; font-weight: 300; }
-    .verity-header-sub { color: #64748B; font-weight: 500; font-size: 15px; }
-    .verity-header-badge {
-      background: #FFEBEE;
-      color: #DC2626;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(220, 38, 38, 0.2);
-    }
-    .verity-card-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-    }
-    .verity-card {
-      background: #FFFFFF;
-      border-radius: 24px;
-      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.9);
-      display: flex;
-      max-width: 960px;
-      width: 100%;
-      padding: 56px;
-      gap: 50px;
-      transition: transform 0.3s ease;
-    }
-    @media (max-width: 850px) {
-      .verity-card { flex-direction: column; padding: 36px; gap: 30px; }
-    }
-    .verity-card-left {
-      flex: 0 0 240px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .verity-alert-wrapper {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: ${isDanger ? 'rgba(254, 226, 226, 0.7)' : 'rgba(254, 243, 199, 0.7)'};
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      animation: pulseGlow 2.5s infinite ease-in-out;
-    }
-    @keyframes pulseGlow {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 ${isDanger ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'}; }
-      50% { transform: scale(1.03); box-shadow: 0 0 0 16px rgba(0,0,0,0); }
-    }
-    .verity-alert-circle {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: ${isDanger ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'linear-gradient(135deg, #F59E0B, #D97706)'};
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 72px;
-      font-weight: 900;
-      box-shadow: 0 10px 25px ${isDanger ? 'rgba(220, 38, 38, 0.4)' : 'rgba(217, 119, 6, 0.4)'};
-    }
-    .verity-card-right {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .verity-status {
-      margin: 0 0 8px 0;
-      font-size: 32px;
-      font-weight: 800;
-      color: #0F172A;
-      letter-spacing: -0.02em;
-    }
-    .verity-status-highlight { color: ${stateColor}; }
-    .verity-url {
-      color: #475569;
-      font-size: 13px;
-      margin-bottom: 20px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      word-break: break-all;
-      overflow-wrap: anywhere;
-      max-height: 85px;
-      overflow-y: auto;
-      background: #F8FAFC;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid #E2E8F0;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .verity-message { font-size: 16px; line-height: 1.6; color: #334155; margin-bottom: 24px; font-weight: 400; }
-    .verity-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
-    .verity-tag {
-      background: #F1F5F9;
-      color: #334155;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      max-width: 100%;
-      word-break: break-word;
-      line-height: 1.4;
-      border: 1px solid #E2E8F0;
-    }
-    .verity-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-    .verity-btn-secondary {
-      background: #FFFFFF;
-      border: 1.5px solid #CBD5E1;
-      color: #475569;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .verity-btn-secondary:hover {
-      background: #F8FAFC;
-      color: #0F172A;
-      border-color: #94A3B8;
-    }
-    .verity-btn-primary {
-      background: linear-gradient(135deg, #2563EB, #1D4ED8);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 13px 32px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .verity-btn-primary:hover {
-      background: linear-gradient(135deg, #1D4ED8, #1E40AF);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
-    }
-    .verity-btn-primary:active { transform: translateY(0); }
-    .verity-trust-msg { font-size: 12px; color: #94A3B8; text-align: right; margin: 0; }
-  `;
+  const styleEl = document.createElement('style');
+  styleEl.textContent = VERITY_UI_CSS;
+  shadow.appendChild(styleEl);
 
-  const styleTag = document.createElement('style');
-  styleTag.textContent = hardcodedCSS;
-  shadow.appendChild(styleTag);
+  const overlayWrap = document.createElement('div');
+  overlayWrap.className = 'verity-overlay';
+  overlayWrap.setAttribute('role', 'alertdialog');
+  overlayWrap.setAttribute('aria-modal', 'true');
+  overlayWrap.setAttribute('aria-labelledby', 'verity-dialog-title');
+  overlayWrap.setAttribute('aria-describedby', 'verity-dialog-desc');
 
-  const container = document.createElement('div');
-  container.className = 'verity-overlay';
+  // Theme Sync
+  chrome.storage.local.get(['theme'], (res) => {
+    if (res && res.theme && res.theme !== 'system') {
+      overlayWrap.setAttribute('data-theme', res.theme);
+    }
+  });
+
+  const domainParts = extractDomainParts(window.location.href);
 
   const allReasons = (verdict.signals && verdict.signals.length > 0)
     ? verdict.signals.map(s => {
@@ -1148,147 +748,170 @@ function injectOverlay(verdict) {
         ...(verdict.paymentAnalysis ? verdict.paymentAnalysis.reasons : []),
       ].filter(Boolean);
 
+  const reasonsList = allReasons.length > 0 ? allReasons : ['Suspicious threat pattern detected'];
 
-  container.innerHTML = `
-    <div class="verity-header">
-      <div class="verity-header-brand">
-        <div class="verity-header-logo">V</div>
-        <div class="verity-header-title">VERITY <span class="verity-header-pipe">|</span> <span class="verity-header-sub">Web Protection</span></div>
-      </div>
-      <div class="verity-header-badge">${isDanger ? '🛑 Threat Blocked' : '⚠️ Warning'}</div>
-    </div>
-
-    <div class="verity-card-container" id="main-view">
-      <div class="verity-card">
-        <div class="verity-card-left">
-          <div class="verity-alert-wrapper">
-            <div class="verity-alert-circle">!</div>
+  overlayWrap.innerHTML = `
+    <!-- Main View Dialog Card -->
+    <div class="v-dialog-card ${isDanger ? 'v-card-danger' : 'v-card-warning'}" id="main-view">
+      <div class="v-dialog-inner">
+        <div class="v-dialog-header-top">
+          <div class="v-icon-badge-wrap">
+            <div class="v-icon-circle ${isDanger ? 'v-icon-circle-danger' : 'v-icon-circle-warning'}">
+              ${isDanger
+                ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg>'
+                : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
+              }
+            </div>
+            <span class="verity-header-badge v-badge ${isDanger ? 'v-badge-danger' : 'v-badge-caution'}">
+              ${isDanger ? '🛑 Threat Blocked' : '⚠️ Warning'}
+            </span>
+          </div>
+          <div class="v-brand-mark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+            <span>VERITY</span>
           </div>
         </div>
 
-        <div class="verity-card-right">
-          <h1 class="verity-status">Website status: <span class="verity-status-highlight">${stateTitle}</span></h1>
-          <div class="verity-url">🌐 <span id="verity-url-display"></span></div>
-          <div id="verity-payment-warning-container"></div>
-          <div id="verity-chain-container"></div>
-          <p class="verity-message">
-            ${isPaymentPhishing
-              ? 'This website is attempting to impersonate a payment gateway to steal your payment credentials. We strongly recommend you do not proceed.'
-              : isDanger
-                ? 'This site matches signatures of phishing, scams, malvertising, or credential harvesting. Verity recommends returning to safety.'
-                : 'This site exhibits suspicious patterns. Please make sure you trust the domain before proceeding.'}
-          </p>
+        <h1 class="v-dialog-title" id="verity-dialog-title">
+          Website status: <span class="verity-status-highlight">${escapeHtml(stateTitle)}</span>
+        </h1>
 
-          <div class="verity-tags" id="verity-tags-container"></div>
-
-          <div class="verity-actions">
-            <button class="verity-btn-secondary" id="btn-proceed">⚠️ Visit Anyway</button>
-            <button class="verity-btn-primary" id="btn-back">🛡️ Go Back to Safety</button>
-          </div>
-
-          <p class="verity-trust-msg">
-            Choosing to visit this site will bypass protection for this tab.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Confirmation View -->
-    <div class="verity-card-container" id="confirm-view" style="display: none;">
-      <div class="verity-card" style="max-width: 620px; padding: 48px; flex-direction: column; gap: 20px;">
-        <h1 class="verity-status" style="font-size: 26px; color: #DC2626;">⚠️ Are you sure you want to proceed?</h1>
-        ${isPaymentPhishing ? '<p style="color:#BE123C;font-weight:600;font-size:14px;">💳 Danger: Entering passwords, OTPs, or card details on this site puts your financial account at risk.</p>' : ''}
-        <p class="verity-message" style="margin-bottom: 10px; font-size: 15px;">
-          This website has been classified as <strong id="verity-confirm-state"></strong>.<br><br>
-          Bypassing protection exposes you to potential credential theft, phishing, or malvertising pop-unders.
+        <p class="verity-message" id="verity-dialog-desc">
+          ${isPaymentPhishing
+            ? 'This website is attempting to impersonate a financial institution to steal your payment credentials.'
+            : isDanger
+              ? 'This website matches verified signatures of phishing, brand impersonation, or credential harvesting.'
+              : 'This website exhibits unusual or unverified patterns. Verify the domain before proceeding.'}
         </p>
-        <div class="verity-actions" style="margin-top: 20px; justify-content: space-between; gap: 12px;">
-          <button class="verity-btn-primary" id="btn-confirm-cancel" style="flex: 1;">🛡️ Return to Safety</button>
-          <button class="verity-btn-secondary" id="btn-confirm-proceed" style="background: #DC2626; color: white; border: none; font-weight: 700;">Proceed to Unsafe Site</button>
+
+        <div class="v-chip-mono" style="margin-bottom: 20px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--v-muted-fg);flex-shrink:0;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          <span class="v-chip-mono-muted">${escapeHtml(domainParts.subdomain)}</span>
+          <span class="v-chip-mono-emphasis">${escapeHtml(domainParts.registeredDomain)}</span>
+          <span id="verity-url-display" style="display:none;">${escapeHtml(window.location.href)}</span>
+        </div>
+
+        <div id="verity-payment-warning-container"></div>
+        <div id="verity-chain-container"></div>
+
+        <div class="v-accordion-item">
+          <button type="button" class="v-accordion-trigger" id="v-accordion-btn" aria-expanded="true">
+            <span>Why we flagged this (${reasonsList.length})</span>
+            <svg class="v-accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="v-accordion-content v-scroll" id="verity-tags-container"></div>
+        </div>
+
+        <div class="v-dialog-actions">
+          <button type="button" class="v-btn v-btn-ghost v-btn-md" id="btn-proceed">Continue anyway</button>
+          <button type="button" class="v-btn v-btn-primary v-btn-lg" id="btn-back">Take me to safety</button>
+        </div>
+
+        <div class="v-dialog-footer">
+          <span class="v-footer-brand">Protected by VERITY Web Protection</span>
+          <button type="button" class="v-footer-link" id="btn-report-site">Report an issue</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation View Dialog Card -->
+    <div class="v-dialog-card v-card-danger" id="confirm-view" style="display: none; max-width: 540px;">
+      <div class="v-dialog-inner">
+        <div class="v-dialog-header-top">
+          <div class="v-icon-badge-wrap">
+            <div class="v-icon-circle v-icon-circle-danger">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </div>
+            <span class="v-badge v-badge-danger">High Risk Confirmation</span>
+          </div>
+        </div>
+
+        <h2 class="v-dialog-title" style="color: var(--v-destructive);">Are you sure you want to proceed?</h2>
+        <p class="verity-message">
+          This site is classified as <strong id="verity-confirm-state">${escapeHtml(stateTitle)}</strong>.
+          Bypassing protection exposes you to potential credential theft, phishing, or financial risk.
+        </p>
+
+        <div class="v-cooldown-bar"><div class="v-cooldown-progress" id="v-cooldown-fill"></div></div>
+
+        <div class="v-dialog-actions" style="margin-top: 16px;">
+          <button type="button" class="v-btn v-btn-outline v-btn-md" id="btn-confirm-cancel">Return to safety</button>
+          <button type="button" class="v-btn v-btn-destructive v-btn-md" id="btn-confirm-proceed" disabled>Please wait (1.5s)...</button>
         </div>
       </div>
     </div>
   `;
 
-  // Safely populate dynamic values via textContent
-  const urlDisplay = container.querySelector('#verity-url-display');
-  if (urlDisplay) urlDisplay.textContent = window.location.href;
-
-  const confirmState = container.querySelector('#verity-confirm-state');
-  if (confirmState) confirmState.textContent = stateTitle;
-
+  // Populate dynamic payment warning if present
   if (isPaymentPhishing) {
-    const pwContainer = container.querySelector('#verity-payment-warning-container');
+    const pwContainer = overlayWrap.querySelector('#verity-payment-warning-container');
     if (pwContainer) {
-      const pw = document.createElement('p');
-      pw.style.cssText = 'background:#FFEBEE;border:1px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-weight:600;margin-bottom:20px;font-size:14px;';
-      pw.appendChild(document.createTextNode('💳 '));
-      const strongPw = document.createElement('strong');
-      strongPw.textContent = 'Critical Payment Risk:';
-      pw.appendChild(strongPw);
-      pw.appendChild(document.createTextNode(' Do NOT enter any card, UPI, CVV or OTP details on this website.'));
-      pwContainer.appendChild(pw);
+      pwContainer.innerHTML = `
+        <div class="v-payment-alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          <div><strong>Critical Payment Risk:</strong> Do not enter any passwords, card numbers, UPI PINs, or OTPs on this page.</div>
+        </div>
+      `;
     }
   }
 
+  // Populate redirect chain if present
   if (verdict.shortenerDetected && verdict.redirectChain && verdict.redirectChain.length > 1) {
-    const chainContainer = container.querySelector('#verity-chain-container');
+    const chainContainer = overlayWrap.querySelector('#verity-chain-container');
     if (chainContainer) {
-      const chainBox = document.createElement('div');
-      chainBox.style.cssText = 'background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px; margin-bottom: 24px;';
-      const chainTitle = document.createElement('div');
-      chainTitle.style.cssText = 'font-weight: 700; margin-bottom: 10px; font-size: 13px; color: #475569; letter-spacing: 0.5px;';
-      chainTitle.textContent = '🔗 REDIRECT CHAIN ANALYSIS';
-      chainBox.appendChild(chainTitle);
-
-      verdict.redirectChain.forEach((url, i) => {
-        let u;
-        try { u = new URL(url).hostname; } catch(e) { u = url; }
-        const item = document.createElement('div');
-        item.style.cssText = 'padding: 4px 0; font-family: monospace; font-size: 13px;';
-        item.textContent = `${i + 1}. ${u}`;
-        chainBox.appendChild(item);
-        if (i < verdict.redirectChain.length - 1) {
-          const arrow = document.createElement('div');
-          arrow.style.cssText = 'color: #94A3B8; padding-left: 12px;';
-          arrow.textContent = '↓';
-          chainBox.appendChild(arrow);
-        }
-      });
-      chainContainer.appendChild(chainBox);
+      const chainItems = verdict.redirectChain.map((u, i) => {
+        let h;
+        try { h = new URL(u).hostname; } catch(e) { h = u; }
+        return `<div class="v-chain-item">${i + 1}. ${escapeHtml(h)}</div>`;
+      }).join('<div style="color:var(--v-muted-fg);padding-left:8px;font-size:10px;">↓</div>');
+      chainContainer.innerHTML = `
+        <div class="v-chain-box">
+          <div class="v-chain-title">Redirect Chain Analysis</div>
+          ${chainItems}
+        </div>
+      `;
     }
   }
 
-  const tagsContainer = container.querySelector('#verity-tags-container');
+  // Populate reasons list inside accordion
+  const tagsContainer = overlayWrap.querySelector('#verity-tags-container');
   if (tagsContainer) {
-    const reasonsList = allReasons.length > 0 ? allReasons : ['High Risk Pattern Detected'];
     for (const r of reasonsList) {
-      const tag = document.createElement('span');
-      tag.className = 'verity-tag';
-      const svgWrap = document.createElement('span');
-      svgWrap.style.cssText = 'display:inline-flex;align-items:center;';
-      svgWrap.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
-      tag.appendChild(svgWrap);
-      tag.appendChild(document.createTextNode(String(r)));
-      tagsContainer.appendChild(tag);
+      const tagRow = document.createElement('div');
+      tagRow.className = 'verity-tag';
+      tagRow.innerHTML = `
+        <span class="v-reason-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        </span>
+        <span class="v-reason-text">${escapeHtml(String(r))}</span>
+        <span class="v-reason-dot ${isDanger ? 'v-dot-danger' : 'v-dot-warning'}"></span>
+      `;
+      tagsContainer.appendChild(tagRow);
     }
-
-    const scoreTag = document.createElement('span');
-    scoreTag.className = 'verity-tag';
-    scoreTag.style.color = stateColor;
-    scoreTag.style.background = isDanger ? '#FFEBEE' : '#FEF3C7';
-    scoreTag.style.borderColor = 'rgba(239,68,68,0.2)';
-    scoreTag.textContent = `Risk Score: ${verdict.score || 0}/100`;
-    tagsContainer.appendChild(scoreTag);
+    const scorePill = document.createElement('div');
+    scorePill.className = 'verity-tag v-score-tag';
+    scorePill.textContent = `Risk Score: ${verdict.score || 0}/100`;
+    tagsContainer.appendChild(scorePill);
   }
 
-  shadow.appendChild(container);
+  shadow.appendChild(overlayWrap);
 
-  // Event Listeners
+  // Accordion Toggle Behavior
+  const accordionBtn = shadow.querySelector('#v-accordion-btn');
+  if (accordionBtn) {
+    accordionBtn.addEventListener('click', () => {
+      const expanded = accordionBtn.getAttribute('aria-expanded') === 'true';
+      accordionBtn.setAttribute('aria-expanded', String(!expanded));
+    });
+  }
+
+  // Navigation and Buttons
   const mainView = shadow.querySelector('#main-view');
   const confirmView = shadow.querySelector('#confirm-view');
+  const cooldownFill = shadow.querySelector('#v-cooldown-fill');
+  const btnConfirmProceed = shadow.querySelector('#btn-confirm-proceed');
 
-  shadow.querySelector('#btn-back').addEventListener('click', () => {
+  shadow.querySelector('#btn-back')?.addEventListener('click', () => {
     if (window.history.length > 1) {
       window.history.back();
     } else {
@@ -1296,17 +919,39 @@ function injectOverlay(verdict) {
     }
   });
 
-  shadow.querySelector('#btn-proceed').addEventListener('click', () => {
-    mainView.style.display = 'none';
-    confirmView.style.display = 'flex';
+  shadow.querySelector('#btn-proceed')?.addEventListener('click', () => {
+    if (isDanger) {
+      mainView.style.display = 'none';
+      confirmView.style.display = 'flex';
+      shadow.querySelector('#btn-confirm-cancel')?.focus();
+
+      // 1.5s Cooldown with Progress Sweep
+      if (cooldownFill && btnConfirmProceed) {
+        btnConfirmProceed.disabled = true;
+        btnConfirmProceed.textContent = 'Please wait (1.5s)...';
+        cooldownFill.style.width = '0%';
+        requestAnimationFrame(() => {
+          cooldownFill.style.width = '100%';
+        });
+        setTimeout(() => {
+          btnConfirmProceed.disabled = false;
+          btnConfirmProceed.textContent = 'Confirm, I understand the risk';
+        }, 1500);
+      }
+    } else {
+      // Direct caution override
+      isBlocked = false;
+      removeOverlay();
+    }
   });
 
-  shadow.querySelector('#btn-confirm-cancel').addEventListener('click', () => {
+  shadow.querySelector('#btn-confirm-cancel')?.addEventListener('click', () => {
     confirmView.style.display = 'none';
     mainView.style.display = 'flex';
+    shadow.querySelector('#btn-back')?.focus();
   });
 
-  shadow.querySelector('#btn-confirm-proceed').addEventListener('click', () => {
+  shadow.querySelector('#btn-confirm-proceed')?.addEventListener('click', () => {
     isBlocked = false;
     chrome.runtime.sendMessage({ action: 'USER_OVERRIDE_ALLOW', url: window.location.href }, () => {
       removeOverlay();
@@ -1314,11 +959,44 @@ function injectOverlay(verdict) {
     });
   });
 
+  // Focus trap & Esc handling
+  overlayWrap.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (isDanger) {
+        // Block verdict does NOT dismiss on Esc
+        e.preventDefault();
+        shadow.querySelector('#btn-back')?.focus();
+      } else {
+        removeOverlay();
+      }
+    }
+    if (e.key === 'Tab') {
+      const activeCard = confirmView.style.display === 'flex' ? confirmView : mainView;
+      const focusables = Array.from(activeCard.querySelectorAll('button:not([disabled]), [tabindex="0"]'));
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && shadow.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && shadow.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+
   const parent = document.documentElement || document.body;
   if (parent) {
     parent.appendChild(host);
   }
 
+  // Auto-focus primary safe action
+  setTimeout(() => {
+    shadow.querySelector('#btn-back')?.focus();
+  }, 50);
+
+  // Re-attachment Observer against hostile host pages
   if (!blockObserver && parent) {
     blockObserver = new MutationObserver((mutations) => {
       let removed = false;

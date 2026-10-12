@@ -1,0 +1,419 @@
+/**
+ * shared/ui/components.css - Production-Grade UI Component Styles
+ * shadcn/ui inspired primitives with calm typography, WCAG AA contrast, and stable layout.
+ */
+
+/* ─── Font Setup & Base Reset ──────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/shared/fonts/InterVariable.woff2') format('woff2');
+}
+
+*, ::before, ::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:host {
+  all: initial;
+  display: block;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: var(--text-base, 14px);
+  line-height: var(--line-height-base, 1.5);
+  color: var(--foreground, #09090b);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Custom Scrollbars (.v-scroll) ────────────────────────────────────────── */
+.v-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #e4e4e7) transparent;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  transition: scrollbar-color var(--dur-base, 200ms) var(--ease-out, ease-out);
+}
+
+.v-scroll:hover {
+  scrollbar-color: var(--muted-foreground, #71717a) transparent;
+}
+
+.v-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+.v-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.v-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--border, #e4e4e7);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: var(--radius-full, 9999px);
+  transition: background-color var(--dur-base, 200ms) var(--ease-out, ease-out);
+}
+
+.v-scroll:hover::-webkit-scrollbar-thumb,
+.v-scroll:active::-webkit-scrollbar-thumb {
+  background-color: var(--muted-foreground, #71717a);
+}
+
+.v-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Soft Edge Fade Mask on Scroll Containers */
+.v-scroll-mask {
+  mask-image: linear-gradient(to bottom, transparent, black 16px, black calc(100% - 16px), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 16px, black calc(100% - 16px), transparent);
+}
+.v-scroll-mask-top {
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+}
+.v-scroll-mask-bottom {
+  mask-image: linear-gradient(to bottom, transparent, black 16px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 16px);
+}
+
+/* ─── Buttons (.v-btn) ─────────────────────────────────────────────────────── */
+.v-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  font-family: inherit;
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  background: transparent;
+  color: var(--foreground, #09090b);
+  transition: background-color var(--dur-fast, 120ms) var(--ease-out, ease-out),
+              border-color var(--dur-fast, 120ms) var(--ease-out, ease-out),
+              color var(--dur-fast, 120ms) var(--ease-out, ease-out),
+              box-shadow var(--dur-fast, 120ms) var(--ease-out, ease-out),
+              transform var(--dur-fast, 120ms) var(--ease-out, ease-out);
+}
+
+.v-btn:focus-visible {
+  outline: 2px solid var(--ring, #18181b);
+  outline-offset: 2px;
+}
+
+.v-btn:disabled,
+.v-btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Button Sizes */
+.v-btn-sm {
+  height: 32px;
+  padding: 0 var(--space-3, 12px);
+  font-size: var(--text-xs, 12px);
+}
+.v-btn-md {
+  height: 38px;
+  padding: 0 var(--space-4, 16px);
+  font-size: var(--text-sm, 13px);
+}
+.v-btn-lg {
+  height: 44px;
+  padding: 0 var(--space-5, 20px);
+  font-size: var(--text-base, 14px);
+  font-weight: 600;
+}
+.v-btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-md, 8px);
+}
+
+/* Button Variants */
+.v-btn-primary {
+  background-color: var(--primary, #18181b);
+  color: var(--primary-foreground, #fafafa);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+}
+.v-btn-primary:hover {
+  background-color: rgba(24, 24, 27, 0.88);
+}
+[data-theme="dark"] .v-btn-primary:hover {
+  background-color: rgba(250, 250, 250, 0.9);
+}
+.v-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.v-btn-secondary {
+  background-color: var(--secondary, #f4f4f5);
+  color: var(--secondary-foreground, #18181b);
+}
+.v-btn-secondary:hover {
+  background-color: var(--border, #e4e4e7);
+}
+.v-btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.v-btn-outline {
+  border-color: var(--border, #e4e4e7);
+  background-color: transparent;
+  color: var(--foreground, #09090b);
+}
+.v-btn-outline:hover {
+  background-color: var(--muted, #f4f4f5);
+  border-color: var(--input, #e4e4e7);
+}
+.v-btn-outline:active {
+  transform: scale(0.98);
+}
+
+.v-btn-ghost {
+  background-color: transparent;
+  color: var(--muted-foreground, #52525b);
+}
+.v-btn-ghost:hover {
+  background-color: var(--muted, #f4f4f5);
+  color: var(--foreground, #09090b);
+}
+
+.v-btn-destructive {
+  background-color: var(--destructive, #dc2626);
+  color: var(--destructive-foreground, #ffffff);
+  box-shadow: var(--shadow-sm);
+}
+.v-btn-destructive:hover {
+  background-color: #b91c1c;
+}
+.v-btn-destructive:active {
+  transform: scale(0.98);
+}
+
+/* ─── Badges & Pills (.v-badge) ────────────────────────────────────────────── */
+.v-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5, 6px);
+  padding: var(--space-0-5, 2px) var(--space-2-5, 10px);
+  border-radius: var(--radius-full, 9999px);
+  font-size: var(--text-xs, 12px);
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.v-badge-neutral {
+  background-color: var(--muted, #f4f4f5);
+  color: var(--muted-foreground, #52525b);
+  border-color: var(--border, #e4e4e7);
+}
+
+.v-badge-safe {
+  background-color: var(--success-subtle, #f0fdf4);
+  color: var(--success-text, #166534);
+  border-color: var(--success-border, #bbf7d0);
+}
+
+.v-badge-caution {
+  background-color: var(--warning-subtle, #fffbeb);
+  color: var(--warning-text, #92400e);
+  border-color: var(--warning-border, #fde68a);
+}
+
+.v-badge-danger {
+  background-color: var(--destructive-subtle, #fef2f2);
+  color: var(--destructive-text, #991b1b);
+  border-color: var(--destructive-border, #fecaca);
+}
+
+/* ─── Card (.v-card) ───────────────────────────────────────────────────────── */
+.v-card {
+  background-color: var(--card, #ffffff);
+  color: var(--card-foreground, #09090b);
+  border-radius: var(--radius-lg, 10px);
+  border: 1px solid var(--border, #e4e4e7);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
+}
+
+/* ─── Accordion (.v-accordion) ─────────────────────────────────────────────── */
+.v-accordion-item {
+  border-bottom: 1px solid var(--border, #e4e4e7);
+}
+.v-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.v-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3, 12px) 0;
+  font-family: inherit;
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  color: var(--foreground, #09090b);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--dur-fast, 120ms) var(--ease-out, ease-out);
+}
+.v-accordion-trigger:hover {
+  color: var(--primary, #18181b);
+}
+.v-accordion-trigger:focus-visible {
+  outline: 2px solid var(--ring, #18181b);
+  outline-offset: 2px;
+}
+
+.v-accordion-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-base, 200ms) var(--ease-out, ease-out);
+  color: var(--muted-foreground, #71717a);
+}
+
+.v-accordion-trigger[aria-expanded="true"] .v-accordion-icon {
+  transform: rotate(180deg);
+}
+
+.v-accordion-content {
+  overflow: hidden;
+  transition: max-height var(--dur-base, 200ms) var(--ease-out, ease-out),
+              opacity var(--dur-base, 200ms) var(--ease-out, ease-out);
+}
+
+.v-accordion-content[hidden] {
+  display: none;
+}
+
+/* ─── Tooltip (.v-tooltip) ─────────────────────────────────────────────────── */
+.v-tooltip {
+  position: absolute;
+  z-index: 50;
+  padding: var(--space-1-5, 6px) var(--space-2-5, 10px);
+  font-size: var(--text-xs, 12px);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--primary-foreground, #fafafa);
+  background-color: var(--primary, #18181b);
+  border-radius: var(--radius-sm, 6px);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: vFadeIn var(--dur-fast, 120ms) var(--ease-out, ease-out);
+}
+
+/* ─── Separator (.v-separator) ─────────────────────────────────────────────── */
+.v-separator {
+  height: 1px;
+  width: 100%;
+  background-color: var(--border, #e4e4e7);
+  border: none;
+  margin: var(--space-3, 12px) 0;
+}
+
+/* ─── Alert (.v-alert) ─────────────────────────────────────────────────────── */
+.v-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border, #e4e4e7);
+  background-color: var(--card, #ffffff);
+  font-size: var(--text-sm, 13px);
+  line-height: 1.5;
+}
+.v-alert-danger {
+  background-color: var(--destructive-subtle, #fef2f2);
+  border-color: var(--destructive-border, #fecaca);
+  color: var(--destructive-text, #991b1b);
+}
+.v-alert-warning {
+  background-color: var(--warning-subtle, #fffbeb);
+  border-color: var(--warning-border, #fde68a);
+  color: var(--warning-text, #92400e);
+}
+
+/* ─── Monospace Chip (.v-chip-mono) ────────────────────────────────────────── */
+.v-chip-mono {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5, 6px);
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-xs, 12px);
+  padding: var(--space-1, 4px) var(--space-2-5, 10px);
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--muted, #f4f4f5);
+  border: 1px solid var(--border, #e4e4e7);
+  color: var(--foreground, #09090b);
+  word-break: break-all;
+}
+.v-chip-mono-muted {
+  color: var(--muted-foreground, #71717a);
+  font-weight: 400;
+}
+.v-chip-mono-emphasis {
+  color: var(--foreground, #09090b);
+  font-weight: 700;
+}
+
+/* ─── Skeleton (.v-skeleton) ───────────────────────────────────────────────── */
+.v-skeleton {
+  background-color: var(--muted, #f4f4f5);
+  border-radius: var(--radius-sm, 6px);
+  animation: vPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ─── Animations ───────────────────────────────────────────────────────────── */
+@keyframes vFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes vPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@keyframes vDialogEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes vDialogExit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}

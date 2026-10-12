@@ -58,6 +58,8 @@
     {
       "resources": [
         "shared/theme.css",
+        "shared/ui/*",
+        "shared/fonts/*",
         "content/overlay.css",
         "payment-brands.json",
         "config/urlShorteners.json",

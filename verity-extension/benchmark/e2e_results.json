@@ -1,6 +1,6 @@
 {
   "verified": true,
-  "timestamp": "2026-10-12T18:49:44.635Z",
+  "timestamp": "2026-10-12T19:43:35.304Z",
   "browserExecutable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "extensionPath": "C:\\Users\\User\\AppData\\Local\\Temp\\verity_ext_e2e_clean",
   "demoPages": [
@@ -11,7 +11,7 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 100,
+        "score": 96,
         "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
         "reasonsCount": 14,
@@ -30,7 +30,7 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 100,
+        "score": 96,
         "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
         "reasonsCount": 13,
@@ -49,7 +49,7 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 100,
+        "score": 96,
         "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
         "reasonsCount": 11,
@@ -68,7 +68,7 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 98,
+        "score": 80,
         "stateTitle": "Payment Phishing Blocked",
         "headerBadge": "🛑 Threat Blocked",
         "reasonsCount": 7,
