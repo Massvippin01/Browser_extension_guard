@@ -36,7 +36,13 @@
     {
       "matches": [
         "*://www.google.com/search*",
-        "*://www.bing.com/search*"
+        "*://*.google.com/search*",
+        "*://www.bing.com/search*",
+        "*://*.bing.com/search*",
+        "*://duckduckgo.com/*",
+        "*://*.duckduckgo.com/*",
+        "*://localhost/*demo/google-search*",
+        "*://127.0.0.1/*demo/google-search*"
       ],
       "js": ["content/search/search-loader.js"],
       "run_at": "document_idle"
@@ -62,6 +68,7 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "shared/*",
         "shared/theme.css",
         "shared/ui/*",
         "shared/fonts/*",

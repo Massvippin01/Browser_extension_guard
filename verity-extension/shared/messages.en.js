@@ -191,7 +191,27 @@
     OVERLAY_CONFIRM_DESC: (p) => `This site is classified as ${p?.state || 'dangerous'}. Bypassing protection exposes you to potential credential theft, phishing, or financial risk.`,
     OVERLAY_CONFIRM_CANCEL: () => 'Return to safety',
     OVERLAY_CONFIRM_PROCEED: () => 'I understand the risks, proceed',
-    OVERLAY_CONFIRM_WAIT: (p) => `Please wait (${p?.seconds || '1.5'}s)...`
+    OVERLAY_CONFIRM_WAIT: (p) => `Please wait (${p?.seconds || '1.5'}s)...`,
+
+    // ── Search Result Badges & Tooltips (Phase UI-1.2) ─────────────────────────
+    SEARCH_BADGE_SAFE: () => 'Safe',
+    SEARCH_BADGE_SUSPICIOUS: () => 'Suspicious',
+    SEARCH_BADGE_DANGEROUS: () => 'Dangerous',
+    SEARCH_BADGE_CHECKING: () => 'Checking',
+    SEARCH_BADGE_ARIA: (p) => `Verity security rating: ${p?.state || 'Safe'}`,
+
+    SEARCH_POPOVER_TITLE_SAFE: () => 'Looks safe',
+    SEARCH_POPOVER_TITLE_CAUTION: () => 'Be careful with this link',
+    SEARCH_POPOVER_TITLE_BLOCK: () => 'Dangerous link',
+    SEARCH_POPOVER_TITLE_CHECKING: () => 'Checking link safety...',
+
+    SEARCH_POPOVER_SAFE_DESC: () => 'No warning signs found by on-device checks.',
+    SEARCH_POPOVER_CHECKING_DESC: () => 'Analyzing URL reputation and characteristics...',
+    SEARCH_POPOVER_MORE_REASONS: (p) => `+${p?.count || 1} more`,
+
+    SEARCH_POPOVER_RISK_SCORE: () => 'Risk score',
+    SEARCH_POPOVER_SCORE_VALUE: (p) => `${p?.score ?? 0} / 100`,
+    SEARCH_POPOVER_FOOTER_BRAND: () => 'Protected by VERITY'
   };
 
   /**

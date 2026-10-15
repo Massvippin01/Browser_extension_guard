@@ -64,6 +64,55 @@ const server = http.createServer((req, res) => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // DEMO GOOGLE SEARCH — Real Google DOM & Styling for Search Engine Testing
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (req.url.startsWith('/demo/google-search')) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    return res.end(`<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>hdfc netbanking - Google Search</title>
+<style>
+  body { font-family: Roboto, arial, sans-serif; background: #fff; color: #202124; margin: 0; padding: 24px 40px; }
+  body.dark-mode { background: #202124 !important; color: #bdc1c6 !important; }
+  body.dark-mode h3 { color: #8ab4f8 !important; }
+  body.dark-mode .cite { color: #bdc1c6 !important; }
+  body.dark-mode .snippet { color: #9aa0a6 !important; }
+  #search { max-width: 652px; }
+  .g { margin-bottom: 28px; }
+  h3 { font-size: 20px; line-height: 26px; margin: 0 0 4px 0; font-weight: 400; color: #1a0dab; }
+  a { text-decoration: none; color: inherit; }
+  a:hover h3 { text-decoration: underline; }
+  .cite { font-size: 14px; line-height: 1.3; color: #202124; margin-bottom: 4px; }
+  .snippet { font-size: 14px; line-height: 1.58; color: #4d5156; }
+</style></head><body>
+<div id="search">
+  <div id="rso">
+    <div class="g">
+      <div class="cite">https://netbanking.hdfcbank.com &gt; netbanking</div>
+      <a href="https://netbanking.hdfcbank.com/netbanking/">
+        <h3>Welcome to HDFC Bank NetBanking</h3>
+      </a>
+      <div class="snippet">Login to HDFC Bank NetBanking for secure online banking services, fund transfer, bill payments and more.</div>
+    </div>
+    <div class="g">
+      <div class="cite">https://free-movies-online.click &gt; watch</div>
+      <a href="https://free-movies-online.click/watch/stream">
+        <h3>Watch Free Movies HD 2026 - Stream Online Free</h3>
+      </a>
+      <div class="snippet">Stream latest high definition movies online without registration. High speed servers.</div>
+    </div>
+    <div class="g">
+      <div class="cite">https://hdfc-bank-netbanking-verify.xyz &gt; urgent</div>
+      <a href="https://hdfc-bank-netbanking-verify.xyz/urgent-kyc">
+        <h3>HDFC Bank KYC Update Mandatory - Complete NetBanking Verification</h3>
+      </a>
+      <div class="snippet">Dear customer, your netbanking access will be suspended within 24 hours. Verify now.</div>
+    </div>
+  </div>
+</div>
+</body></html>`);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // DEMO B — Fake Payment Gateway (Plain HTML, no embedded overlays)
   // ═══════════════════════════════════════════════════════════════════════════
   if (req.url === '/demo/payment') {

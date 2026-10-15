@@ -1,10 +1,11 @@
 import { GoogleAdapter } from './engines/google.js';
 import { BingAdapter } from './engines/bing.js';
+import { DuckDuckGoAdapter } from './engines/duckduckgo.js';
 import { SearchUI } from './ui.js';
 
 class SearchManager {
   constructor() {
-    this.adapters = [GoogleAdapter, BingAdapter];
+    this.adapters = [GoogleAdapter, BingAdapter, DuckDuckGoAdapter];
     this.activeAdapter = null;
     this.ui = new SearchUI();
     this.resultCache = new Map();     // url → verdict (persists across SPA navigations)
@@ -22,7 +23,7 @@ class SearchManager {
     // Initial scan after DOM settles
     this._scheduleScan(500);
 
-    // Watch for DOM mutations (new results loading, infinite scroll)
+    // Watch for DOM mutations (new results loading, infinite scroll, "People also ask")
     const observer = new MutationObserver(() => {
       this._scheduleScan(400);
     });
@@ -94,7 +95,11 @@ class SearchManager {
       if (!res.insertionPoint) continue;
 
       // Skip elements that already have a badge attached
-      if (this.processedElements.has(res.element)) continue;
+      if (this.processedElements.has(res.element) ||
+          res.insertionPoint.querySelector('.verity-search-indicator') ||
+          res.element.querySelector('.verity-search-indicator')) {
+        continue;
+      }
 
       const normUrl = this.normalizeUrl(res.url);
 
@@ -102,14 +107,22 @@ class SearchManager {
         // Instant inject from cache
         this.injectBadge(res, this.resultCache.get(normUrl));
       } else {
-        // Mark immediately so we don't send duplicate messages while awaiting response
+        // Mark immediately and inject Checking shimmer pill while awaiting response
         this.processedElements.add(res.element);
-        this.requestAnalysis(normUrl, res);
+        const checkingBadge = this.ui.createBadge(
+          { state: 'checking', severity: 'checking', score: 0, reasons: [] },
+          res.url
+        );
+        try {
+          res.insertionPoint.appendChild(checkingBadge);
+        } catch (_) {}
+
+        this.requestAnalysis(normUrl, res, checkingBadge);
       }
     }
   }
 
-  requestAnalysis(url, resultObj) {
+  requestAnalysis(url, resultObj, badgeHost) {
     chrome.runtime.sendMessage(
       { action: 'ANALYZE_SEARCH_RESULT', url },
       (response) => {
@@ -124,17 +137,25 @@ class SearchManager {
 
         console.log('[Verity] Verdict for', url, '→', response.verdict.severity, response.verdict.score);
         this.resultCache.set(url, response.verdict);
-        this.injectBadge(resultObj, response.verdict);
+
+        if (badgeHost && badgeHost.parentNode) {
+          this.ui.updateBadge(badgeHost, response.verdict, resultObj.url);
+        } else {
+          this.injectBadge(resultObj, response.verdict);
+        }
       }
     );
   }
 
   injectBadge(resultObj, verdict) {
     // Final guard — check the actual DOM for an existing badge too
-    if (resultObj.element.querySelector('.verity-search-indicator')) return;
+    if (resultObj.insertionPoint.querySelector('.verity-search-indicator') ||
+        resultObj.element.querySelector('.verity-search-indicator')) {
+      return;
+    }
     this.processedElements.add(resultObj.element);
 
-    const badge = this.ui.createBadge(verdict);
+    const badge = this.ui.createBadge(verdict, resultObj.url);
     try {
       resultObj.insertionPoint.appendChild(badge);
       console.log('[Verity] Badge injected:', resultObj.url);

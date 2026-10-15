@@ -2,8 +2,9 @@ export const GoogleAdapter = {
   name: 'google',
 
   isSearchPage() {
-    return window.location.hostname.includes('google.') &&
-           window.location.pathname.startsWith('/search');
+    return (window.location.hostname.includes('google.') &&
+           window.location.pathname.startsWith('/search')) ||
+           window.location.pathname.includes('/demo/google-search');
   },
 
   extractResults() {
