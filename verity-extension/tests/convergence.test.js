@@ -129,3 +129,52 @@ test('Score Architecture: each category alone at its cap must NEVER produce a Bl
   }
 });
 
+test('Real-world Malvertising URL: scores >= 70 (BLOCK) with corroborated signals', async () => {
+  const { hasSuspiciousUrlPattern, hasMalvertisingPattern } = await import('../background/rules.js');
+  const targetUrl = 'https://aar5n.wigglepoploaderfast.monster/?540267a373b920a51ea99c645c7f';
+
+  const tldSignal = hasSuspiciousUrlPattern(targetUrl);
+  const malvertisingSignal = hasMalvertisingPattern(targetUrl);
+
+  assert.equal(tldSignal.triggered, true, 'TLD .monster should trigger');
+  assert.equal(malvertisingSignal.triggered, true, 'Malvertising pattern should trigger');
+  assert.equal(malvertisingSignal.score, 65, 'Malvertising score should be 65');
+
+  const verdict = calculateRisk(targetUrl, [tldSignal, malvertisingSignal], null, null);
+  assert.ok(verdict.score >= 70, `Score must be >= 70, got: ${verdict.score}`);
+  assert.equal(verdict.action, 'block', `Action must be block, got: ${verdict.action}`);
+  assert.equal(verdict.severity, 'danger', `Severity must be danger, got: ${verdict.severity}`);
+});
+
+test('Pairwise Synergy Bonuses: boost corroborated risk scores', () => {
+  // brand_impersonation + dom_credentials (+20 pts)
+  const brandSignal = [{ id: 'RULE_BRAND_VARIANT_MATCH', score: 55, triggered: true }];
+  const domCredSignal = { isTrustedDomain: false, hasCredentialCollection: true, pageTitle: 'Login' };
+  const brandCredVerdict = calculateRisk('https://example-phish.com', brandSignal, null, domCredSignal);
+  assert.equal(brandCredVerdict.action, 'block');
+  assert.ok(brandCredVerdict.score >= 70);
+
+  // payment_phishing + dom_credentials (+25 pts)
+  const paymentAnalysis = {
+    isPaymentPage: true,
+    structuredReasons: [{ id: 'PAYMENT_FAKE_PROVIDER', score: 65, params: { hostname: 'fake-pay.com' } }]
+  };
+  const paymentVerdict = calculateRisk('https://fake-pay.com', [], null, domCredSignal, null, null, paymentAnalysis);
+  assert.equal(paymentVerdict.action, 'block');
+  assert.ok(paymentVerdict.score >= 70);
+
+  // malvertising + redirect (+20 pts) convergence to block
+  const malvSignal = [{ id: 'RULE_MALVERTISING_REDIRECT', score: 65, triggered: true }];
+  const redirectSignals = { chain: ['https://source.com', 'https://dest.monster'], redirectCount: 1, suspicious: true };
+  const malvRedirectVerdict = calculateRisk('https://dest.monster', malvSignal, null, null, null, redirectSignals);
+  assert.equal(malvRedirectVerdict.action, 'block');
+  assert.ok(malvRedirectVerdict.score >= 70);
+
+  // url + ml (both >= 20) (+15 pts)
+  const urlSignals = [{ id: 'RULE_SUSPICIOUS_URL_PATTERN', score: 30, triggered: true }];
+  const urlMlVerdict = calculateRisk('https://suspicious-ml.com', urlSignals, 80, null);
+  // ml 80 scaled: 80 * 0.35 = 28 pts. url: 30 pts. Capped: 30 + round(28 * 0.65) = 48 + 15 = 63.
+  assert.ok(urlMlVerdict.score >= 60);
+});
+
+

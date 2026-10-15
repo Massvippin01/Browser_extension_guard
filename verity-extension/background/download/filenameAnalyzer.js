@@ -13,7 +13,9 @@ const DOCUMENT_LIKE_EXTENSIONS = new Set([
 const HIGH_RISK_EXTENSIONS = new Set([
   '.exe', '.com', '.scr', '.cpl', '.dll', '.msi', '.msp',
   '.bat', '.cmd', '.ps1', '.vbs', '.vbe', '.js', '.jse',
-  '.wsf', '.wsh', '.hta', '.sh', '.pkg', '.deb', '.rpm'
+  '.wsf', '.wsh', '.hta', '.sh', '.pkg', '.deb', '.rpm',
+  '.dmg', '.iso', '.img', '.vhd', '.vhdx', '.lnk', '.chm',
+  '.one', '.reg', '.cab'
 ]);
 
 // Suspicious filename keywords: misleading update/security naming patterns

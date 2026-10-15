@@ -155,6 +155,11 @@ test('Rule 11: hasMalvertisingPattern', () => {
   const attack = hasMalvertisingPattern('https://ad-network.com/click/campaign-redirect-target');
   assert.equal(attack.triggered, true);
 
+  // Attack: Real-world pop-under with hex query, loaderfast keyword, and shard subdomain
+  const popunder = hasMalvertisingPattern('https://aar5n.wigglepoploaderfast.monster/?540267a373b920a51ea99c645c7f');
+  assert.equal(popunder.triggered, true);
+  assert.equal(popunder.score, 65);
+
   // Benign: Standard news/content
   const benign = hasMalvertisingPattern('https://example.com/tech-news');
   assert.equal(benign.triggered, false);

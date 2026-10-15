@@ -14,7 +14,13 @@ import skl2onnx
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 
-SUSPICIOUS_TLDS = {'.xyz', '.top', '.pw', '.tk', '.ml', '.ga', '.cf', '.gq', '.site', '.online', '.rest', '.click', '.fun', '.info', '.icu', '.sbs', '.cfd', '.monster'}
+SUSPICIOUS_TLDS = {
+    '.xyz', '.top', '.pw', '.tk', '.ml', '.ga', '.cf', '.gq',
+    '.site', '.online', '.info',
+    '.monster', '.click', '.sbs', '.cfd', '.rest', '.icu', '.cyou',
+    '.buzz', '.lat', '.skin', '.hair', '.boats', '.quest', '.shop',
+    '.live', '.fun'
+}
 KEYWORDS = ['login', 'verify', 'secure', 'account', 'banking', 'update', 'signin', 'wallet', 'claim', 'otp', 'support', 'auth', 'bill']
 
 def calculate_entropy(text):
@@ -212,7 +218,11 @@ def main():
     # Export ONNX model
     onnx_path = os.path.join(os.path.dirname(__file__), '..', 'background', 'model', 'phishing_model_v2.onnx')
     initial_type = [('float_input', FloatTensorType([None, len(chosen_features)]))]
-    onnx_model = convert_sklearn(gb_model, initial_types=initial_type, target_opset=12)
+    options = {type(gb_model): {'zipmap': False}}
+    onnx_model = convert_sklearn(gb_model, initial_types=initial_type, target_opset=12, options=options)
+    for op in onnx_model.opset_import:
+        if (op.domain == '' or op.domain == 'ai.onnx') and op.version < 12:
+            op.version = 12
     with open(onnx_path, 'wb') as f:
         f.write(onnx_model.SerializeToString())
     print(f"\n[ONNX] Saved candidate model v2 to {onnx_path} ({os.path.getsize(onnx_path)} bytes)")

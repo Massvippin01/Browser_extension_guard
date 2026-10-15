@@ -43,13 +43,22 @@ async function runInference(urlString, domSignals) {
 
     const results = await session.run(feeds);
     
-    let probTensor = results['output_probability'] || results['probabilities'];
-    if (!probTensor && results['output_label']) {
+    let probTensor = results['probabilities'] || results['output_probability'];
+    if (!probTensor) {
+      for (const [key, val] of Object.entries(results)) {
+        if (key !== 'label' && key !== 'output_label' && val && val.data) {
+          probTensor = val;
+          break;
+        }
+      }
+    }
+    if (!probTensor) {
       const keys = Object.keys(results);
       if (keys.length > 1) probTensor = results[keys[1]];
+      else if (keys.length === 1) probTensor = results[keys[0]];
     }
 
-    if (!probTensor) return null;
+    if (!probTensor || !probTensor.data) return null;
 
     const data = probTensor.data; 
     let phishingProb = (data.length >= 2) ? data[1] : data[0];

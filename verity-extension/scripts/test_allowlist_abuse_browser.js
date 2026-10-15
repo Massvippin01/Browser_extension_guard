@@ -135,8 +135,10 @@ async function runFixtureTests() {
     source: 'build_configuration_fixture_test'
   });
   fs.writeFileSync(stagedLegitPath, JSON.stringify(stagedLegit, null, 2), 'utf8');
+  const stagedLegitJsPath = path.join(tempExtDir, 'config', 'legit_domains.js');
+  fs.writeFileSync(stagedLegitJsPath, 'export default ' + JSON.stringify(stagedLegit, null, 2) + ';\n', 'utf8');
   console.log(`[Fixture] Staged extension in: ${tempExtDir}`);
-  console.log(`[Fixture] Injected "allowlisted-corp.test" and "github.io" into staged config/legit_domains.json`);
+  console.log(`[Fixture] Injected "allowlisted-corp.test" and "github.io" into staged config/legit_domains.json and config/legit_domains.js`);
 
   // Start fixture HTTP server
   const server = await startFixtureServer();

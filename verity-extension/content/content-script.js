@@ -7,6 +7,136 @@ let isBlocked = false;
 let blockObserver = null;
 let statusBadgeHost = null;
 
+// ─── Deep DOM & Shadow DOM Traversal ─────────────────────────────────────────
+
+/**
+ * Traverses standard DOM nodes and recursively pierces any open shadowRoot.
+ * Guarantees discovery of form inputs, passwords, and payment fields inside Web Components.
+ *
+ * @param {string} selector - CSS selector
+ * @param {Document|Element|ShadowRoot} [root=document] - Root node to query from
+ * @returns {Element[]} Array of unique matched elements
+ */
+function querySelectorAllDeep(selector, root = (typeof document !== 'undefined' ? document : null)) {
+  const resultSet = new Set();
+  if (!root || typeof root.querySelectorAll !== 'function') return [];
+
+  const visitedRoots = new WeakSet();
+
+  function traverse(currentRoot) {
+    if (!currentRoot || typeof currentRoot.querySelectorAll !== 'function' || visitedRoots.has(currentRoot)) {
+      return;
+    }
+    visitedRoots.add(currentRoot);
+
+    try {
+      // 1. Direct matches within currentRoot
+      const matches = currentRoot.querySelectorAll(selector);
+      for (let i = 0; i < matches.length; i++) {
+        resultSet.add(matches[i]);
+      }
+
+      // 2. If currentRoot has a shadowRoot directly attached
+      if (currentRoot.shadowRoot && !visitedRoots.has(currentRoot.shadowRoot)) {
+        traverse(currentRoot.shadowRoot);
+      }
+
+      // 3. Inspect descendants for open shadow roots
+      const descendants = currentRoot.querySelectorAll('*');
+      for (let i = 0; i < descendants.length; i++) {
+        const desc = descendants[i];
+        if (desc && desc.shadowRoot && !visitedRoots.has(desc.shadowRoot)) {
+          traverse(desc.shadowRoot);
+        }
+      }
+    } catch (_) {}
+  }
+
+  traverse(root);
+  return Array.from(resultSet);
+}
+
+/**
+ * Returns first matching element searching across light DOM and open shadow roots.
+ */
+function querySelectorDeep(selector, root = (typeof document !== 'undefined' ? document : null)) {
+  const all = querySelectorAllDeep(selector, root);
+  return all.length > 0 ? all[0] : null;
+}
+
+// ─── ClickFix & Fake Verification Attack Analyzer ─────────────────────────────
+
+/**
+ * Extracts visible page text including text inside open shadow roots.
+ */
+function getPageTextDeep(maxLength = 25000) {
+  let combined = '';
+  if (typeof document !== 'undefined' && document.body) {
+    combined += (document.body.innerText || document.body.textContent || '') + ' ';
+  }
+  try {
+    if (typeof document !== 'undefined') {
+      const all = document.querySelectorAll('*');
+      for (let i = 0; i < all.length; i++) {
+        const el = all[i];
+        if (el && el.shadowRoot) {
+          combined += (el.shadowRoot.textContent || '') + ' ';
+          if (combined.length > maxLength * 2) break;
+        }
+      }
+    }
+  } catch (_) {}
+
+  return combined.slice(0, maxLength);
+}
+
+/**
+ * Detects "ClickFix" fake human verification / browser check pages tricking users
+ * into running malicious PowerShell / mshta commands via Win + R and Ctrl + V.
+ *
+ * @param {string} [customText] - Optional text to analyze instead of current DOM text
+ * @returns {{ detected: boolean, lure: string|null, prompt: string|null, reason: string|null }}
+ */
+function detectClickFixAndFakeVerification(customText = null) {
+  const rawText = customText !== null ? customText : getPageTextDeep();
+  if (!rawText || typeof rawText !== 'string' || rawText.length < 10) {
+    return { detected: false, lure: null, prompt: null, reason: null };
+  }
+
+  const text = rawText.toLowerCase();
+
+  // Execution & clipboard lures
+  const lures = [
+    'win + r', 'win+r', 'windows key + r', 'windows + r',
+    'ctrl + v', 'ctrl+v', 'powershell', 'mshta',
+    'paste in run', 'paste into run', 'run box', 'press windows',
+    'cmd.exe', 'powershell.exe'
+  ];
+
+  // Fake verification prompts
+  const prompts = [
+    'verify you are human', 'confirm you are human', 'verify that you are human',
+    'browser check', 'cloudflare', 'i am not a robot', "i'm not a robot",
+    'press allow to continue', 'click allow to continue', 'turn on notifications to verify',
+    'human verification', 'robot verification', 'security check to proceed',
+    'verify your browser', 'checking your browser'
+  ];
+
+  const matchedLure = lures.find(l => text.includes(l));
+  const matchedPrompt = prompts.find(p => text.includes(p));
+
+  if (matchedLure && matchedPrompt) {
+    return {
+      detected: true,
+      lure: matchedLure,
+      prompt: matchedPrompt,
+      reason: `ClickFix lure detected: "${matchedLure}" combined with fake verification "${matchedPrompt}".`
+    };
+  }
+
+  return { detected: false, lure: null, prompt: null, reason: null };
+}
+
 // ─── Payment Field Detection ─────────────────────────────────────────────────
 
 /**
@@ -18,11 +148,11 @@ function getInputMeta(input) {
     try {
       if (input.id && typeof input.id === 'string' && input.id.trim()) {
         const escapedId = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(input.id) : input.id;
-        const lbl = document.querySelector(`label[for="${escapedId}"]`);
-        if (lbl) return lbl.innerText || '';
+        const lbl = querySelectorDeep(`label[for="${escapedId}"]`);
+        if (lbl) return lbl.innerText || lbl.textContent || '';
       }
       const parent = input.closest ? input.closest('label') : null;
-      return parent ? (parent.innerText || '') : '';
+      return parent ? (parent.innerText || parent.textContent || '') : '';
     } catch (e) {
       return '';
     }
@@ -44,7 +174,7 @@ function getInputMeta(input) {
 }
 
 function detectPaymentFields() {
-  const inputs = Array.from(document.querySelectorAll('input'));
+  const inputs = querySelectorAllDeep('input');
   let card = false, cvv = false, expiry = false, upi = false,
       otp = false, pin = false, accountNumber = false;
 
@@ -87,7 +217,7 @@ function detectPaymentFields() {
 
 function detectPaymentForm() {
   const paymentKeywords = ['payment', 'pay', 'checkout', 'billing', 'card', 'upi', 'transaction'];
-  return Array.from(document.querySelectorAll('form')).some(form => {
+  return querySelectorAllDeep('form').some(form => {
     const meta = ((form.action||'') + (form.id||'') + (form.className||'')).toLowerCase();
     return paymentKeywords.some(k => meta.includes(k));
   });
@@ -108,9 +238,6 @@ const PAYMENT_BRAND_ALIASES = [
 ];
 
 let earlyRiskElevated = false;
-let spaDebounceTimer = null;
-let lastSpaScanTime = 0;
-const SPA_MUTATION_THROTTLE_MS = 1500;
 
 function scanClaimedProviders(pageText) {
   if (!pageText) return [];
@@ -145,48 +272,47 @@ function collectSignals() {
     [...TRUSTED_DOMAINS].some(d => currentHostname.endsWith('.' + d)) ||
     currentHostname.endsWith('.bank.in');
 
-  const hasPasswordInput = document.querySelector('input[type="password"]') !== null;
+  const hasPasswordInput = querySelectorDeep('input[type="password"]') !== null;
   const paymentFields    = detectPaymentFields();
   const hasPaymentForm   = detectPaymentForm();
-  const allLinks = Array.from(document.querySelectorAll('a[href]'));
-  const hasUpiLink = allLinks.some(a => (a.href || '').toLowerCase().startsWith('upi://'));
-  const hasPaymentOrOtp  = !!(paymentFields.card || paymentFields.cvv || paymentFields.otp || paymentFields.upi || paymentFields.pin || hasUpiLink);
+  const allLinks         = querySelectorAllDeep('a[href]');
+  const hasUpiLink       = allLinks.some(a => (a.href || '').toLowerCase().startsWith('upi://'));
+  const hasPaymentOrOtp  = !!(paymentFields.card || paymentFields.cvv || paymentFields.expiry || paymentFields.upi || paymentFields.otp || paymentFields.pin || hasUpiLink);
   const hasSensitiveInputs = hasPasswordInput || hasPaymentOrOtp;
 
-
-
-  // GATED SCAN: Only read body text if sensitive inputs exist or URL risk is elevated
-  const shouldScanText = hasSensitiveInputs || earlyRiskElevated;
+  // Always read page text when body exists to scan for ClickFix, scam lures, and financial context
   let text = '';
-  if (shouldScanText && document.body) {
-    // Length-capped to 20,000 characters to prevent thread stalling on massive DOMs
-    text = (document.body.innerText || '').slice(0, 20000).toLowerCase();
+  if (typeof document !== 'undefined' && document.body) {
+    text = getPageTextDeep();
   }
 
-  const loginForms = Array.from(document.querySelectorAll('form')).filter(form => {
-    return form.querySelector('input[type="password"]') !== null ||
+  // ClickFix analysis
+  const clickFix = detectClickFixAndFakeVerification(text);
+
+  const loginForms = querySelectorAllDeep('form').filter(form => {
+    return querySelectorDeep('input[type="password"]', form) !== null ||
            (form.action && form.action.toLowerCase().includes('login')) ||
            (form.id && form.id.toLowerCase().includes('login'));
   });
 
   const formActions = loginForms.map(form => form.action).filter(Boolean);
 
-  // Scam heuristics (only evaluated if text was scanned)
+  // Scam heuristics
   const scamPhrases = ['act now', 'limited time', 'your account will be suspended', 'pay with gift card', 'click here to claim'];
   let scamMatch = text ? scamPhrases.find(p => text.includes(p)) : null;
 
   // PUP heuristics
   let pupMatch = null;
-  const scripts = document.scripts || [];
+  const scripts = (typeof document !== 'undefined' && document.scripts) ? document.scripts : [];
   for (let i = 0; i < scripts.length; i++) {
-    const s = scripts[i].innerText || '';
+    const s = scripts[i].innerText || scripts[i].textContent || '';
     if (s.includes('eval(') && s.includes('unescape(')) {
       pupMatch = 'Obfuscated inline script detected';
       break;
     }
   }
 
-  if (document.querySelectorAll('iframe[style*="opacity: 0"], iframe[style*="display: none"]').length > 3) {
+  if (querySelectorAllDeep('iframe[style*="opacity: 0"], iframe[style*="display: none"]').length > 3) {
     pupMatch = 'Excessive hidden iframes detected';
   }
 
@@ -199,7 +325,7 @@ function collectSignals() {
   let financialMatch = (isTrustedDomain || !text) ? [] : financialKeywords.filter(k => text.includes(k));
 
   // Credential Collection Detection
-  const sensitiveInputs = isTrustedDomain ? [] : Array.from(document.querySelectorAll('input')).filter(input => {
+  const sensitiveInputs = isTrustedDomain ? [] : querySelectorAllDeep('input').filter(input => {
     const attr = ((input.name||'') + (input.id||'') + (input.type||'') + (input.placeholder||'')).toLowerCase();
     return attr.includes('password') || attr.includes('cardnumber') || 
            attr.includes('cc-number') || attr.includes('cvv') || 
@@ -207,10 +333,10 @@ function collectSignals() {
   });
 
   // Extract structural text from title, form actions, and logo elements
-  const logoElements = Array.from(document.querySelectorAll('img[alt], [aria-label], [class*="logo"], [id*="logo"]')).slice(0, 20);
+  const logoElements = querySelectorAllDeep('img[alt], [aria-label], [class*="logo"], [id*="logo"]').slice(0, 20);
   const logoAlts = logoElements.map(el => (el.getAttribute('alt') || el.getAttribute('aria-label') || el.title || '').trim()).filter(Boolean);
   const structuralText = [
-    document.title || '',
+    (typeof document !== 'undefined' ? document.title : '') || '',
     ...formActions,
     ...logoAlts
   ].join(' ').toLowerCase();
@@ -218,7 +344,7 @@ function collectSignals() {
   // Cross-domain credential exfiltration check (credential form posting to different registered domain)
   let hasCrossDomainCredentialAction = false;
   let exfilTargetDomain = null;
-  const currentHost = window.location.hostname.toLowerCase();
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
   function getBaseDomain(h) {
     if (!h) return '';
     const parts = h.split('.').filter(Boolean);
@@ -231,7 +357,7 @@ function collectSignals() {
     const action = form.getAttribute('action') || form.action;
     if (action && !action.startsWith('#') && !action.startsWith('javascript:')) {
       try {
-        const resolved = new URL(action, window.location.href);
+        const resolved = new URL(action, typeof window !== 'undefined' ? window.location.href : 'http://localhost');
         const actionHost = resolved.hostname.toLowerCase();
         if (actionHost && actionHost !== currentHost) {
           const actionBase = getBaseDomain(actionHost);
@@ -262,19 +388,25 @@ function collectSignals() {
     financialMatches: financialMatch,
     hasCredentialCollection: sensitiveInputs.length > 0,
     isTrustedDomain,
+    // ClickFix fake verification detection
+    clickFixAttack: isTrustedDomain ? false : clickFix.detected,
+    clickFixReason: isTrustedDomain ? null : clickFix.reason,
+    clickFixLure: isTrustedDomain ? null : clickFix.lure,
+    clickFixPrompt: isTrustedDomain ? null : clickFix.prompt,
     // Payment Protection signals
     paymentFields: isTrustedDomain ? {} : paymentFields,
     hasPaymentForm: isTrustedDomain ? false : hasPaymentForm,
     claimedProviders,
     hasUpiLink,
     pageText:  text.substring(0, 3000),
-    pageTitle: document.title || '',
+    pageTitle: (typeof document !== 'undefined' ? document.title : '') || '',
   };
 }
 
 // 2. Early and Full Scans
 
 function triggerImmediateUrlScan() {
+  if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
   chrome.runtime.sendMessage({ action: 'ANALYZE_URL_ONLY', url: window.location.href }, (response) => {
     if (chrome.runtime.lastError) return;
     if (response && response.verdict) {
@@ -287,7 +419,9 @@ function triggerImmediateUrlScan() {
 }
 
 function triggerFullScan() {
+  if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
   try {
+    lastKnownSensitiveSignature = getSensitiveDomSignature();
     const domSignals = collectSignals();
     chrome.runtime.sendMessage({ action: 'ANALYZE_FULL', url: window.location.href, domSignals: domSignals }, (response) => {
       if (chrome.runtime.lastError) return;
@@ -300,19 +434,101 @@ function triggerFullScan() {
   }
 }
 
-// Throttle SPA DOM mutations (1500ms debounce)
-function handleSpaDomMutation() {
-  const now = Date.now();
-  if (now - lastSpaScanTime < SPA_MUTATION_THROTTLE_MS) {
-    if (spaDebounceTimer) clearTimeout(spaDebounceTimer);
-    spaDebounceTimer = setTimeout(() => {
-      lastSpaScanTime = Date.now();
-      triggerFullScan();
-    }, SPA_MUTATION_THROTTLE_MS);
+// ─── Debounced SPA MutationObserver (350ms) ──────────────────────────────────
+let spaMutationObserver = null;
+let spaDebounceTimer = null;
+let lastKnownSensitiveSignature = '';
+
+/**
+ * Computes a fingerprint of all sensitive DOM fields, payment inputs, iframes, and ClickFix state.
+ * Used to avoid redundant re-scans if mutations did not affect sensitive nodes.
+ */
+function getSensitiveDomSignature() {
+  const inputs = querySelectorAllDeep('input');
+  const forms = querySelectorAllDeep('form');
+  const iframes = querySelectorAllDeep('iframe');
+  const hasPassword = querySelectorDeep('input[type="password"]') !== null;
+  const pf = detectPaymentFields();
+  const paymentFieldSum = (pf.card ? 1 : 0) + (pf.cvv ? 2 : 0) + (pf.expiry ? 4 : 0) +
+                          (pf.upi ? 8 : 0) + (pf.otp ? 16 : 0) + (pf.pin ? 32 : 0) +
+                          (pf.accountNumber ? 64 : 0);
+  const clickFix = detectClickFixAndFakeVerification();
+  return `${inputs.length}:${forms.length}:${iframes.length}:${hasPassword}:${paymentFieldSum}:${clickFix.detected}`;
+}
+
+/**
+ * Checks if a mutation added any <form>, <input>, or <iframe> elements.
+ */
+function hasRelevantAddedNodes(mutation) {
+  if (mutation.type !== 'childList' || !mutation.addedNodes) return false;
+  for (let i = 0; i < mutation.addedNodes.length; i++) {
+    const node = mutation.addedNodes[i];
+    if (node && node.nodeType === 1) { // Node.ELEMENT_NODE
+      const tag = (node.tagName || '').toLowerCase();
+      if (tag === 'form' || tag === 'input' || tag === 'iframe') {
+        return true;
+      }
+      if (node.querySelector && node.querySelector('form, input, iframe')) {
+        return true;
+      }
+      if (node.shadowRoot && node.shadowRoot.querySelector && node.shadowRoot.querySelector('form, input, iframe')) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Initializes a debounced (350ms) MutationObserver on document.documentElement.
+ * Watches childList and subtree for dynamically mounted sensitive form, input, or iframe elements (SPAs).
+ */
+function initSpaMutationObserver() {
+  if (typeof MutationObserver === 'undefined' || typeof document === 'undefined') return;
+  const target = document.documentElement || document.body;
+  if (!target) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSpaMutationObserver, { once: true });
+    }
     return;
   }
-  lastSpaScanTime = now;
-  triggerFullScan();
+
+  if (spaMutationObserver) return; // Already watching
+
+  lastKnownSensitiveSignature = getSensitiveDomSignature();
+
+  spaMutationObserver = new MutationObserver((mutations) => {
+    if (isBlocked) return;
+
+    let relevantChange = false;
+    for (let i = 0; i < mutations.length; i++) {
+      if (hasRelevantAddedNodes(mutations[i])) {
+        relevantChange = true;
+        break;
+      }
+    }
+
+    if (relevantChange) {
+      if (spaDebounceTimer) clearTimeout(spaDebounceTimer);
+      spaDebounceTimer = setTimeout(() => {
+        if (isBlocked) return;
+        const currentSig = getSensitiveDomSignature();
+        if (currentSig !== lastKnownSensitiveSignature) {
+          lastKnownSensitiveSignature = currentSig;
+          triggerFullScan();
+        }
+      }, 350);
+    }
+  });
+
+  try {
+    spaMutationObserver.observe(target, {
+      childList: true,
+      subtree: true
+    });
+  } catch (e) {
+    console.error('[Verity] Failed to attach SPA MutationObserver:', e);
+  }
 }
 
 
@@ -358,6 +574,7 @@ function extractDomainParts(urlString) {
 // ─── Floating Page Status Badge ─────────────────────────────────────────────
 
 function injectStatusBadge() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return null;
   if (window.self !== window.top) return null; // Skip iframes
   if (document.getElementById('verity-status-badge-host')) return null;
 
@@ -532,30 +749,39 @@ function handleEnforcementVerdict(verdict) {
 }
 
 // ─── Listeners from Background ──────────────────────────────────────────────
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'POPUP_BLOCKED_TOAST') {
-    showPopupBlockedToast(message.hostname || message.blockedUrl);
-  } else if (message.action === 'ENFORCEMENT_DECISION') {
-    handleEnforcementVerdict(message.decision.verdict);
-  } else if (message.action === 'RE_ANALYZE') {
-    isBlocked = false;
-    removeOverlay();
-    if (statusBadgeHost) statusBadgeHost.style.display = 'block';
-    triggerImmediateUrlScan();
-    setTimeout(triggerFullScan, 500);
-  } else if (message.action === 'DOWNLOAD_VERDICT') {
-    injectDownloadWarning(message.payload);
-  } else if (message.action === 'OVERLAY_PREVIEW') {
-    injectOverlay(message.verdict);
-  }
-});
+if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'POPUP_BLOCKED_TOAST') {
+      showPopupBlockedToast(message.hostname || message.blockedUrl);
+    } else if (message.action === 'ENFORCEMENT_DECISION') {
+      handleEnforcementVerdict(message.decision.verdict);
+    } else if (message.action === 'RE_ANALYZE') {
+      isBlocked = false;
+      removeOverlay();
+      if (statusBadgeHost) statusBadgeHost.style.display = 'block';
+      triggerImmediateUrlScan();
+      setTimeout(triggerFullScan, 500);
+    } else if (message.action === 'DOWNLOAD_VERDICT') {
+      injectDownloadWarning(message.payload);
+    } else if (message.action === 'OVERLAY_PREVIEW') {
+      injectOverlay(message.verdict);
+    }
+  });
+}
 
 triggerImmediateUrlScan();
+initSpaMutationObserver();
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', triggerFullScan);
-} else {
-  triggerFullScan();
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initSpaMutationObserver();
+      triggerFullScan();
+    });
+  } else {
+    initSpaMutationObserver();
+    triggerFullScan();
+  }
 }
 
 // ─── Download Warning Modal ─────────────────────────────────────────────────
@@ -1015,3 +1241,29 @@ function injectOverlay(verdict) {
     blockObserver.observe(parent, { childList: true });
   }
 }
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.querySelectorAllDeep = querySelectorAllDeep;
+  globalThis.querySelectorDeep = querySelectorDeep;
+  globalThis.getPageTextDeep = getPageTextDeep;
+  globalThis.detectClickFixAndFakeVerification = detectClickFixAndFakeVerification;
+  globalThis.detectPaymentFields = detectPaymentFields;
+  globalThis.detectPaymentForm = detectPaymentForm;
+  globalThis.getSensitiveDomSignature = getSensitiveDomSignature;
+  globalThis.collectSignals = collectSignals;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    querySelectorAllDeep,
+    querySelectorDeep,
+    getPageTextDeep,
+    detectClickFixAndFakeVerification,
+    detectPaymentFields,
+    detectPaymentForm,
+    getSensitiveDomSignature,
+    collectSignals,
+  };
+}
+
+

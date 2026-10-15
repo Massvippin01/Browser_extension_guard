@@ -20,10 +20,32 @@ export async function applyDownloadPolicy(downloadId, verdict, downloadSignals) 
     return { action: 'block', cancelled, reason: 'chrome_danger' };
   }
 
+  // HTML smuggling paired with risky extension or archive: pause and enforce block
+  if (downloadSignals.htmlSmuggling && (downloadSignals.archiveDownload || downloadSignals.executableDownload || downloadSignals.scriptDownload || downloadSignals.installerDownload || downloadSignals.isDangerousExtension)) {
+    if (typeof chrome !== 'undefined' && chrome.downloads && chrome.downloads.pause) {
+      await chrome.downloads.pause(downloadId).catch(() => {});
+    }
+    if (action === 'block' || verdict.severity === 'danger') {
+      cancelled = await tryCancelDownload(downloadId);
+    }
+    return { action: 'block', cancelled, reason: 'html_smuggling' };
+  }
+
+  // Content-Disposition spoofing (.pdf/.html URL resolving to executable/container): pause and enforce block
+  if (downloadSignals.contentDispositionSpoofed && (downloadSignals.archiveDownload || downloadSignals.executableDownload || downloadSignals.scriptDownload || downloadSignals.installerDownload || downloadSignals.isDangerousExtension)) {
+    if (typeof chrome !== 'undefined' && chrome.downloads && chrome.downloads.pause) {
+      await chrome.downloads.pause(downloadId).catch(() => {});
+    }
+    if (action === 'block' || verdict.severity === 'danger') {
+      cancelled = await tryCancelDownload(downloadId);
+    }
+    return { action: 'block', cancelled, reason: 'content_disposition_spoof' };
+  }
+
   // Verity high-risk (block verdict from risk engine)
   if (action === 'block' || verdict.severity === 'danger') {
-    // Only attempt cancel for executables, scripts, installers — not archives/docs
-    if (downloadSignals.executableDownload || downloadSignals.scriptDownload || downloadSignals.installerDownload) {
+    // Attempt cancel for executables, scripts, installers, modern containers, and dangerous formats
+    if (downloadSignals.executableDownload || downloadSignals.scriptDownload || downloadSignals.installerDownload || downloadSignals.isDangerousExtension || downloadSignals.archiveDownload) {
       cancelled = await tryCancelDownload(downloadId);
     }
     return { action: 'block', cancelled, reason: 'verity_high_risk' };
@@ -43,7 +65,7 @@ export async function applyDownloadPolicy(downloadId, verdict, downloadSignals) 
  * Returns true if successful, false if API does not support it.
  */
 async function tryCancelDownload(downloadId) {
-  if (!chrome.downloads) return false;
+  if (typeof chrome === 'undefined' || !chrome.downloads) return false;
   try {
     if (chrome.downloads.cancel) {
       await chrome.downloads.cancel(downloadId);

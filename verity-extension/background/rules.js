@@ -249,7 +249,9 @@ export function hasSuspiciousUrlPattern(urlString) {
     '.icu', '.fun', '.vip', '.club',        // Often used in scam campaigns
     '.cyou', '.sbs', '.uno', '.cfd',        // New-era phishing TLDs
     '.monster', '.rest', '.skin', '.bar',   // Rare but seen in campaigns
-    '.qpon', '.world'                       // Commonly abused in ad-redirects
+    '.qpon', '.world',                      // Commonly abused in ad-redirects
+    '.buzz', '.lat', '.hair', '.boats',     // Expanded abuse TLDs
+    '.quest', '.shop', '.live'
   ];
   const matchedTld = suspiciousTlds.find(tld => url.hostname.endsWith(tld));
   if (matchedTld) {
@@ -299,6 +301,33 @@ export function hasMalvertisingPattern(urlString) {
 
   const fullPath = url.pathname + url.search;
   let score = 0;
+
+  // 1. Keyless hex/hash query strings matching /^\?[a-f0-9]{16,64}$/i (+25 pts)
+  const isHexQuery = /^\?[a-f0-9]{16,64}$/i.test(url.search);
+  if (isHexQuery) {
+    score += 25;
+  }
+
+  // 2. Concatenated loader/rotator keywords in hostname matching /(popload|popunder|adserver|clicktrack|fastload|rotator|traffic|loaderfast|popcash|propeller)/i (+25 pts)
+  const hasLoaderRotatorKw = /(popload|popunder|adserver|clicktrack|fastload|rotator|traffic|loaderfast|popcash|propeller)/i.test(url.hostname);
+  if (hasLoaderRotatorKw) {
+    score += 25;
+  }
+
+  // 3. Short alphanumeric shard subdomains matching /^[a-z0-9]{4,7}$/ with letters and digits like aar5n (+15 pts with suspicious TLD or hex query)
+  const sub = getSubdomain(url.hostname) || (url.hostname.split('.').length > 2 ? url.hostname.split('.')[0] : '');
+  const isShardSubdomain = /^[a-z0-9]{4,7}$/i.test(sub) && /[a-z]/i.test(sub) && /[0-9]/.test(sub);
+  const suspiciousTldList = [
+    '.monster', '.click', '.sbs', '.cfd', '.rest', '.icu', '.cyou', '.buzz',
+    '.lat', '.skin', '.hair', '.boats', '.quest', '.shop', '.live', '.fun',
+    '.xyz', '.zip', '.info', '.top', '.link', '.online', '.site', '.pw',
+    '.cc', '.ws', '.biz', '.vip', '.club', '.uno', '.bar', '.qpon', '.world',
+    '.tk', '.ml', '.ga', '.cf', '.gq'
+  ];
+  const hasSuspTld = suspiciousTldList.some(tld => url.hostname.endsWith(tld));
+  if (isShardSubdomain && (hasSuspTld || isHexQuery)) {
+    score += 15;
+  }
 
   // A. Extremely long URL path — classic ad-redirect obfuscation
   if (fullPath.length > 500) {
@@ -455,7 +484,12 @@ export function hasRandomLookingHostname(urlString) {
   const parts = hostname.split('.');
   const labelsToCheck = parts.length > 1 ? parts.slice(0, -1) : parts;
   const tld = parts.length > 1 ? '.' + parts[parts.length - 1] : '';
-  const suspTLDs = new Set(['.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.ga', '.cf', '.gq', '.click', '.online', '.site', '.fun', '.icu', '.sbs', '.cfd', '.monster', '.skin', '.qpon']);
+  const suspTLDs = new Set([
+    '.rest', '.xyz', '.top', '.pw', '.tk', '.ml', '.ga', '.cf', '.gq',
+    '.click', '.online', '.site', '.fun', '.icu', '.sbs', '.cfd',
+    '.monster', '.skin', '.qpon', '.cyou', '.buzz', '.lat', '.hair',
+    '.boats', '.quest', '.shop', '.live'
+  ]);
 
   for (const label of labelsToCheck) {
     if (safeLabels.has(label)) continue;

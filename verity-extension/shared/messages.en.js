@@ -49,6 +49,7 @@
     SIG_URL_SUSPICIOUS: (p) => `URL structure exhibits suspicious patterns (${p?.details || 'heuristic signals'}).`,
     SIG_IP_HOST: (p) => 'Raw IP address host detected.',
     SIG_MALVERTISING: (p) => 'Malvertising or suspicious traffic redirection detected.',
+    SIG_POPUNDER_SPAWN: (p) => `High risk: Pop-under tab automatically spawned to a different unverified domain (${p?.targetDomain || 'external'}).`,
     SIG_ML_PHISHING: (p) => `On-device ML model flagged structural phishing characteristics (${p?.confidence || 0}% confidence).`,
     SIG_BRAND_IMPERSONATION: (p) => `Brand impersonation detected: claims to be "${p?.brand || 'Brand'}".`,
     SIG_CONTENT_BRAND_IMPERSONATION: (p) => `Page claims to be "${p?.brand || 'Brand'}" while requesting login credentials on an unverified domain.`,
@@ -56,6 +57,7 @@
     SIG_PASSWORD_REQUEST: (p) => 'Page requests a password.',
     SIG_LOGIN_FORM: (p) => 'Login form detected.',
     SIG_SCAM_LANGUAGE: (p) => `Matches scam language: "${p?.phrase || 'urgent notice'}".`,
+    SIG_CLICKFIX_CLIPBOARD_ATTACK: (p) => `Critical risk: ClickFix fake verification lure attempting clipboard command execution (PowerShell/Run-box). ${p?.phrase || ''}`.trim(),
     SIG_PUP: (p) => `Potentially unwanted script or hidden iframes detected (${p?.details || 'obfuscation'}).`,
     SIG_FINANCIAL_CONTEXT: (p) => `Financial terminology detected: ${p?.terms || 'banking keywords'}.`,
     SIG_SYNERGY_IMPERSONATION_CREDENTIALS: (p) => 'High risk: Impersonating a trusted brand while requesting sensitive credentials.',
@@ -77,11 +79,13 @@
 
     // ── Download Interceptor Signals ──────────────────────────────────────────
     DOWNLOAD_CHROME_DANGEROUS: (p) => 'Chrome identified this file as dangerous.',
+    SIG_HTML_SMUGGLING_DOWNLOAD: (p) => `High risk: HTML smuggling detected (blob/data URI download from unverified origin "${p?.source || 'external'}").`,
     DOWNLOAD_EXECUTABLE: (p) => `Executable file (.exe/.com/.scr) download: "${p?.filename || ''}".`,
     DOWNLOAD_SCRIPT: (p) => `Script file (${p?.extension || 'script'}) download: "${p?.filename || ''}".`,
     DOWNLOAD_INSTALLER: (p) => `Installer or mobile package (${p?.extension || 'package'}) download: "${p?.filename || ''}".`,
     DOWNLOAD_ARCHIVE: (p) => 'Archive file — may contain executables.',
     DOWNLOAD_DOUBLE_EXTENSION: (p) => `Double extension detected: "${p?.apparentExtension || ''}" hidden by "${p?.extension || ''}".`,
+    DOWNLOAD_CONTENT_DISPOSITION_SPOOF: (p) => 'Content-Disposition header spoofed document URL to executable or container.',
     DOWNLOAD_MISLEADING_NAME: (p) => `Misleading filename keyword: "${p?.keyword || ''}".`,
     DOWNLOAD_BRAND_IMPERSONATION: (p) => `Download impersonates: "${p?.brand || 'Brand'}".`,
     DOWNLOAD_SOURCE_MALICIOUS: (p) => 'Source domain flagged as malicious.',
@@ -186,6 +190,7 @@
     // Category: malvertising
     RULE_MALVERTISING_REDIRECT: 'malvertising',
     SIG_MALVERTISING: 'malvertising',
+    SIG_POPUNDER_SPAWN: 'malvertising',
 
     // Category: brand_impersonation
     RULE_BRAND_NAME_WRONG_DOMAIN: 'brand_impersonation',
@@ -207,6 +212,7 @@
 
     // Category: scam_language
     SIG_SCAM_LANGUAGE: 'scam_language',
+    SIG_CLICKFIX_CLIPBOARD_ATTACK: 'scam_language',
     SIG_PUP: 'scam_language',
     SIG_FINANCIAL_CONTEXT: 'scam_language',
     SIG_DIGITAL_ARREST_SCAM: 'scam_language',
@@ -226,11 +232,13 @@
 
     // Category: download
     DOWNLOAD_CHROME_DANGEROUS: 'download',
+    SIG_HTML_SMUGGLING_DOWNLOAD: 'download',
     DOWNLOAD_EXECUTABLE: 'download',
     DOWNLOAD_SCRIPT: 'download',
     DOWNLOAD_INSTALLER: 'download',
     DOWNLOAD_ARCHIVE: 'download',
     DOWNLOAD_DOUBLE_EXTENSION: 'download',
+    DOWNLOAD_CONTENT_DISPOSITION_SPOOF: 'download',
     DOWNLOAD_MISLEADING_NAME: 'download',
     DOWNLOAD_BRAND_IMPERSONATION: 'download',
     DOWNLOAD_SOURCE_MALICIOUS: 'download',
@@ -253,14 +261,14 @@
    * Multi-signal convergence is strictly required to achieve a Block verdict.
    */
   const CATEGORY_CAPS = {
-    url: 30,
+    url: 40,
     ip_host: 60,
-    malvertising: 60,
-    brand_impersonation: 60,
-    ml: 25,
-    dom_credentials: 25,
-    scam_language: 20,
-    payment_phishing: 60,
+    malvertising: 65,
+    brand_impersonation: 55,
+    ml: 35,
+    dom_credentials: 50,
+    scam_language: 65,
+    payment_phishing: 65,
     synergy: 40,
     download: 60,
     threat_intel: 65

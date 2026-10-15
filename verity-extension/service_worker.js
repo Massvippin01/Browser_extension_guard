@@ -8,7 +8,7 @@
 
 import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
-import { getRedirectSignals, updateShorteners } from './background/redirect-analyzer.js';
+import { getRedirectSignals, getRedirectSignalsAsync, updateShorteners, recordNavigationTarget, hydrateFromStorage, pruneTab } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
 import { getMlScore, initializeModel } from './background/ml-scorer.js';
 import { checkReputation } from './background/reputation.js';
@@ -130,7 +130,7 @@ async function runFullAnalysis(tabId, url, domSignals) {
     checkReputation(url),
   ]);
 
-  const redirectSignals = getRedirectSignals(tabId);
+  const redirectSignals = await getRedirectSignalsAsync(tabId);
 
   // Payment protection analysis
   const paymentAnalysis = analyzePaymentPage(url, domSignals, paymentBrands);
@@ -227,17 +227,32 @@ function updateBadge(tabId, verdict) {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Pop-up / Pop-under Automatic Interceptor & Killer
 // ---------------------------------------------------------------------------
+// 1. Hook webNavigation.onCreatedNavigationTarget to record origin tab & timestamp
+chrome.webNavigation.onCreatedNavigationTarget.addListener((details) => {
+  recordNavigationTarget(details);
+});
+
 chrome.tabs.onCreated.addListener(async (tab) => {
-  if (!tab.openerTabId || !tab.id) return;
+  if (!tab.id) return;
+  if (tab.openerTabId) {
+    recordNavigationTarget({
+      sourceTabId: tab.openerTabId,
+      tabId: tab.id,
+      url: tab.url || tab.pendingUrl || '',
+      timeStamp: Date.now()
+    });
+  }
   const openerTabId = tab.openerTabId;
 
   const checkAndKillPopup = async (targetUrl) => {
     if (!targetUrl || isInternalUrl(targetUrl)) return;
     const ruleSignals = await analyzeUrl(targetUrl);
     if (!ruleSignals) return;
-    const verdict = calculateRisk(targetUrl, ruleSignals);
+    const redirectSignals = await getRedirectSignalsAsync(tab.id);
+    const verdict = calculateRisk(targetUrl, ruleSignals, null, null, null, redirectSignals);
 
     if (verdict.action === 'block' || verdict.score >= 70) {
       // 1. Instantly kill the pop-up window
@@ -246,11 +261,13 @@ chrome.tabs.onCreated.addListener(async (tab) => {
       // 2. Notify opener tab to render pop-up blocked notification toast
       let host = targetUrl;
       try { host = new URL(targetUrl).hostname; } catch (e) {}
-      chrome.tabs.sendMessage(openerTabId, {
-        action: 'POPUP_BLOCKED_TOAST',
-        blockedUrl: targetUrl,
-        hostname: host
-      }).catch(() => {});
+      if (openerTabId) {
+        chrome.tabs.sendMessage(openerTabId, {
+          action: 'POPUP_BLOCKED_TOAST',
+          blockedUrl: targetUrl,
+          hostname: host
+        }).catch(() => {});
+      }
     }
   };
 
@@ -259,6 +276,10 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   } else if (tab.pendingUrl) {
     checkAndKillPopup(tab.pendingUrl);
   }
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  pruneTab(tabId);
 });
 
 // ---------------------------------------------------------------------------
@@ -304,8 +325,17 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const ruleSignals = await analyzeUrl(url);
   if (!ruleSignals) return;
 
-  // Fast URL-only verdict
-  const quickVerdict = calculateRisk(url, ruleSignals);
+  const redirectSignals = await getRedirectSignalsAsync(tabId);
+
+  // Fast URL-only verdict incorporating redirect signals
+  const quickVerdict = calculateRisk(
+    url,
+    ruleSignals,
+    null,
+    null,
+    null,
+    redirectSignals
+  );
   quickVerdict.url = url;
 
   // Subframe rule: only enforce if dangerous (block threshold) to avoid disturbing clean embeds
@@ -387,6 +417,22 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async (details) => {
 });
 
 // ---------------------------------------------------------------------------
+// Pop-under & Navigation Target Tracking (window.open on sketchy sites)
+// ---------------------------------------------------------------------------
+if (chrome.webNavigation && chrome.webNavigation.onCreatedNavigationTarget) {
+  chrome.webNavigation.onCreatedNavigationTarget.addListener((details) => {
+    recordNavigationTarget(details);
+  });
+}
+
+// Clean up tab tracking when tab closes
+if (chrome.tabs && chrome.tabs.onRemoved) {
+  chrome.tabs.onRemoved.addListener((tabId) => {
+    pruneTab(tabId);
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Message Handler
 // ---------------------------------------------------------------------------
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -414,12 +460,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return false;
     }
 
-    analyzeUrl(url).then(ruleSignals => {
+    analyzeUrl(url).then(async (ruleSignals) => {
       if (!ruleSignals) {
         sendResponse({ verdict: null });
         return;
       }
-      const verdict = calculateRisk(url, ruleSignals);
+      const redirectSignals = await getRedirectSignalsAsync(tabId);
+      const verdict = calculateRisk(
+        url,
+        ruleSignals,
+        null,
+        null,
+        null,
+        redirectSignals
+      );
       verdict.url = url;
       storeAndEnforce(tabId, verdict, frameId);
       sendResponse({ verdict });
@@ -514,6 +568,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   await loadPaymentBrands();
   await loadUrlShorteners();
   await initializeModel();
+  await hydrateFromStorage();
   console.log('[Verity] Extension installed and ready.');
 });
 
@@ -522,13 +577,15 @@ chrome.runtime.onStartup.addListener(async () => {
   await loadPaymentBrands();
   await loadUrlShorteners();
   await initializeModel();
+  await hydrateFromStorage();
   console.log('[Verity] Extension started.');
 });
 
-// Also load brands on service worker wake (no event)
+// Also load brands and hydrate on service worker wake (no event)
 loadBrands().catch(() => {});
 loadPaymentBrands().catch(() => {});
 loadUrlShorteners().catch(() => {});
+hydrateFromStorage().catch(() => {});
 
 // ---------------------------------------------------------------------------
 // Download Monitor Initialization

@@ -92,7 +92,7 @@ export function calculateRisk(
 
   // ── 2. Process ML Signal ───────────────────────────────────────────────────
   if (activeMlWeight > 0 && mlScore !== null && mlScore > 30) {
-    const mlScaled = Math.min(Math.round(mlScore * 0.25 * activeMlWeight), Math.round(25 * activeMlWeight));
+    const mlScaled = Math.min(Math.round(mlScore * 0.35 * activeMlWeight), Math.round(35 * activeMlWeight));
     if (mlScaled > 0) {
       emitSignal('SIG_ML_PHISHING', { confidence: mlScore }, mlScaled, 'ml');
       categories.phishing.flagged = true;
@@ -150,7 +150,12 @@ export function calculateRisk(
       categories.phishing.flagged = true;
     }
 
-    // C. Scam Language / PUP
+    // C. Scam Language / PUP / ClickFix
+    if (domSignals.clickFixAttack) {
+      emitSignal('SIG_CLICKFIX_CLIPBOARD_ATTACK', { phrase: domSignals.clickFixReason }, 85, 'dom');
+      categories.scamFraud.flagged = true;
+      categories.scamFraud.reason = domSignals.clickFixReason || 'ClickFix clipboard command lure detected';
+    }
     if (domSignals.scam) {
       emitSignal('SIG_SCAM_LANGUAGE', { phrase: domSignals.scamReason }, 10, 'dom');
       categories.scamFraud.flagged = true;
@@ -193,6 +198,13 @@ export function calculateRisk(
     }
   }
 
+  // ── 4b. Process Redirect Protection Signals ────────────────────────────────
+  if (redirectSignals && redirectSignals.structuredReasons && Array.isArray(redirectSignals.structuredReasons)) {
+    redirectSignals.structuredReasons.forEach(r => {
+      emitSignal(r.id, r.params || {}, r.score || 0, r.source || 'redirect');
+    });
+  }
+
   // ── 5. Process Threat Intelligence Signals ─────────────────────────────────
   if (threatIntel && threatIntel.malware) {
     emitSignal('THREAT_INTEL_MALWARE', { source: threatIntel.source }, 80, 'threat_intel');
@@ -206,6 +218,10 @@ export function calculateRisk(
       emitSignal('DOWNLOAD_CHROME_DANGEROUS', {}, 90, 'download');
       categories.malware.flagged = true;
     }
+    if (downloadSignals.htmlSmuggling) {
+      emitSignal('SIG_HTML_SMUGGLING_DOWNLOAD', { source: downloadSignals.originatingHostname || 'unverified' }, 50, 'download');
+      categories.malware.flagged = true;
+    }
     if (downloadSignals.executableDownload) {
       emitSignal('DOWNLOAD_EXECUTABLE', { filename: downloadSignals.filename }, downloadSignals.sourceDomainSuspicious ? 45 : 15, 'download');
     }
@@ -217,6 +233,10 @@ export function calculateRisk(
     }
     if (downloadSignals.doubleExtension) {
       emitSignal('DOWNLOAD_DOUBLE_EXTENSION', { apparentExtension: downloadSignals.apparentExtension, extension: downloadSignals.extension }, 55, 'download');
+    }
+    if (downloadSignals.contentDispositionSpoofed) {
+      emitSignal('DOWNLOAD_CONTENT_DISPOSITION_SPOOF', {}, 55, 'download');
+      categories.malware.flagged = true;
     }
     if (downloadSignals.misleadingFilename) {
       emitSignal('DOWNLOAD_MISLEADING_NAME', { keyword: downloadSignals.suspiciousKeyword }, 25, 'download');
@@ -245,12 +265,19 @@ export function calculateRisk(
     signals.push(s);
 
     if (s.score > 0) {
+      if (s.source === 'redirect') {
+        activeSources.add('redirect');
+      }
       if (['url', 'ip_host', 'malvertising', 'brand_impersonation'].includes(cat)) {
-        activeSources.add('url');
+        if (s.source !== 'redirect') {
+          activeSources.add('url');
+        }
       } else if (cat === 'ml') {
         activeSources.add('ml');
-      } else if (['dom_credentials', 'payment_phishing'].includes(cat)) {
+      } else if (cat === 'dom_credentials') {
         activeSources.add('dom_credentials');
+      } else if (cat === 'payment_phishing') {
+        activeSources.add('payment_phishing');
       } else if (cat === 'download') {
         activeSources.add('download');
       } else if (cat === 'threat_intel') {
@@ -271,24 +298,85 @@ export function calculateRisk(
   }
   cappedScores.sort((a, b) => b - a);
 
+  const diminishingWeights = [1.0, 0.65, 0.40, 0.25, 0.15];
   let riskScore = 0;
-  if (cappedScores.length > 0) {
-    riskScore = cappedScores[0];
-    for (let i = 1; i < cappedScores.length; i++) {
-      const weight = 0.5 * Math.pow(0.3, i - 1);
-      riskScore += Math.round(cappedScores[i] * weight);
-    }
+  for (let i = 0; i < cappedScores.length; i++) {
+    const weight = i < diminishingWeights.length ? diminishingWeights[i] : 0.10;
+    riskScore += Math.round(cappedScores[i] * weight);
   }
 
-  // Hard override floors (known malware, chrome dangerous download, credential exfil)
-  const hasDangerousDownload = downloadSignals && (downloadSignals.chromeSaysDangerous || (downloadSignals.executableDownload && downloadSignals.sourceDomainMalicious));
+  // Pairwise Synergy Bonuses
+  const hasRedirect = !!(
+    (redirectSignals && (
+      redirectSignals.suspicious ||
+      redirectSignals.shortenerDetected ||
+      redirectSignals.hasShortener ||
+      redirectSignals.suspiciousIntermediateDomain ||
+      redirectSignals.finalDomainSuspicious ||
+      redirectSignals.popunderSpawn ||
+      redirectSignals.popunderDetected ||
+      (redirectSignals.chain && redirectSignals.chain.length > 1) ||
+      (redirectSignals.redirectCount && redirectSignals.redirectCount > 0)
+    )) ||
+    activeSources.has('redirect')
+  );
+
+  // - brand_impersonation + dom_credentials: +20 pts
+  if ((pointsByCategory['brand_impersonation'] || 0) > 0 && (pointsByCategory['dom_credentials'] || 0) > 0) {
+    riskScore += 20;
+  }
+  // - payment_phishing + dom_credentials: +25 pts
+  if ((pointsByCategory['payment_phishing'] || 0) > 0 && (pointsByCategory['dom_credentials'] || 0) > 0) {
+    riskScore += 25;
+  }
+  // - malvertising + (url or ml or redirect): +20 pts
+  if ((pointsByCategory['malvertising'] || 0) > 0 && ((pointsByCategory['url'] || 0) > 0 || (pointsByCategory['ml'] || 0) > 0 || hasRedirect)) {
+    riskScore += 20;
+  }
+  // - url + ml (both >= 20): +15 pts
+  if ((pointsByCategory['url'] || 0) >= 20 && (pointsByCategory['ml'] || 0) >= 20) {
+    riskScore += 15;
+  }
+
+  if (hasRedirect) {
+    activeSources.add('redirect');
+  }
+
+  // Hard override floors (known malware, chrome dangerous download, credential exfil, clickfix, html smuggling, content disposition spoofing)
+  const isSmugglingDanger = downloadSignals && downloadSignals.htmlSmuggling && (
+    downloadSignals.executableDownload ||
+    downloadSignals.scriptDownload ||
+    downloadSignals.installerDownload ||
+    downloadSignals.archiveDownload ||
+    downloadSignals.isDangerousExtension
+  );
+
+  const isSpoofDanger = downloadSignals && downloadSignals.contentDispositionSpoofed && (
+    downloadSignals.executableDownload ||
+    downloadSignals.scriptDownload ||
+    downloadSignals.installerDownload ||
+    downloadSignals.archiveDownload ||
+    downloadSignals.isDangerousExtension
+  );
+
+  const hasDangerousDownload = downloadSignals && (
+    downloadSignals.chromeSaysDangerous ||
+    (downloadSignals.executableDownload && downloadSignals.sourceDomainMalicious) ||
+    isSmugglingDanger ||
+    isSpoofDanger
+  );
   const hasCredentialExfil = !!(domSignals && domSignals.hasCrossDomainCredentialAction);
   const hasMalwareIntel = !!(threatIntel && threatIntel.malware);
+  const hasClickFix = !!(domSignals && domSignals.clickFixAttack);
 
-  if (hasCredentialExfil) {
+  if (hasClickFix) {
+    riskScore = Math.max(riskScore, 85);
+  } else if (hasCredentialExfil) {
     riskScore = Math.max(riskScore, 85);
   } else if (downloadSignals && downloadSignals.chromeSaysDangerous) {
     riskScore = Math.max(riskScore, 90);
+  } else if (isSmugglingDanger || isSpoofDanger) {
+    riskScore = Math.max(riskScore, 75);
   } else if (hasMalwareIntel) {
     riskScore = Math.max(riskScore, 85);
   }
@@ -298,8 +386,8 @@ export function calculateRisk(
 
   // ── 8. Apply Convergence & Allowlist Rules ──────────────────────────────────
   // A. Independent Allowlist Rule:
-  // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download or credential-exfil fires
-  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil) {
+  // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download, credential-exfil, or ClickFix fires
+  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil && !hasClickFix) {
     riskScore = Math.min(riskScore, 40);
   }
 
@@ -307,8 +395,20 @@ export function calculateRisk(
   // A Block-level verdict (>= 70) strictly requires independent evidence from at least TWO sources
   // (url, ml, dom_credentials, download, threat_intel), unless a hard override fires.
   // Single-source signals can add at most Caution-level score (demoted to 65).
+  // Malvertising corroborated by url (>= 20), ml (>= 15), or redirect can reach Block without dom_credentials.
+  const isCorroboratedMalvertising = (pointsByCategory['malvertising'] || 0) >= 45 && (
+    (pointsByCategory['url'] || 0) >= 20 ||
+    (pointsByCategory['ml'] || 0) >= 15 ||
+    hasRedirect
+  );
+
   if (riskScore >= 70) {
-    const hasOverride = hasMalwareIntel || (downloadSignals && downloadSignals.chromeSaysDangerous) || hasCredentialExfil;
+    const hasOverride = hasMalwareIntel ||
+      (downloadSignals && downloadSignals.chromeSaysDangerous) ||
+      hasDangerousDownload ||
+      hasCredentialExfil ||
+      hasClickFix ||
+      isCorroboratedMalvertising;
     if (!hasOverride && activeSources.size < 2) {
       // Demote to Caution
       riskScore = 65;

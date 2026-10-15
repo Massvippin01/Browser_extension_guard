@@ -1,70 +1,70 @@
 {
   "metadata": {
-    "timestamp": "2026-10-12T15:20:48.061Z",
-    "datasetSize": 4750,
-    "testSize": 2412,
-    "httpsTestSize": 1787,
+    "timestamp": "2026-10-15T06:48:44.056Z",
+    "datasetSize": 5507,
+    "testSize": 2774,
+    "httpsTestSize": 2148,
     "mlWeight": 1
   },
   "metrics": {
     "Phishing (Separately)": {
       "th35": {
         "point": {
-          "precision": 0.9294605809128631,
-          "recall": 0.896,
-          "f1": 0.9124236252545824,
-          "fpr": 0.04975609756097561,
-          "tp": 672,
-          "fp": 51,
-          "tn": 974,
-          "fn": 78
+          "precision": 0.9480337078651685,
+          "recall": 0.9,
+          "f1": 0.9233926128590971,
+          "fpr": 0.026676279740447006,
+          "tp": 675,
+          "fp": 37,
+          "tn": 1350,
+          "fn": 75
         },
         "ci95": {
           "precision": [
-            0.9084604715672677,
-            0.9486111111111111
+            0.9315866084425036,
+            0.9629629629629629
           ],
           "recall": [
-            0.873015873015873,
-            0.9182879377431906
+            0.8801054018445322,
+            0.9226594301221167
           ],
           "f1": [
-            0.8961303462321792,
-            0.9270833333333333
+            0.9103740296400846,
+            0.9363099146421536
           ],
           "fpr": [
-            0.036062378167641324,
-            0.06448311156601842
+            0.019014084507042252,
+            0.0347764371894961
           ]
         }
       },
       "th70": {
         "point": {
-          "precision": 0.9107142857142857,
-          "recall": 0.476,
-          "f1": 0.6252189141856392,
-          "fpr": 0.03414634146341464,
-          "tp": 357,
-          "fp": 35,
-          "tn": 990,
-          "fn": 393
+          "precision": 1,
+          "recall": 0.19066666666666668,
+          "f1": 0.3202687569988802,
+          "fpr": 0,
+          "tp": 143,
+          "fp": 0,
+          "tn": 1387,
+          "fn": 607
         },
         "ci95": {
           "precision": [
-            0.8802992518703242,
-            0.9411764705882353
+            1,
+            1
           ],
           "recall": [
-            0.43373493975903615,
-            0.5115961800818554
+            0.16358463726884778,
+            0.2232746955345061
           ],
           "f1": [
-            0.586784140969163,
-            0.6571682991985752
+            0.2811735941320293,
+            0.36504424778761063
           ],
           "fpr": [
-            0.0224390243902439,
-            0.04604604604604605
+            0,
+            0
           ]
         }
       }
@@ -72,61 +72,61 @@
     "Malware (Separately)": {
       "th35": {
         "point": {
-          "precision": 0.203125,
+          "precision": 0.26,
           "recall": 0.02040816326530612,
-          "f1": 0.03708987161198288,
-          "fpr": 0.04975609756097561,
+          "f1": 0.0378457059679767,
+          "fpr": 0.026676279740447006,
           "tp": 13,
-          "fp": 51,
-          "tn": 974,
+          "fp": 37,
+          "tn": 1350,
           "fn": 624
         },
         "ci95": {
           "precision": [
-            0.1076923076923077,
-            0.3076923076923077
+            0.14285714285714285,
+            0.3958333333333333
           ],
           "recall": [
-            0.009819967266775777,
-            0.03140495867768595
+            0.010719754977029096,
+            0.032362459546925564
           ],
           "f1": [
-            0.017804154302670624,
-            0.05652759084791385
+            0.02005730659025788,
+            0.05965909090909091
           ],
           "fpr": [
-            0.038461538461538464,
-            0.06336633663366337
+            0.01884057971014493,
+            0.03655913978494624
           ]
         }
       },
       "th70": {
         "point": {
-          "precision": 0.2391304347826087,
+          "precision": 1,
           "recall": 0.01726844583987441,
-          "f1": 0.0322108345534407,
-          "fpr": 0.03414634146341464,
+          "f1": 0.033950617283950615,
+          "fpr": 0,
           "tp": 11,
-          "fp": 35,
-          "tn": 990,
+          "fp": 0,
+          "tn": 1387,
           "fn": 626
         },
         "ci95": {
           "precision": [
-            0.12,
-            0.3684210526315789
+            1,
+            1
           ],
           "recall": [
-            0.007530120481927711,
-            0.028875379939209727
+            0.008025682182985553,
+            0.02750809061488673
           ],
           "f1": [
-            0.014245014245014245,
-            0.05307262569832402
+            0.015923566878980888,
+            0.053543307086614166
           ],
           "fpr": [
-            0.023233301064859633,
-            0.045584045584045586
+            0,
+            0
           ]
         }
       }
@@ -134,61 +134,61 @@
     "Overall (Phishing + Malware)": {
       "th35": {
         "point": {
-          "precision": 0.9307065217391305,
-          "recall": 0.4938716654650324,
-          "f1": 0.6453132359868111,
-          "fpr": 0.04975609756097561,
-          "tp": 685,
-          "fp": 51,
-          "tn": 974,
-          "fn": 702
+          "precision": 0.9489655172413793,
+          "recall": 0.4960346070656092,
+          "f1": 0.6515151515151515,
+          "fpr": 0.026676279740447006,
+          "tp": 688,
+          "fp": 37,
+          "tn": 1350,
+          "fn": 699
         },
         "ci95": {
           "precision": [
-            0.9114285714285715,
-            0.9487179487179487
+            0.9338731443994602,
+            0.9633649932157394
           ],
           "recall": [
-            0.46723044397463004,
-            0.524578136463683
+            0.4711673699015471,
+            0.5276381909547738
           ],
           "f1": [
-            0.6210826210826211,
-            0.6740027510316369
+            0.6290247316845544,
+            0.6801315171441992
           ],
           "fpr": [
-            0.036053130929791274,
-            0.0636182902584493
+            0.018950437317784258,
+            0.03450704225352113
           ]
         }
       },
       "th70": {
         "point": {
-          "precision": 0.913151364764268,
-          "recall": 0.2653208363374189,
-          "f1": 0.41117318435754185,
-          "fpr": 0.03414634146341464,
-          "tp": 368,
-          "fp": 35,
-          "tn": 990,
-          "fn": 1019
+          "precision": 1,
+          "recall": 0.1110310021629416,
+          "f1": 0.19987021414665804,
+          "fpr": 0,
+          "tp": 154,
+          "fp": 0,
+          "tn": 1387,
+          "fn": 1233
         },
         "ci95": {
           "precision": [
-            0.8799019607843137,
-            0.941320293398533
+            1,
+            1
           ],
           "recall": [
-            0.24303621169916434,
-            0.2900763358778626
+            0.09597741707833451,
+            0.12936046511627908
           ],
           "f1": [
-            0.38273708120386146,
-            0.44141069397042093
+            0.1751448808757244,
+            0.2290862290862291
           ],
           "fpr": [
-            0.023143683702989394,
-            0.046966731898238745
+            0,
+            0
           ]
         }
       }
@@ -196,61 +196,61 @@
     "HTTPS-Only Phishing": {
       "th35": {
         "point": {
-          "precision": 0.5096153846153846,
-          "recall": 0.424,
-          "f1": 0.462882096069869,
-          "fpr": 0.04975609756097561,
-          "tp": 53,
-          "fp": 51,
-          "tn": 974,
-          "fn": 72
+          "precision": 0.5795454545454546,
+          "recall": 0.408,
+          "f1": 0.47887323943661975,
+          "fpr": 0.026695526695526696,
+          "tp": 51,
+          "fp": 37,
+          "tn": 1349,
+          "fn": 74
         },
         "ci95": {
           "precision": [
-            0.40816326530612246,
-            0.6018518518518519
+            0.47619047619047616,
+            0.6883116883116883
           ],
           "recall": [
-            0.3391304347826087,
-            0.5068493150684932
+            0.3333333333333333,
+            0.4928571428571429
           ],
           "f1": [
-            0.3771929824561403,
-            0.5349794238683129
+            0.4,
+            0.5570776255707762
           ],
           "fpr": [
-            0.03747534516765286,
-            0.06310679611650485
+            0.01866475233309404,
+            0.03540462427745665
           ]
         }
       },
       "th70": {
         "point": {
-          "precision": 0.3137254901960784,
-          "recall": 0.128,
-          "f1": 0.18181818181818182,
-          "fpr": 0.03414634146341464,
-          "tp": 16,
-          "fp": 35,
-          "tn": 990,
-          "fn": 109
+          "precision": 1,
+          "recall": 0.08,
+          "f1": 0.14814814814814814,
+          "fpr": 0,
+          "tp": 10,
+          "fp": 0,
+          "tn": 1386,
+          "fn": 115
         },
         "ci95": {
           "precision": [
-            0.18518518518518517,
-            0.4444444444444444
+            1,
+            1
           ],
           "recall": [
-            0.07017543859649122,
-            0.18840579710144928
+            0.03759398496240601,
+            0.13043478260869565
           ],
           "f1": [
-            0.1038961038961039,
-            0.2555555555555556
+            0.07246376811594202,
+            0.23076923076923078
           ],
           "fpr": [
-            0.024630541871921183,
-            0.044965786901270774
+            0,
+            0
           ]
         }
       }
@@ -258,133 +258,173 @@
   },
   "worst20FalsePositives": [
     {
-      "url": "https://xn--42cah7d0cxcvbbb9x.com/",
-      "score": 81,
-      "source": "tranco-list.eu:1k-100k",
-      "category": "tranco_1k_100k",
+      "url": "https://idfcfirstbank.com/personal-banking/payments",
+      "score": 65,
+      "source": "sitemap_and_page_crawl:fallback",
+      "category": "benign_deep",
       "rulesFired": [
+        {
+          "name": "hasBrandNameInWrongDomain",
+          "score": 90,
+          "reason": "The URL contains the name \"IRS\" but does not belong to its official domain."
+        },
         {
           "name": "hasPunycodeOrKeywords",
-          "score": 85,
-          "reason": "The URL uses Punycode (IDN), which is often used in homograph attacks to spoof legitimate domains."
-        },
-        {
-          "name": "hasRandomLookingHostname",
-          "score": 65,
-          "reason": "Hostname \"xn--42cah7d0cxcvbbb9x.com\" contains an unpronounceable consonant sequence (\"42cah7d0cxcvbbb9x\") — signature of ad-redirect & malware DGA infrastructure."
-        }
-      ],
-      "signals": [
-        {
-          "category": "url",
-          "score": 26,
-          "reason": "The URL uses Punycode (IDN), which is often used in homograph attacks to spoof legitimate domains."
-        },
-        {
-          "category": "malvertising",
-          "score": 55,
-          "reason": "Hostname \"xn--42cah7d0cxcvbbb9x.com\" contains an unpronounceable consonant sequence (\"42cah7d0cxcvbbb9x\") — signature of ad-redirect & malware DGA infrastructure."
-        }
-      ]
-    },
-    {
-      "url": "https://www.amazon.co.in/gp/help/customer/display.html",
-      "score": 80,
-      "source": "curated:amazon_co_in_help",
-      "category": "cctld_hard",
-      "rulesFired": [
-        {
-          "name": "hasBrandNameInWrongDomain",
-          "score": 90,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "score": 40,
+          "reason": "The URL contains punycode or suspicious keywords: banking, payment."
         },
         {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
+          "reason": "Hostname matches a known typosquat variant of \"IRS\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
-        },
-        {
-          "category": "ml",
-          "score": 10,
-          "reason": "On-device ML model flagged structural phishing characteristics."
-        },
-        {
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "IRS"
+          },
+          "score": 90,
           "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"IRS\" but does not belong to its official domain."
+        },
+        {
+          "id": "RULE_PUNYCODE_OR_KEYWORDS",
+          "params": {
+            "keywords": "banking, payment"
+          },
           "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "category": "url",
+          "source": "url",
+          "reason": "The URL contains punycode or suspicious keywords: banking, payment."
+        },
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "IRS"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"IRS\"."
         }
       ]
     },
     {
-      "url": "https://amazonaws.com/",
-      "score": 70,
-      "source": "tranco-list.eu:top1k",
-      "category": "tranco_top1k",
+      "url": "https://idfcfirstbank.com/personal-banking/accounts",
+      "score": 65,
+      "source": "sitemap_and_page_crawl:fallback",
+      "category": "benign_deep",
       "rulesFired": [
         {
           "name": "hasBrandNameInWrongDomain",
           "score": 90,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "reason": "The URL contains the name \"IRS\" but does not belong to its official domain."
+        },
+        {
+          "name": "hasPunycodeOrKeywords",
+          "score": 40,
+          "reason": "The URL contains punycode or suspicious keywords: account, banking."
         },
         {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
+          "reason": "Hostname matches a known typosquat variant of \"IRS\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "IRS"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"IRS\" but does not belong to its official domain."
         },
         {
-          "category": "brand_impersonation",
+          "id": "RULE_PUNYCODE_OR_KEYWORDS",
+          "params": {
+            "keywords": "account, banking"
+          },
           "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "category": "url",
+          "source": "url",
+          "reason": "The URL contains punycode or suspicious keywords: account, banking."
+        },
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "IRS"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"IRS\"."
         }
       ]
     },
     {
-      "url": "https://googlevideo.com/",
-      "score": 70,
-      "source": "tranco-list.eu:top1k",
-      "category": "tranco_top1k",
+      "url": "https://idfcfirstbank.com/personal-banking/accounts/savings-account?utm_source=website&utm_medium=L1PersonalAccounts&utm_campaign=SavingsAccount",
+      "score": 65,
+      "source": "sitemap_and_page_crawl:fallback",
+      "category": "benign_deep",
       "rulesFired": [
         {
           "name": "hasBrandNameInWrongDomain",
           "score": 90,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+          "reason": "The URL contains the name \"IRS\" but does not belong to its official domain."
+        },
+        {
+          "name": "hasPunycodeOrKeywords",
+          "score": 40,
+          "reason": "The URL contains punycode or suspicious keywords: account, banking."
         },
         {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Google\"."
+          "reason": "Hostname matches a known typosquat variant of \"IRS\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Google\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "IRS"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"IRS\" but does not belong to its official domain."
         },
         {
-          "category": "brand_impersonation",
+          "id": "RULE_PUNYCODE_OR_KEYWORDS",
+          "params": {
+            "keywords": "account, banking"
+          },
           "score": 40,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+          "category": "url",
+          "source": "url",
+          "reason": "The URL contains punycode or suspicious keywords: account, banking."
+        },
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "IRS"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"IRS\"."
         }
       ]
     },
     {
       "url": "https://apple-dns.net/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -401,20 +441,30 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Apple\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Apple\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Apple"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Apple\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Apple"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Apple\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Apple\"."
         }
       ]
     },
     {
       "url": "https://microsoftonline.com/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -431,110 +481,80 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Microsoft\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Microsoft\"."
-        },
-        {
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Microsoft"
+          },
+          "score": 90,
           "category": "brand_impersonation",
-          "score": 40,
+          "source": "url",
           "reason": "The URL contains the name \"Microsoft\" but does not belong to its official domain."
+        },
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Microsoft"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Microsoft\"."
         }
       ]
     },
     {
-      "url": "https://tiktokv.com/",
-      "score": 70,
+      "url": "https://windows.net/",
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
         {
-          "name": "hasBrandNameInWrongDomain",
-          "score": 90,
-          "reason": "The URL contains the name \"TikTok\" but does not belong to its official domain."
-        },
-        {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"TikTok\"."
+          "reason": "Hostname matches a known typosquat variant of \"Microsoft\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"TikTok\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"TikTok\"."
-        },
-        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Microsoft"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"TikTok\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Microsoft\"."
         }
       ]
     },
     {
-      "url": "https://googlesyndication.com/",
-      "score": 70,
+      "url": "https://office365.com/",
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
         {
-          "name": "hasBrandNameInWrongDomain",
-          "score": 90,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
-        },
-        {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Google\"."
+          "reason": "Hostname matches a known typosquat variant of \"Microsoft\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Google\"."
-        },
-        {
-          "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
-        }
-      ]
-    },
-    {
-      "url": "https://googledomains.com/",
-      "score": 70,
-      "source": "tranco-list.eu:top1k",
-      "category": "tranco_top1k",
-      "rulesFired": [
-        {
-          "name": "hasBrandNameInWrongDomain",
-          "score": 90,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
-        },
-        {
-          "name": "hasBrandVariantMatch",
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Microsoft"
+          },
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Google\"."
-        }
-      ],
-      "signals": [
-        {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Google\"."
-        },
-        {
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Microsoft\"."
         }
       ]
     },
     {
       "url": "https://amazon-adsystem.com/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -551,20 +571,30 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Amazon"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Amazon"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
         }
       ]
     },
     {
       "url": "https://netflix.net/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -581,20 +611,55 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Netflix\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Netflix\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Netflix"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Netflix\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Netflix"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Netflix\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Netflix\"."
+        }
+      ]
+    },
+    {
+      "url": "https://att.net/",
+      "score": 60,
+      "source": "tranco-list.eu:top1k",
+      "category": "tranco_top1k",
+      "rulesFired": [
+        {
+          "name": "hasBrandVariantMatch",
+          "score": 85,
+          "reason": "Hostname matches a known typosquat variant of \"AT&T\"."
+        }
+      ],
+      "signals": [
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "AT&T"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"AT&T\"."
         }
       ]
     },
     {
       "url": "https://comcast.com/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -611,20 +676,30 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Comcast\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Comcast\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Comcast"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Comcast\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Comcast"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Comcast\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Comcast\"."
         }
       ]
     },
     {
       "url": "https://amazon.dev/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -641,20 +716,30 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Amazon"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Amazon"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
         }
       ]
     },
     {
       "url": "https://media-amazon.com/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -671,20 +756,30 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Amazon"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Amazon"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
         }
       ]
     },
     {
       "url": "https://googletagservices.com/",
-      "score": 70,
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -701,20 +796,80 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Google\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ]
     },
     {
-      "url": "https://google.co.uk/",
-      "score": 70,
+      "url": "https://hicloud.com/",
+      "score": 60,
+      "source": "tranco-list.eu:top1k",
+      "category": "tranco_top1k",
+      "rulesFired": [
+        {
+          "name": "hasBrandVariantMatch",
+          "score": 85,
+          "reason": "Hostname matches a known typosquat variant of \"Apple\"."
+        }
+      ],
+      "signals": [
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Apple"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Apple\"."
+        }
+      ]
+    },
+    {
+      "url": "https://icloud-content.com/",
+      "score": 60,
+      "source": "tranco-list.eu:top1k",
+      "category": "tranco_top1k",
+      "rulesFired": [
+        {
+          "name": "hasBrandVariantMatch",
+          "score": 85,
+          "reason": "Hostname matches a known typosquat variant of \"Apple\"."
+        }
+      ],
+      "signals": [
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Apple"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Apple\"."
+        }
+      ]
+    },
+    {
+      "url": "https://google.es/",
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -731,20 +886,30 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Google\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ]
     },
     {
-      "url": "https://google.de/",
-      "score": 70,
+      "url": "https://google.it/",
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
@@ -761,104 +926,104 @@
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Google\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Google\"."
-        },
-        {
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 90,
           "category": "brand_impersonation",
-          "score": 40,
+          "source": "url",
           "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+        },
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ]
     },
     {
-      "url": "https://myshopify.com/",
-      "score": 70,
+      "url": "https://google.com.hk/",
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
         {
           "name": "hasBrandNameInWrongDomain",
           "score": 90,
-          "reason": "The URL contains the name \"Shopify\" but does not belong to its official domain."
+          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
         },
         {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Shopify\"."
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Shopify\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Shopify\"."
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 90,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
         },
         {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 85,
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Shopify\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ]
     },
     {
-      "url": "https://amazontrust.com/",
-      "score": 70,
+      "url": "https://google.com.mx/",
+      "score": 60,
       "source": "tranco-list.eu:top1k",
       "category": "tranco_top1k",
       "rulesFired": [
         {
           "name": "hasBrandNameInWrongDomain",
           "score": 90,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
         },
         {
           "name": "hasBrandVariantMatch",
           "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ],
       "signals": [
         {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
-        },
-        {
-          "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
-        }
-      ]
-    },
-    {
-      "url": "https://amazon.co.jp/",
-      "score": 70,
-      "source": "tranco-list.eu:top1k",
-      "category": "tranco_top1k",
-      "rulesFired": [
-        {
-          "name": "hasBrandNameInWrongDomain",
+          "id": "RULE_BRAND_NAME_WRONG_DOMAIN",
+          "params": {
+            "brand": "Google"
+          },
           "score": 90,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
-        },
-        {
-          "name": "hasBrandVariantMatch",
-          "score": 85,
-          "reason": "Hostname matches a known typosquat variant of \"Amazon\"."
-        }
-      ],
-      "signals": [
-        {
-          "category": "url",
-          "score": 30,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain. Hostname matches a known typosquat variant of \"Amazon\"."
-        },
-        {
           "category": "brand_impersonation",
-          "score": 40,
-          "reason": "The URL contains the name \"Amazon\" but does not belong to its official domain."
+          "source": "url",
+          "reason": "The URL contains the name \"Google\" but does not belong to its official domain."
+        },
+        {
+          "id": "RULE_BRAND_VARIANT_MATCH",
+          "params": {
+            "brand": "Google"
+          },
+          "score": 85,
+          "category": "brand_impersonation",
+          "source": "url",
+          "reason": "Hostname matches a known typosquat variant of \"Google\"."
         }
       ]
     }
@@ -889,6 +1054,30 @@
       "signals": []
     },
     {
+      "url": "https://asureindirect.blogspot.com/",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
+      "url": "https://albertsonstore.us/rt/pt/",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
+      "url": "https://gimminiloginx.gitbook.io/us-en",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
       "url": "https://g5.lu/g7fey",
       "score": 0,
       "source": "openphish.com:feed",
@@ -905,7 +1094,7 @@
       "signals": []
     },
     {
-      "url": "https://uz3045.craftum.io/",
+      "url": "https://www.silverlsakyo.spahotel.guru/",
       "score": 0,
       "source": "openphish.com:feed",
       "category": "phishing_live",
@@ -913,7 +1102,15 @@
       "signals": []
     },
     {
-      "url": "https://zq7047.craftum.io/",
+      "url": "https://www.royalstandrewsandconferencecentre.spahotel.guru/",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
+      "url": "https://www.ballygarryestate.spahotel.guru/",
       "score": 0,
       "source": "openphish.com:feed",
       "category": "phishing_live",
@@ -922,6 +1119,30 @@
     },
     {
       "url": "https://www.fish.spahotel.guru/",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
+      "url": "https://www.maradivavillas.spahotel.guru/",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
+      "url": "https://www.silverlandsakyo.spahotel.guru/",
+      "score": 0,
+      "source": "openphish.com:feed",
+      "category": "phishing_live",
+      "rulesFired": [],
+      "signals": []
+    },
+    {
+      "url": "https://minha-maga-online.com/p",
       "score": 0,
       "source": "openphish.com:feed",
       "category": "phishing_live",
@@ -967,175 +1188,89 @@
       "category": "phishing_live",
       "rulesFired": [],
       "signals": []
-    },
-    {
-      "url": "https://kreyolinter.com/",
-      "score": 0,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [],
-      "signals": []
-    },
-    {
-      "url": "https://khan-netfli.netlify.app/",
-      "score": 0,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [],
-      "signals": []
-    },
-    {
-      "url": "https://servinfor.vercel.app/",
-      "score": 0,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [],
-      "signals": []
-    },
-    {
-      "url": "https://minha-maga-online.com/p",
-      "score": 8,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [],
-      "signals": [
-        {
-          "category": "ml",
-          "score": 8,
-          "reason": "On-device ML model flagged structural phishing characteristics."
-        }
-      ]
-    },
-    {
-      "url": "https://www.letsive.site/",
-      "score": 9,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [
-        {
-          "name": "hasSuspiciousUrlPattern",
-          "score": 30,
-          "reason": "The URL uses a top-level domain frequently associated with spam or abuse."
-        }
-      ],
-      "signals": [
-        {
-          "category": "url",
-          "score": 9,
-          "reason": "The URL uses a top-level domain frequently associated with spam or abuse."
-        }
-      ]
-    },
-    {
-      "url": "https://gimminiloginx.gitbook.io/us-en",
-      "score": 11,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [],
-      "signals": [
-        {
-          "category": "ml",
-          "score": 11,
-          "reason": "On-device ML model flagged structural phishing characteristics."
-        }
-      ]
-    },
-    {
-      "url": "https://w0ydy28b.6lnov0.cn/",
-      "score": 11,
-      "source": "openphish.com:feed",
-      "category": "phishing_live",
-      "rulesFired": [],
-      "signals": [
-        {
-          "category": "ml",
-          "score": 11,
-          "reason": "On-device ML model flagged structural phishing characteristics."
-        }
-      ]
     }
   ],
   "ruleStats": [
     {
       "Rule Name": "isIpBasedUrl",
-      "Benign Fires": "0 / 1025 (0.0%)",
+      "Benign Fires": "0 / 1387 (0.0%)",
       "Phish Fires": "115 / 750 (15.3%)",
       "benignCount": 0,
       "phishCount": 115
     },
     {
       "Rule Name": "hasMissingHttps",
-      "Benign Fires": "0 / 1025 (0.0%)",
+      "Benign Fires": "1 / 1387 (0.1%)",
       "Phish Fires": "625 / 750 (83.3%)",
-      "benignCount": 0,
+      "benignCount": 1,
       "phishCount": 625
     },
     {
       "Rule Name": "hasExcessiveSubdomains",
-      "Benign Fires": "0 / 1025 (0.0%)",
-      "Phish Fires": "9 / 750 (1.2%)",
+      "Benign Fires": "0 / 1387 (0.0%)",
+      "Phish Fires": "6 / 750 (0.8%)",
       "benignCount": 0,
-      "phishCount": 9
+      "phishCount": 6
     },
     {
       "Rule Name": "hasBrandNameInWrongDomain",
-      "Benign Fires": "35 / 1025 (3.4%)",
-      "Phish Fires": "29 / 750 (3.9%)",
-      "benignCount": 35,
-      "phishCount": 29
+      "Benign Fires": "28 / 1387 (2.0%)",
+      "Phish Fires": "22 / 750 (2.9%)",
+      "benignCount": 28,
+      "phishCount": 22
     },
     {
       "Rule Name": "hasSuspiciousUrlPattern",
-      "Benign Fires": "17 / 1025 (1.7%)",
+      "Benign Fires": "17 / 1387 (1.2%)",
       "Phish Fires": "286 / 750 (38.1%)",
       "benignCount": 17,
       "phishCount": 286
     },
     {
       "Rule Name": "hasPunycodeOrKeywords",
-      "Benign Fires": "1 / 1025 (0.1%)",
+      "Benign Fires": "15 / 1387 (1.1%)",
       "Phish Fires": "36 / 750 (4.8%)",
-      "benignCount": 1,
+      "benignCount": 15,
       "phishCount": 36
     },
     {
       "Rule Name": "hasFinancialKeywordInHostname",
-      "Benign Fires": "0 / 1025 (0.0%)",
+      "Benign Fires": "0 / 1387 (0.0%)",
       "Phish Fires": "1 / 750 (0.1%)",
       "benignCount": 0,
       "phishCount": 1
     },
     {
       "Rule Name": "hasBrandVariantMatch",
-      "Benign Fires": "39 / 1025 (3.8%)",
-      "Phish Fires": "29 / 750 (3.9%)",
-      "benignCount": 39,
-      "phishCount": 29
+      "Benign Fires": "32 / 1387 (2.3%)",
+      "Phish Fires": "23 / 750 (3.1%)",
+      "benignCount": 32,
+      "phishCount": 23
     },
     {
       "Rule Name": "hasMalvertisingPattern",
-      "Benign Fires": "0 / 1025 (0.0%)",
+      "Benign Fires": "3 / 1387 (0.2%)",
       "Phish Fires": "66 / 750 (8.8%)",
-      "benignCount": 0,
+      "benignCount": 3,
       "phishCount": 66
     },
     {
       "Rule Name": "hasRandomLookingHostname",
-      "Benign Fires": "8 / 1025 (0.8%)",
+      "Benign Fires": "8 / 1387 (0.6%)",
       "Phish Fires": "294 / 750 (39.2%)",
       "benignCount": 8,
       "phishCount": 294
     },
     {
       "Rule Name": "hasAffiliateTrackerPattern",
-      "Benign Fires": "5 / 1025 (0.5%)",
+      "Benign Fires": "5 / 1387 (0.4%)",
       "Phish Fires": "33 / 750 (4.4%)",
       "benignCount": 5,
       "phishCount": 33
     },
     {
       "Rule Name": "hasPiracyOrUnverifiedMediaPattern",
-      "Benign Fires": "2 / 1025 (0.2%)",
+      "Benign Fires": "2 / 1387 (0.1%)",
       "Phish Fires": "0 / 750 (0.0%)",
       "benignCount": 2,
       "phishCount": 0

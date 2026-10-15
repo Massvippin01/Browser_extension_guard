@@ -8,6 +8,7 @@ import { classifyFile } from './fileTypeAnalyzer.js';
 import { analyzeFilename } from './filenameAnalyzer.js';
 import { checkReputation } from '../reputation.js';
 import { getRedirectSignals } from '../redirect-analyzer.js';
+import { isAllowlistedDomain } from '../../shared/legit-domains.js';
 
 /**
  * Extract hostname safely.
@@ -101,7 +102,27 @@ export async function analyzeDownload(downloadItem, brandsList, calculateRisk, r
     suspiciousTLDs.some(tld => sourceHostname.endsWith(tld)) ||
     suspiciousTLDs.some(tld => finalHostname.endsWith(tld));
 
+  // ── 7b. HTML Smuggling Detection ──────────────────────────────────────────
+  const urlLower = (url || '').toLowerCase();
+  const finalUrlLower = (finalUrl || '').toLowerCase();
+  const isBlobOrData = urlLower.startsWith('blob:') || urlLower.startsWith('data:') ||
+                       finalUrlLower.startsWith('blob:') || finalUrlLower.startsWith('data:');
+
+  const originatingUrl = downloadItem.originatingUrl || referrer || '';
+  const originatingHost = downloadItem.originatingHostname || safeHostname(originatingUrl);
+  const isAllowlistedOrigin = isAllowlistedDomain(originatingUrl) || isAllowlistedDomain(originatingHost);
+
+  const htmlSmuggling = !!(downloadItem.htmlSmuggling ?? (isBlobOrData && !isAllowlistedOrigin));
+
   // ── 8. Build Normalized Download Risk Features (spec §16) ─────────────────
+  const dangerousExtensionList = [
+    '.exe', '.com', '.scr', '.cpl', '.dll',
+    '.bat', '.cmd', '.ps1', '.vbs', '.vbe', '.js', '.jse', '.wsf', '.wsh', '.hta', '.sh',
+    '.msi', '.msp', '.pkg', '.deb', '.rpm', '.dmg', '.apk', '.xapk', '.apkm', '.ipa',
+    '.iso', '.img', '.vhd', '.vhdx', '.lnk', '.chm', '.one', '.reg', '.cab'
+  ];
+  const isDangerousExtension = dangerousExtensionList.includes((fileType.extension || '').toLowerCase());
+
   const downloadSignals = {
     analysisContext: 'download',
     // File type
@@ -111,6 +132,11 @@ export async function analyzeDownload(downloadItem, brandsList, calculateRisk, r
     archiveDownload:    fileType.isArchive,
     fileCategory:       fileType.category,
     extension:          fileType.extension,
+    isDangerousExtension,
+    // HTML Smuggling & Spoofing
+    htmlSmuggling,
+    originatingHostname: originatingHost,
+    contentDispositionSpoofed: !!downloadItem.contentDispositionSpoofed,
     // Filename analysis
     doubleExtension:    filenameAnalysis.doubleExtension,
     misleadingFilename: filenameAnalysis.misleadingFilename,
@@ -154,7 +180,7 @@ export async function analyzeDownload(downloadItem, brandsList, calculateRisk, r
     pageTitle: filename || '',
   };
 
-  const verdict = calculateRisk(
+  const verdict = (typeof calculateRisk === 'function') ? calculateRisk(
     sourceUrl || finalUrlStr,
     ruleSignals || [],
     null,             // mlScore — not applicable for downloads
@@ -163,7 +189,14 @@ export async function analyzeDownload(downloadItem, brandsList, calculateRisk, r
     redirectSignals,
     null,             // paymentAnalysis — not applicable here
     downloadSignals   // new downloadSignals parameter
-  );
+  ) : {
+    score: 0,
+    riskScore: 0,
+    severity: 'safe',
+    action: 'allow',
+    signals: [],
+    reasons: []
+  };
 
   return { verdict, downloadSignals };
 }

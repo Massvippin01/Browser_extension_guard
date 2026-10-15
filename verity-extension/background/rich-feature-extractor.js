@@ -5,7 +5,10 @@
 
 const SUSPICIOUS_TLDS = new Set([
   '.xyz', '.top', '.pw', '.tk', '.ml', '.ga', '.cf', '.gq',
-  '.site', '.online', '.rest', '.click', '.fun', '.info'
+  '.site', '.online', '.info',
+  '.monster', '.click', '.sbs', '.cfd', '.rest', '.icu', '.cyou',
+  '.buzz', '.lat', '.skin', '.hair', '.boats', '.quest', '.shop',
+  '.live', '.fun'
 ]);
 
 const KEYWORDS = [

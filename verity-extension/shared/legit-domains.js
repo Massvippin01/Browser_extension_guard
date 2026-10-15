@@ -1,5 +1,5 @@
 import { getDomain, parse } from './psl.js';
-import legitData from '../config/legit_domains.json' with { type: 'json' };
+import legitData from '../config/legit_domains.js';
 
 export const LEGIT_DOMAINS = legitData;
 const domainSet = new Set(legitData.map(d => d.domain.toLowerCase()));
