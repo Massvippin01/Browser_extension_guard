@@ -163,7 +163,35 @@
     OPT_ABOUT_VERSION: () => 'Version',
     OPT_ABOUT_BUILD: () => 'Build Target',
     OPT_ABOUT_PRIVACY: () => 'Zero-Telemetry Architecture',
-    OPT_ABOUT_PRIVACY_DESC: () => 'Verity processes all URL signals, DOM features, and heuristic models strictly on your device. Your browsing history is never transmitted to any external server.'
+    OPT_ABOUT_PRIVACY_DESC: () => 'Verity processes all URL signals, DOM features, and heuristic models strictly on your device. Your browsing history is never transmitted to any external server.',
+
+    // ── Warning Overlay Strings (Phase UI-1.1) ────────────────────────────────
+    OVERLAY_TITLE_BLOCK: () => 'This site looks dangerous',
+    OVERLAY_TITLE_CAUTION: () => 'Be careful on this site',
+    OVERLAY_TITLE_BLOCK_PRE: () => 'This site looks ',
+    OVERLAY_TITLE_BLOCK_WORD: () => 'dangerous',
+    OVERLAY_TITLE_CAUTION_WORD: () => 'Be careful',
+    OVERLAY_TITLE_CAUTION_POST: () => ' on this site',
+
+    OVERLAY_SUMMARY_PAYMENT: () => 'This site appears to be impersonating a payment provider or financial institution to capture sensitive credentials.',
+    OVERLAY_SUMMARY_PHISHING: () => 'This site mimics a trusted service or requests credentials that could compromise your security.',
+    OVERLAY_SUMMARY_THREAT_INTEL: () => 'This site is listed on verified threat intelligence feeds as hosting malicious content.',
+    OVERLAY_SUMMARY_MALVERTISING: () => 'This site was launched through deceptive advertising redirects commonly associated with unwanted software.',
+    OVERLAY_SUMMARY_NEUTRAL: () => 'This site showed warning signs that are common on unsafe pages.',
+    OVERLAY_SUMMARY_CAUTION: () => 'This site exhibits unusual patterns or unconfirmed security details. Exercise caution before interacting with it.',
+
+    OVERLAY_BTN_SAFETY: () => 'Take me to safety',
+    OVERLAY_BTN_PROCEED: () => 'Continue anyway',
+    OVERLAY_WHY_FLAGGED: (p) => `Why we flagged this (${p?.count || 0})`,
+    OVERLAY_RISK_SCORE_LABEL: () => 'Risk score',
+    OVERLAY_PROTECTED_BY: () => 'Protected by VERITY Web Protection',
+    OVERLAY_REPORT_ISSUE: () => 'Report an issue',
+    OVERLAY_CONFIRM_TITLE: () => 'Are you sure you want to proceed?',
+    OVERLAY_CONFIRM_BADGE: () => 'High Risk Confirmation',
+    OVERLAY_CONFIRM_DESC: (p) => `This site is classified as ${p?.state || 'dangerous'}. Bypassing protection exposes you to potential credential theft, phishing, or financial risk.`,
+    OVERLAY_CONFIRM_CANCEL: () => 'Return to safety',
+    OVERLAY_CONFIRM_PROCEED: () => 'I understand the risks, proceed',
+    OVERLAY_CONFIRM_WAIT: (p) => `Please wait (${p?.seconds || '1.5'}s)...`
   };
 
   /**

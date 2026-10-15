@@ -535,9 +535,1026 @@ function initSpaMutationObserver() {
 // ─── Live Status Badge ──────────────────────────────────────────────────────
 
 
+// ─── Verity Custom Font Loader (CSP-Safe ArrayBuffer Injection) ──────────────
+
+let verityFontLoadPromise = null;
+function ensureVerityFontLoaded() {
+  if (typeof document === 'undefined' || !('fonts' in document)) {
+    return Promise.resolve();
+  }
+  try {
+    if (document.fonts.check('16px VerityInter')) {
+      return Promise.resolve();
+    }
+  } catch (e) {}
+  if (verityFontLoadPromise) {
+    return verityFontLoadPromise;
+  }
+  verityFontLoadPromise = (async () => {
+    try {
+      const fontUrl = (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL)
+        ? chrome.runtime.getURL('shared/fonts/InterVariable.woff2')
+        : '/shared/fonts/InterVariable.woff2';
+      const res = await fetch(fontUrl);
+      if (!res.ok) return;
+      const buffer = await res.arrayBuffer();
+      const fontFace = new FontFace('VerityInter', buffer, {
+        weight: '100 900',
+        style: 'normal',
+        display: 'swap'
+      });
+      const loadedFace = await fontFace.load();
+      document.fonts.add(loadedFace);
+    } catch (e) {
+      // Font load error fallback gracefully
+    }
+  })();
+  return verityFontLoadPromise;
+}
+
+if (typeof document !== 'undefined') {
+  ensureVerityFontLoaded().catch(() => {});
+}
+
 // ─── Design System & Production UI Implementation ───────────────────────────
 
-const VERITY_UI_CSS = '/**\n * content/verity-ui.css - Production-Grade Shadow DOM Styles for Verity\n * Covers: Warning Overlay Dialog, Download Modal, Popup Toasts, Status Badge.\n * Design language: shadcn/ui, Linear, Vercel — calm, precise, trustworthy.\n */\n\n@font-face {\n  font-family: \'Inter Variable\';\n  font-style: normal;\n  font-weight: 100 900;\n  font-display: swap;\n  src: url(\'/shared/fonts/InterVariable.woff2\') format(\'woff2\');\n}\n\n/* ─── Design Tokens ────────────────────────────────────────────────────────── */\n:host,\n.verity-root,\n[data-theme="light"] {\n  --v-bg: #ffffff;\n  --v-fg: #09090b;\n  --v-card: #ffffff;\n  --v-card-fg: #09090b;\n  --v-muted: #f4f4f5;\n  --v-muted-fg: #52525b; /* 7.03:1 contrast */\n  --v-border: #e4e4e7;\n  --v-input: #e4e4e7;\n  --v-ring: #18181b;\n\n  --v-primary: #18181b;\n  --v-primary-fg: #fafafa;\n  --v-secondary: #f4f4f5;\n  --v-secondary-fg: #18181b;\n\n  --v-destructive: #dc2626;\n  --v-destructive-fg: #ffffff;\n  --v-destructive-subtle: #fef2f2;\n  --v-destructive-border: #fecaca;\n  --v-destructive-text: #991b1b;\n\n  --v-warning: #d97706;\n  --v-warning-fg: #ffffff;\n  --v-warning-subtle: #fffbeb;\n  --v-warning-border: #fde68a;\n  --v-warning-text: #92400e;\n\n  --v-success: #16a34a;\n  --v-success-fg: #ffffff;\n  --v-success-subtle: #f0fdf4;\n  --v-success-border: #bbf7d0;\n  --v-success-text: #166534;\n\n  --v-radius: 0.625rem;\n  --v-radius-sm: 0.375rem;\n  --v-radius-md: 0.5rem;\n  --v-radius-lg: 0.75rem;\n  --v-radius-full: 9999px;\n\n  --v-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);\n  --v-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);\n  --v-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);\n  --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08);\n\n  --v-font: \'Inter Variable\', \'Inter\', -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Noto Sans\', system-ui, sans-serif;\n  --v-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;\n\n  --v-dur-fast: 120ms;\n  --v-dur-base: 200ms;\n  --v-ease-out: cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n@media (prefers-color-scheme: dark) {\n  :host:not([data-theme="light"]),\n  .verity-root:not([data-theme="light"]) {\n    --v-bg: #09090b;\n    --v-fg: #fafafa;\n    --v-card: #121215;\n    --v-card-fg: #fafafa;\n    --v-muted: #27272a;\n    --v-muted-fg: #a1a1aa; /* 5.81:1 contrast */\n    --v-border: #27272a;\n    --v-input: #27272a;\n    --v-ring: #d4d4d8;\n\n    --v-primary: #fafafa;\n    --v-primary-fg: #18181b;\n    --v-secondary: #27272a;\n    --v-secondary-fg: #fafafa;\n\n    --v-destructive: #ef4444;\n    --v-destructive-fg: #09090b;\n    --v-destructive-subtle: rgba(239, 68, 68, 0.12);\n    --v-destructive-border: rgba(239, 68, 68, 0.3);\n    --v-destructive-text: #fca5a5;\n\n    --v-warning: #f59e0b;\n    --v-warning-fg: #09090b;\n    --v-warning-subtle: rgba(245, 158, 11, 0.12);\n    --v-warning-border: rgba(245, 158, 11, 0.3);\n    --v-warning-text: #fde68a;\n\n    --v-success: #22c55e;\n    --v-success-fg: #09090b;\n    --v-success-subtle: rgba(34, 197, 94, 0.12);\n    --v-success-border: rgba(34, 197, 94, 0.3);\n    --v-success-text: #86efac;\n\n    --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);\n  }\n}\n\n[data-theme="dark"] {\n  --v-bg: #09090b;\n  --v-fg: #fafafa;\n  --v-card: #121215;\n  --v-card-fg: #fafafa;\n  --v-muted: #27272a;\n  --v-muted-fg: #a1a1aa;\n  --v-border: #27272a;\n  --v-input: #27272a;\n  --v-ring: #d4d4d8;\n\n  --v-primary: #fafafa;\n  --v-primary-fg: #18181b;\n  --v-secondary: #27272a;\n  --v-secondary-fg: #fafafa;\n\n  --v-destructive: #ef4444;\n  --v-destructive-fg: #09090b;\n  --v-destructive-subtle: rgba(239, 68, 68, 0.12);\n  --v-destructive-border: rgba(239, 68, 68, 0.3);\n  --v-destructive-text: #fca5a5;\n\n  --v-warning: #f59e0b;\n  --v-warning-fg: #09090b;\n  --v-warning-subtle: rgba(245, 158, 11, 0.12);\n  --v-warning-border: rgba(245, 158, 11, 0.3);\n  --v-warning-text: #fde68a;\n\n  --v-success: #22c55e;\n  --v-success-fg: #09090b;\n  --v-success-subtle: rgba(34, 197, 94, 0.12);\n  --v-success-border: rgba(34, 197, 94, 0.3);\n  --v-success-text: #86efac;\n\n  --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);\n}\n\n/* ─── Host & Global Reset ──────────────────────────────────────────────────── */\n:host {\n  all: initial;\n  display: block;\n  font-family: var(--v-font);\n  font-size: 14px;\n  line-height: 1.5;\n  color: var(--v-fg);\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n*, *::before, *::after {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\n/* ─── Custom Scrollbar (.v-scroll) ─────────────────────────────────────────── */\n.v-scroll {\n  overflow-y: auto;\n  overflow-x: hidden;\n  scrollbar-width: thin;\n  scrollbar-color: var(--v-border) transparent;\n  scrollbar-gutter: stable;\n  overscroll-behavior: contain;\n  transition: scrollbar-color var(--v-dur-base) var(--v-ease-out);\n}\n\n.v-scroll:hover {\n  scrollbar-color: var(--v-muted-fg) transparent;\n}\n\n.v-scroll::-webkit-scrollbar {\n  width: 8px;\n  height: 8px;\n  background: transparent;\n}\n\n.v-scroll::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n.v-scroll::-webkit-scrollbar-thumb {\n  background-color: var(--v-border);\n  background-clip: padding-box;\n  border: 2px solid transparent;\n  border-radius: var(--v-radius-full);\n  transition: background-color var(--v-dur-base) var(--v-ease-out);\n}\n\n.v-scroll:hover::-webkit-scrollbar-thumb,\n.v-scroll:active::-webkit-scrollbar-thumb {\n  background-color: var(--v-muted-fg);\n}\n\n.v-scroll::-webkit-scrollbar-corner {\n  background: transparent;\n}\n\n/* ─── Buttons (.v-btn) ─────────────────────────────────────────────────────── */\n.v-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  font-family: inherit;\n  font-size: 13px;\n  font-weight: 500;\n  line-height: 1;\n  white-space: nowrap;\n  border-radius: var(--v-radius-md);\n  border: 1px solid transparent;\n  cursor: pointer;\n  user-select: none;\n  background: transparent;\n  color: var(--v-fg);\n  transition: background-color var(--v-dur-fast) var(--v-ease-out),\n              border-color var(--v-dur-fast) var(--v-ease-out),\n              color var(--v-dur-fast) var(--v-ease-out),\n              box-shadow var(--v-dur-fast) var(--v-ease-out),\n              transform var(--v-dur-fast) var(--v-ease-out);\n}\n\n.v-btn:focus-visible {\n  outline: 2px solid var(--v-ring);\n  outline-offset: 2px;\n}\n\n.v-btn:disabled,\n.v-btn[disabled] {\n  opacity: 0.5;\n  pointer-events: none;\n  cursor: not-allowed;\n}\n\n.v-btn-sm {\n  height: 32px;\n  padding: 0 12px;\n  font-size: 12px;\n}\n\n.v-btn-md {\n  height: 38px;\n  padding: 0 16px;\n  font-size: 13px;\n}\n\n.v-btn-lg {\n  height: 44px;\n  padding: 0 22px;\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.v-btn-primary {\n  background-color: var(--v-primary);\n  color: var(--v-primary-fg);\n  box-shadow: var(--v-shadow-sm);\n}\n.v-btn-primary:hover {\n  opacity: 0.9;\n}\n.v-btn-primary:active {\n  transform: scale(0.98);\n}\n\n.v-btn-secondary {\n  background-color: var(--v-secondary);\n  color: var(--v-secondary-fg);\n}\n.v-btn-secondary:hover {\n  background-color: var(--v-border);\n}\n\n.v-btn-outline {\n  border-color: var(--v-border);\n  background: transparent;\n  color: var(--v-fg);\n}\n.v-btn-outline:hover {\n  background-color: var(--v-muted);\n}\n\n.v-btn-ghost {\n  background: transparent;\n  color: var(--v-muted-fg);\n}\n.v-btn-ghost:hover {\n  background-color: var(--v-muted);\n  color: var(--v-fg);\n}\n\n.v-btn-destructive {\n  background-color: var(--v-destructive);\n  color: var(--v-destructive-fg);\n  box-shadow: var(--v-shadow-sm);\n}\n.v-btn-destructive:hover {\n  opacity: 0.92;\n}\n\n/* ─── Badges / Pills (.v-badge) ────────────────────────────────────────────── */\n.v-badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 3px 10px;\n  border-radius: var(--v-radius-full);\n  font-size: 12px;\n  font-weight: 600;\n  line-height: 1.3;\n  border: 1px solid transparent;\n  white-space: nowrap;\n}\n.v-badge-safe {\n  background-color: var(--v-success-subtle);\n  color: var(--v-success-text);\n  border-color: var(--v-success-border);\n}\n.v-badge-caution {\n  background-color: var(--v-warning-subtle);\n  color: var(--v-warning-text);\n  border-color: var(--v-warning-border);\n}\n.v-badge-danger {\n  background-color: var(--v-destructive-subtle);\n  color: var(--v-destructive-text);\n  border-color: var(--v-destructive-border);\n}\n\n/* ─── Monospace Chip (.v-chip-mono) ────────────────────────────────────────── */\n.v-chip-mono {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  font-family: var(--v-mono);\n  font-size: 12px;\n  line-height: 1.4;\n  padding: 4px 10px;\n  border-radius: var(--v-radius-sm);\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  color: var(--v-fg);\n  word-break: break-all;\n  max-width: 100%;\n}\n.v-chip-mono-muted {\n  color: var(--v-muted-fg);\n  font-weight: 400;\n}\n.v-chip-mono-emphasis {\n  color: var(--v-fg);\n  font-weight: 700;\n}\n\n/* ─── Fullscreen Backdrop & Centered Dialog ────────────────────────────────── */\n.verity-overlay {\n  position: fixed;\n  inset: 0;\n  width: 100vw;\n  height: 100vh;\n  z-index: 2147483647;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: 20px;\n  background-color: rgba(9, 9, 11, 0.72);\n  backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n  overflow-y: auto;\n  overscroll-behavior: contain;\n}\n\n@supports not (backdrop-filter: blur(12px)) {\n  .verity-overlay {\n    background-color: rgba(9, 9, 11, 0.94);\n  }\n}\n\n.v-dialog-card {\n  position: relative;\n  width: 100%;\n  max-width: 620px;\n  max-height: calc(100vh - 40px);\n  display: flex;\n  flex-direction: column;\n  background-color: var(--v-card);\n  color: var(--v-card-fg);\n  border-radius: var(--v-radius-lg);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-dialog);\n  overflow: hidden;\n  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;\n}\n\n.v-card-danger {\n  border-top: 3px solid var(--v-destructive);\n}\n.v-card-warning {\n  border-top: 3px solid var(--v-warning);\n}\n\n.v-dialog-inner {\n  padding: 32px 36px;\n  display: flex;\n  flex-direction: column;\n  overflow-y: auto;\n}\n\n/* Dialog Header Top */\n.v-dialog-header-top {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 20px;\n}\n\n.v-icon-badge-wrap {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n.v-icon-circle {\n  width: 44px;\n  height: 44px;\n  border-radius: var(--v-radius-full);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n}\n.v-icon-circle-danger {\n  background-color: var(--v-destructive-subtle);\n  color: var(--v-destructive);\n  border: 1px solid var(--v-destructive-border);\n}\n.v-icon-circle-warning {\n  background-color: var(--v-warning-subtle);\n  color: var(--v-warning);\n  border: 1px solid var(--v-warning-border);\n}\n\n.v-brand-mark {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--v-muted-fg);\n}\n\n/* Dialog Title & Message */\n.v-dialog-title {\n  font-size: 20px;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--v-fg);\n  margin-bottom: 8px;\n  letter-spacing: -0.01em;\n}\n\n.verity-status-highlight {\n  font-weight: 700;\n}\n.v-card-danger .verity-status-highlight {\n  color: var(--v-destructive);\n}\n.v-card-warning .verity-status-highlight {\n  color: var(--v-warning);\n}\n\n.verity-message {\n  font-size: 14px;\n  line-height: 1.55;\n  color: var(--v-muted-fg);\n  margin-bottom: 16px;\n}\n\n/* Critical Alerts inside Dialog */\n.v-payment-alert {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 12px 14px;\n  border-radius: var(--v-radius-md);\n  background-color: var(--v-destructive-subtle);\n  border: 1px solid var(--v-destructive-border);\n  color: var(--v-destructive-text);\n  font-size: 13px;\n  line-height: 1.45;\n  margin-bottom: 16px;\n}\n.v-payment-alert strong {\n  font-weight: 700;\n}\n\n/* Chain Box */\n.v-chain-box {\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  border-radius: var(--v-radius-md);\n  padding: 12px 14px;\n  margin-bottom: 16px;\n  font-size: 12px;\n}\n.v-chain-title {\n  font-weight: 600;\n  color: var(--v-muted-fg);\n  font-size: 11px;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  margin-bottom: 8px;\n}\n.v-chain-item {\n  font-family: var(--v-mono);\n  color: var(--v-fg);\n  padding: 2px 0;\n}\n\n/* Collapsible Accordion */\n.v-accordion-item {\n  border: 1px solid var(--v-border);\n  border-radius: var(--v-radius-md);\n  background-color: var(--v-card);\n  margin-bottom: 24px;\n  overflow: hidden;\n}\n\n.v-accordion-trigger {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 12px 16px;\n  background: var(--v-muted);\n  border: none;\n  font-family: inherit;\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--v-fg);\n  cursor: pointer;\n  text-align: left;\n  transition: background-color var(--v-dur-fast) var(--v-ease-out);\n}\n.v-accordion-trigger:hover {\n  background-color: var(--v-border);\n}\n.v-accordion-trigger:focus-visible {\n  outline: 2px solid var(--v-ring);\n  outline-offset: -2px;\n}\n\n.v-accordion-icon {\n  transition: transform var(--v-dur-base) var(--v-ease-out);\n  color: var(--v-muted-fg);\n}\n.v-accordion-trigger[aria-expanded="false"] .v-accordion-icon {\n  transform: rotate(-90deg);\n}\n\n.v-accordion-content {\n  padding: 10px 14px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  max-height: 38vh;\n  transition: max-height var(--v-dur-base) var(--v-ease-out);\n}\n.v-accordion-trigger[aria-expanded="false"] + .v-accordion-content {\n  display: none;\n}\n\n/* Reason Rows (.verity-tag) */\n.verity-tag {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px 12px;\n  border-radius: var(--v-radius-sm);\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  color: var(--v-fg);\n  font-size: 13px;\n  line-height: 1.4;\n  word-break: break-word;\n}\n.v-reason-icon {\n  display: inline-flex;\n  align-items: center;\n  color: var(--v-muted-fg);\n  flex-shrink: 0;\n}\n.v-reason-text {\n  flex: 1;\n}\n.v-reason-dot {\n  width: 6px;\n  height: 6px;\n  border-radius: var(--v-radius-full);\n  flex-shrink: 0;\n}\n.v-dot-danger {\n  background-color: var(--v-destructive);\n}\n.v-dot-warning {\n  background-color: var(--v-warning);\n}\n\n.v-score-tag {\n  font-weight: 600;\n  font-size: 12px;\n  border-color: var(--v-border);\n  background: transparent;\n  color: var(--v-muted-fg);\n  justify-content: flex-end;\n}\n\n/* Action Rows */\n.v-dialog-actions {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n  gap: 12px;\n  margin-top: 4px;\n  margin-bottom: 12px;\n}\n\n.v-dialog-footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-top: 14px;\n  border-top: 1px solid var(--v-border);\n  font-size: 11px;\n  color: var(--v-muted-fg);\n}\n.v-footer-brand {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n}\n.v-footer-link {\n  color: var(--v-muted-fg);\n  text-decoration: underline;\n  cursor: pointer;\n  background: none;\n  border: none;\n  font-size: 11px;\n}\n.v-footer-link:hover {\n  color: var(--v-fg);\n}\n\n/* Confirmation View Cooldown Bar */\n.v-cooldown-bar {\n  position: relative;\n  width: 100%;\n  height: 3px;\n  background-color: var(--v-border);\n  border-radius: var(--v-radius-full);\n  overflow: hidden;\n  margin: 12px 0;\n}\n.v-cooldown-progress {\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 0%;\n  background-color: var(--v-destructive);\n  transition: width 1500ms linear;\n}\n\n/* ─── Download Warning Modal ───────────────────────────────────────────────── */\n#verity-download-warning-host {\n  all: initial;\n  position: fixed;\n  top: 24px;\n  right: 24px;\n  z-index: 2147483645;\n  pointer-events: auto;\n  max-width: 400px;\n  width: calc(100vw - 32px);\n  font-family: var(--v-font);\n}\n\n.v-dw-card {\n  background-color: var(--v-card);\n  color: var(--v-card-fg);\n  border-radius: var(--v-radius-lg);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-dialog);\n  padding: 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;\n}\n\n.v-dw-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.v-dw-title-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n.v-dw-title {\n  font-size: 14px;\n  font-weight: 700;\n  color: var(--v-fg);\n}\n\n.v-dw-meta {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  border-radius: var(--v-radius-md);\n  padding: 10px 12px;\n}\n\n.v-dw-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 12px;\n}\n.v-dw-label {\n  color: var(--v-muted-fg);\n  width: 52px;\n  flex-shrink: 0;\n}\n\n/* ─── Popup Blocked Toast Stacking ─────────────────────────────────────────── */\n.v-toast-container {\n  position: fixed;\n  bottom: 24px;\n  right: 24px;\n  z-index: 2147483647;\n  display: flex;\n  flex-direction: column-reverse;\n  gap: 8px;\n  pointer-events: none;\n  max-width: 380px;\n  width: calc(100vw - 32px);\n}\n\n@media (max-width: 480px) {\n  .v-toast-container {\n    bottom: 16px;\n    right: 16px;\n    left: 16px;\n    width: auto;\n    align-items: center;\n  }\n}\n\n.v-toast-card {\n  pointer-events: auto;\n  background-color: var(--v-card);\n  color: var(--v-card-fg);\n  border-radius: var(--v-radius-md);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-lg);\n  padding: 12px 14px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  font-size: 13px;\n  line-height: 1.4;\n  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;\n  transition: transform var(--v-dur-base) var(--v-ease-out), opacity var(--v-dur-base) var(--v-ease-out);\n}\n\n.v-toast-content {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  min-width: 0;\n}\n.v-toast-icon {\n  color: var(--v-destructive);\n  flex-shrink: 0;\n}\n.v-toast-text {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.v-toast-dismiss {\n  border: none;\n  background: transparent;\n  color: var(--v-muted-fg);\n  cursor: pointer;\n  padding: 2px;\n  border-radius: var(--v-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: color var(--v-dur-fast) var(--v-ease-out);\n}\n.v-toast-dismiss:hover {\n  color: var(--v-fg);\n}\n\n/* ─── Floating Page Status Badge ───────────────────────────────────────────── */\n.verity-badge {\n  width: 28px;\n  height: 28px;\n  border-radius: var(--v-radius-full);\n  background-color: var(--v-muted);\n  border: 1px solid var(--v-border);\n  box-shadow: var(--v-shadow-md);\n  cursor: pointer;\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: transform var(--v-dur-fast) var(--v-ease-out), box-shadow var(--v-dur-fast) var(--v-ease-out);\n}\n.verity-badge:hover {\n  transform: scale(1.1);\n}\n\n.verity-badge.safe {\n  background-color: var(--v-success-subtle);\n  border-color: var(--v-success-border);\n  color: var(--v-success-text);\n}\n.verity-badge.caution {\n  background-color: var(--v-warning-subtle);\n  border-color: var(--v-warning-border);\n  color: var(--v-warning-text);\n}\n.verity-badge.danger {\n  background-color: var(--v-destructive-subtle);\n  border-color: var(--v-destructive-border);\n  color: var(--v-destructive-text);\n}\n\n.verity-tooltip {\n  position: absolute;\n  top: 36px;\n  right: 0;\n  background-color: var(--v-primary);\n  color: var(--v-primary-fg);\n  font-family: var(--v-font);\n  font-size: 11px;\n  font-weight: 500;\n  line-height: 1.4;\n  padding: 8px 12px;\n  border-radius: var(--v-radius-sm);\n  white-space: normal;\n  width: 220px;\n  opacity: 0;\n  pointer-events: none;\n  transform: translateY(-4px);\n  transition: opacity var(--v-dur-fast) var(--v-ease-out), transform var(--v-dur-fast) var(--v-ease-out);\n  box-shadow: var(--v-shadow-md);\n  z-index: 50;\n}\n.verity-badge:hover .verity-tooltip {\n  opacity: 1;\n  transform: translateY(0);\n}\n\n/* ─── Responsive Media Queries ─────────────────────────────────────────────── */\n@media (max-width: 640px) {\n  .v-dialog-inner {\n    padding: 24px 20px;\n  }\n  .v-dialog-actions {\n    flex-direction: column-reverse;\n    align-items: stretch;\n  }\n  .v-btn-lg, .v-btn-md {\n    width: 100%;\n    justify-content: center;\n  }\n}\n\n/* ─── Prefers-Reduced-Motion ───────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n    scroll-behavior: auto !important;\n    transform: none !important;\n  }\n}\n';
+const VERITY_UI_CSS = `/**
+ * content/verity-ui.css - Production-Grade Shadow DOM Styles for Verity
+ * Covers: Warning Overlay Dialog, Download Modal, Popup Toasts, Status Badge.
+ * Design language: shadcn/ui, Linear, Vercel — calm, precise, trustworthy.
+ */
+
+/* ─── Design Tokens ────────────────────────────────────────────────────────── */
+:host,
+.verity-root,
+[data-theme="light"] {
+  --v-bg: #ffffff;
+  --v-fg: #09090b;
+  --v-card: #ffffff;
+  --v-card-fg: #09090b;
+  --v-muted: #f4f4f5;
+  --v-muted-fg: #52525b; /* 7.03:1 contrast */
+  --v-border: #e4e4e7;
+  --v-input: #e4e4e7;
+  --v-ring: #18181b;
+
+  --v-primary: #18181b;
+  --v-primary-fg: #fafafa;
+  --v-secondary: #f4f4f5;
+  --v-secondary-fg: #18181b;
+
+  --v-destructive: #dc2626;
+  --v-destructive-fg: #ffffff;
+  --v-destructive-subtle: #fef2f2;
+  --v-destructive-border: #fecaca;
+  --v-destructive-text: #991b1b;
+
+  --v-warning: #d97706;
+  --v-warning-fg: #ffffff;
+  --v-warning-subtle: #fffbeb;
+  --v-warning-border: #fde68a;
+  --v-warning-text: #92400e;
+
+  --v-success: #16a34a;
+  --v-success-fg: #ffffff;
+  --v-success-subtle: #f0fdf4;
+  --v-success-border: #bbf7d0;
+  --v-success-text: #166534;
+
+  --v-radius: 0.625rem;
+  --v-radius-sm: 0.375rem;
+  --v-radius-md: 0.5rem;
+  --v-radius-lg: 0.75rem;
+  --v-radius-full: 9999px;
+
+  --v-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --v-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --v-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  --v-font: "VerityInter", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --v-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+
+  --v-dur-fast: 120ms;
+  --v-dur-base: 200ms;
+  --v-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host:not([data-theme="light"]),
+  .verity-root:not([data-theme="light"]) {
+    --v-bg: #09090b;
+    --v-fg: #fafafa;
+    --v-card: #121215;
+    --v-card-fg: #fafafa;
+    --v-muted: #27272a;
+    --v-muted-fg: #a1a1aa; /* 5.81:1 contrast */
+    --v-border: #27272a;
+    --v-input: #27272a;
+    --v-ring: #d4d4d8;
+
+    --v-primary: #fafafa;
+    --v-primary-fg: #18181b;
+    --v-secondary: #27272a;
+    --v-secondary-fg: #fafafa;
+
+    --v-destructive: #ef4444;
+    --v-destructive-fg: #09090b;
+    --v-destructive-subtle: rgba(239, 68, 68, 0.12);
+    --v-destructive-border: rgba(239, 68, 68, 0.3);
+    --v-destructive-text: #fca5a5;
+
+    --v-warning: #f59e0b;
+    --v-warning-fg: #09090b;
+    --v-warning-subtle: rgba(245, 158, 11, 0.12);
+    --v-warning-border: rgba(245, 158, 11, 0.3);
+    --v-warning-text: #fde68a;
+
+    --v-success: #22c55e;
+    --v-success-fg: #09090b;
+    --v-success-subtle: rgba(34, 197, 94, 0.12);
+    --v-success-border: rgba(34, 197, 94, 0.3);
+    --v-success-text: #86efac;
+
+    --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+}
+
+[data-theme="dark"] {
+  --v-bg: #09090b;
+  --v-fg: #fafafa;
+  --v-card: #121215;
+  --v-card-fg: #fafafa;
+  --v-muted: #27272a;
+  --v-muted-fg: #a1a1aa;
+  --v-border: #27272a;
+  --v-input: #27272a;
+  --v-ring: #d4d4d8;
+
+  --v-primary: #fafafa;
+  --v-primary-fg: #18181b;
+  --v-secondary: #27272a;
+  --v-secondary-fg: #fafafa;
+
+  --v-destructive: #ef4444;
+  --v-destructive-fg: #09090b;
+  --v-destructive-subtle: rgba(239, 68, 68, 0.12);
+  --v-destructive-border: rgba(239, 68, 68, 0.3);
+  --v-destructive-text: #fca5a5;
+
+  --v-warning: #f59e0b;
+  --v-warning-fg: #09090b;
+  --v-warning-subtle: rgba(245, 158, 11, 0.12);
+  --v-warning-border: rgba(245, 158, 11, 0.3);
+  --v-warning-text: #fde68a;
+
+  --v-success: #22c55e;
+  --v-success-fg: #09090b;
+  --v-success-subtle: rgba(34, 197, 94, 0.12);
+  --v-success-border: rgba(34, 197, 94, 0.3);
+  --v-success-text: #86efac;
+
+  --v-shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Host & Global Reset ──────────────────────────────────────────────────── */
+:host {
+  all: initial;
+  display: block;
+  font-family: var(--v-font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--v-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+}
+
+/* ─── Custom Scrollbar (.v-scroll) ─────────────────────────────────────────── */
+.v-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--v-border) transparent;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  transition: scrollbar-color var(--v-dur-base) var(--v-ease-out);
+}
+
+.v-scroll:hover {
+  scrollbar-color: var(--v-muted-fg) transparent;
+}
+
+.v-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+.v-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.v-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--v-border);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: var(--v-radius-full);
+  transition: background-color var(--v-dur-base) var(--v-ease-out);
+}
+
+.v-scroll:hover::-webkit-scrollbar-thumb,
+.v-scroll:active::-webkit-scrollbar-thumb {
+  background-color: var(--v-muted-fg);
+}
+
+.v-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ─── Buttons (.v-btn) ─────────────────────────────────────────────────────── */
+.v-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: var(--v-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  color: var(--v-fg);
+  transition: background-color var(--v-dur-fast) var(--v-ease-out),
+              border-color var(--v-dur-fast) var(--v-ease-out),
+              color var(--v-dur-fast) var(--v-ease-out),
+              box-shadow var(--v-dur-fast) var(--v-ease-out),
+              transform var(--v-dur-fast) var(--v-ease-out);
+}
+
+.v-btn:focus-visible {
+  outline: 2px solid var(--v-ring);
+  outline-offset: 2px;
+}
+
+.v-btn:disabled,
+.v-btn[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.v-btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.v-btn-md {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.v-btn-lg {
+  height: 44px;
+  padding: 0 22px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.v-btn-primary {
+  background-color: var(--v-primary);
+  color: var(--v-primary-fg);
+  box-shadow: var(--v-shadow-sm);
+}
+.v-btn-primary:hover {
+  opacity: 0.9;
+}
+.v-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.v-btn-secondary {
+  background-color: var(--v-secondary);
+  color: var(--v-secondary-fg);
+}
+.v-btn-secondary:hover {
+  background-color: var(--v-border);
+}
+
+.v-btn-outline {
+  border-color: var(--v-border);
+  background: transparent;
+  color: var(--v-fg);
+}
+.v-btn-outline:hover {
+  background-color: var(--v-muted);
+}
+
+.v-btn-ghost {
+  background: transparent;
+  color: var(--v-muted-fg);
+}
+.v-btn-ghost:hover {
+  background-color: var(--v-muted);
+  color: var(--v-fg);
+}
+
+.v-btn-destructive {
+  background-color: var(--v-destructive);
+  color: var(--v-destructive-fg);
+  box-shadow: var(--v-shadow-sm);
+}
+.v-btn-destructive:hover {
+  opacity: 0.92;
+}
+
+/* ─── Badges / Pills (.v-badge) ────────────────────────────────────────────── */
+.v-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--v-radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.v-badge-safe {
+  background-color: var(--v-success-subtle);
+  color: var(--v-success-text);
+  border-color: var(--v-success-border);
+}
+.v-badge-caution {
+  background-color: var(--v-warning-subtle);
+  color: var(--v-warning-text);
+  border-color: var(--v-warning-border);
+}
+.v-badge-danger {
+  background-color: var(--v-destructive-subtle);
+  color: var(--v-destructive-text);
+  border-color: var(--v-destructive-border);
+}
+
+/* ─── Monospace Chip (.v-chip-mono) ────────────────────────────────────────── */
+.v-chip-mono {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--v-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 4px 10px;
+  border-radius: var(--v-radius-sm);
+  background-color: var(--v-muted);
+  border: 1px solid var(--v-border);
+  color: var(--v-fg);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.v-chip-mono-muted,
+.v-chip-mono-subdomain,
+.v-chip-mono-path {
+  color: var(--v-muted-fg);
+  font-weight: 400;
+}
+.v-chip-mono-emphasis,
+.v-chip-mono-registered {
+  color: var(--v-fg);
+  font-weight: 600;
+}
+
+/* ─── Fullscreen Backdrop & Centered Dialog ────────────────────────────────── */
+.verity-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(9, 9, 11, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-family: var(--v-font);
+}
+
+@supports not (backdrop-filter: blur(12px)) {
+  .verity-overlay {
+    background-color: rgba(9, 9, 11, 0.94);
+  }
+}
+
+.v-dialog-card {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--v-card);
+  color: var(--v-card-fg);
+  border-radius: var(--v-radius-lg);
+  border: 1px solid var(--v-border);
+  box-shadow: var(--v-shadow-dialog);
+  overflow: hidden;
+  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;
+  font-family: var(--v-font);
+}
+
+.v-card-danger {
+  border-top: 3px solid var(--v-destructive);
+}
+.v-card-warning {
+  border-top: 3px solid var(--v-warning);
+}
+
+.v-dialog-inner {
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Dialog Header Top */
+.v-dialog-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.v-icon-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.v-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--v-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.v-icon-circle-danger {
+  background-color: var(--v-destructive-subtle);
+  color: var(--v-destructive);
+  border: 1px solid var(--v-destructive-border);
+}
+.v-icon-circle-warning {
+  background-color: var(--v-warning-subtle);
+  color: var(--v-warning);
+  border: 1px solid var(--v-warning-border);
+}
+
+.v-brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: normal;
+  color: var(--v-fg);
+}
+
+/* Dialog Title & Message */
+.v-dialog-title {
+  font-family: var(--v-font);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--v-fg);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.verity-status-highlight {
+  font-weight: 700;
+}
+.v-card-danger .verity-status-highlight {
+  color: var(--v-destructive);
+}
+.v-card-warning .verity-status-highlight {
+  color: var(--v-warning);
+}
+
+.verity-message {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--v-muted-fg);
+  margin-bottom: 16px;
+}
+
+/* Critical Alerts inside Dialog */
+.v-payment-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--v-radius-md);
+  background-color: var(--v-destructive-subtle);
+  border: 1px solid var(--v-destructive-border);
+  color: var(--v-destructive-text);
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+.v-payment-alert strong {
+  font-weight: 700;
+}
+
+/* Chain Box */
+.v-chain-box {
+  background-color: var(--v-muted);
+  border: 1px solid var(--v-border);
+  border-radius: var(--v-radius-md);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+.v-chain-title {
+  font-weight: 600;
+  color: var(--v-muted-fg);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.v-chain-item {
+  font-family: var(--v-mono);
+  color: var(--v-fg);
+  padding: 2px 0;
+}
+
+/* Collapsible Accordion */
+.v-accordion-item {
+  border: 1px solid var(--v-border);
+  border-radius: var(--v-radius-md);
+  background-color: var(--v-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.v-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--v-muted);
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v-fg);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--v-dur-fast) var(--v-ease-out);
+}
+.v-accordion-trigger:hover {
+  background-color: var(--v-border);
+}
+.v-accordion-trigger:focus-visible {
+  outline: 2px solid var(--v-ring);
+  outline-offset: -2px;
+}
+
+.v-accordion-icon {
+  transition: transform var(--v-dur-base) var(--v-ease-out);
+  color: var(--v-muted-fg);
+}
+.v-accordion-trigger[aria-expanded="false"] .v-accordion-icon {
+  transform: rotate(-90deg);
+}
+
+.v-accordion-content {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 38vh;
+  transition: max-height var(--v-dur-base) var(--v-ease-out);
+}
+.v-accordion-trigger[aria-expanded="false"] + .v-accordion-content {
+  display: none;
+}
+
+/* Reason Rows (.verity-tag) */
+.verity-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--v-radius-sm);
+  background-color: var(--v-muted);
+  border: 1px solid var(--v-border);
+  color: var(--v-fg);
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.v-reason-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--v-muted-fg);
+  flex-shrink: 0;
+}
+.v-reason-text {
+  flex: 1;
+}
+.v-reason-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+.v-dot-danger {
+  background-color: var(--v-destructive);
+}
+.v-dot-warning {
+  background-color: var(--v-warning);
+}
+
+/* Quiet Score Footer */
+.v-score-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--v-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.v-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.v-score-label {
+  color: var(--v-muted-fg);
+  font-weight: 500;
+}
+.v-score-val {
+  color: var(--v-fg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--v-mono);
+}
+.v-score-bar-track {
+  width: 100%;
+  height: 4px;
+  border-radius: var(--v-radius-full);
+  background-color: var(--v-border);
+  overflow: hidden;
+}
+.v-score-bar-fill {
+  height: 100%;
+  border-radius: var(--v-radius-full);
+  transition: width var(--v-dur-base) var(--v-ease-out);
+}
+.v-score-fill-danger {
+  background-color: var(--v-destructive);
+}
+.v-score-fill-warning {
+  background-color: var(--v-warning);
+}
+
+.v-score-tag {
+  font-weight: 600;
+  font-size: 12px;
+  border-color: var(--v-border);
+  background: transparent;
+  color: var(--v-muted-fg);
+  justify-content: flex-end;
+}
+
+/* Action Rows */
+.v-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.v-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--v-border);
+  font-size: 11px;
+  color: var(--v-muted-fg);
+}
+.v-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.v-footer-link {
+  color: var(--v-muted-fg);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 11px;
+}
+.v-footer-link:hover {
+  color: var(--v-fg);
+}
+
+/* Confirmation View Cooldown Bar */
+.v-cooldown-bar {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  background-color: var(--v-border);
+  border-radius: var(--v-radius-full);
+  overflow: hidden;
+  margin: 12px 0;
+}
+.v-cooldown-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background-color: var(--v-destructive);
+  transition: width 1500ms linear;
+}
+
+/* ─── Download Warning Modal ───────────────────────────────────────────────── */
+#verity-download-warning-host {
+  all: initial;
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 2147483645;
+  pointer-events: auto;
+  max-width: 400px;
+  width: calc(100vw - 32px);
+  font-family: var(--v-font);
+}
+
+.v-dw-card {
+  background-color: var(--v-card);
+  color: var(--v-card-fg);
+  border-radius: var(--v-radius-lg);
+  border: 1px solid var(--v-border);
+  box-shadow: var(--v-shadow-dialog);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;
+}
+
+.v-dw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.v-dw-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.v-dw-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--v-fg);
+}
+
+.v-dw-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: var(--v-muted);
+  border: 1px solid var(--v-border);
+  border-radius: var(--v-radius-md);
+  padding: 10px 12px;
+}
+
+.v-dw-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.v-dw-label {
+  color: var(--v-muted-fg);
+  width: 52px;
+  flex-shrink: 0;
+}
+
+/* ─── Popup Blocked Toast Stacking ─────────────────────────────────────────── */
+.v-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 380px;
+  width: calc(100vw - 32px);
+}
+
+@media (max-width: 480px) {
+  .v-toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    align-items: center;
+  }
+}
+
+.v-toast-card {
+  pointer-events: auto;
+  background-color: var(--v-card);
+  color: var(--v-card-fg);
+  border-radius: var(--v-radius-md);
+  border: 1px solid var(--v-border);
+  box-shadow: var(--v-shadow-lg);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  animation: vDialogEnter var(--v-dur-base) var(--v-ease-out) forwards;
+  transition: transform var(--v-dur-base) var(--v-ease-out), opacity var(--v-dur-base) var(--v-ease-out);
+}
+
+.v-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.v-toast-icon {
+  color: var(--v-destructive);
+  flex-shrink: 0;
+}
+.v-toast-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v-toast-dismiss {
+  border: none;
+  background: transparent;
+  color: var(--v-muted-fg);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--v-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--v-dur-fast) var(--v-ease-out);
+}
+.v-toast-dismiss:hover {
+  color: var(--v-fg);
+}
+
+/* ─── Floating Page Status Badge ───────────────────────────────────────────── */
+.verity-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--v-radius-full);
+  background-color: var(--v-muted);
+  border: 1px solid var(--v-border);
+  box-shadow: var(--v-shadow-md);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--v-dur-fast) var(--v-ease-out), box-shadow var(--v-dur-fast) var(--v-ease-out);
+}
+.verity-badge:hover {
+  transform: scale(1.1);
+}
+
+.verity-badge.safe {
+  background-color: var(--v-success-subtle);
+  border-color: var(--v-success-border);
+  color: var(--v-success-text);
+}
+.verity-badge.caution {
+  background-color: var(--v-warning-subtle);
+  border-color: var(--v-warning-border);
+  color: var(--v-warning-text);
+}
+.verity-badge.danger {
+  background-color: var(--v-destructive-subtle);
+  border-color: var(--v-destructive-border);
+  color: var(--v-destructive-text);
+}
+
+.verity-tooltip {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background-color: var(--v-primary);
+  color: var(--v-primary-fg);
+  font-family: var(--v-font);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 8px 12px;
+  border-radius: var(--v-radius-sm);
+  white-space: normal;
+  width: 220px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity var(--v-dur-fast) var(--v-ease-out), transform var(--v-dur-fast) var(--v-ease-out);
+  box-shadow: var(--v-shadow-md);
+  z-index: 50;
+}
+.verity-badge:hover .verity-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Responsive Media Queries ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .v-dialog-inner {
+    padding: 24px 20px;
+  }
+  .v-dialog-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .v-btn-lg, .v-btn-md {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .verity-overlay {
+    padding: 12px;
+  }
+  .v-dialog-inner {
+    padding: 24px 18px;
+  }
+  .v-dialog-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .v-dialog-actions .v-btn {
+    width: 100%;
+    min-height: 44px;
+    height: 44px;
+    justify-content: center;
+  }
+}
+
+/* ─── Prefers-Reduced-Motion ───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+}
+`;
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -553,21 +1570,33 @@ function extractDomainParts(urlString) {
   try {
     const url = new URL(urlString);
     const host = url.hostname.toLowerCase();
-    const parts = host.split('.');
-    if (parts.length <= 2) {
-      return { host, subdomain: '', registeredDomain: host };
+    const pathname = (url.pathname || '') + (url.search || '');
+    let registeredDomain = host;
+    let subdomain = '';
+
+    if (typeof globalThis.getDomain === 'function') {
+      const reg = globalThis.getDomain(host);
+      if (reg) {
+        registeredDomain = reg;
+        if (host.length > reg.length && host.endsWith(reg)) {
+          subdomain = host.slice(0, host.length - reg.length);
+        }
+      }
+    } else {
+      const parts = host.split('.');
+      if (parts.length > 2) {
+        const secondTld = parts[parts.length - 2];
+        const isMultiPartTld = ['co', 'gov', 'ac', 'com', 'org', 'net', 'edu'].includes(secondTld) && parts[parts.length - 1].length <= 3;
+        const splitIndex = isMultiPartTld ? parts.length - 3 : parts.length - 2;
+        if (splitIndex > 0) {
+          registeredDomain = parts.slice(splitIndex).join('.');
+          subdomain = parts.slice(0, splitIndex).join('.') + '.';
+        }
+      }
     }
-    const secondTld = parts[parts.length - 2];
-    const isMultiPartTld = ['co', 'gov', 'ac', 'com', 'org', 'net', 'edu'].includes(secondTld) && parts[parts.length - 1].length <= 3;
-    const splitIndex = isMultiPartTld ? parts.length - 3 : parts.length - 2;
-    if (splitIndex <= 0) {
-      return { host, subdomain: '', registeredDomain: host };
-    }
-    const registeredDomain = parts.slice(splitIndex).join('.');
-    const subdomain = parts.slice(0, splitIndex).join('.') + '.';
-    return { host, subdomain, registeredDomain };
+    return { host, subdomain, registeredDomain, path: pathname };
   } catch (e) {
-    return { host: urlString, subdomain: '', registeredDomain: urlString };
+    return { host: urlString, subdomain: '', registeredDomain: urlString, path: '' };
   }
 }
 
@@ -890,10 +1919,56 @@ function removeOverlay() {
   try { window.onbeforeunload = null; } catch (e) {}
 }
 
+function getOverlaySummary(verdict, isDanger, isPaymentPhishing) {
+  if (typeof t !== 'function') {
+    return isPaymentPhishing
+      ? 'This site appears to be impersonating a payment provider or financial institution to capture sensitive credentials.'
+      : isDanger
+        ? 'This site showed warning signs that are common on unsafe pages.'
+        : 'This site exhibits unusual patterns or unconfirmed security details. Exercise caution before interacting with it.';
+  }
+  if (isPaymentPhishing) {
+    return t('OVERLAY_SUMMARY_PAYMENT');
+  }
+  const signals = verdict.signals || [];
+  const signalIds = signals.map(s => String(s.id || ''));
+  const categories = signals.map(s => String(s.category || ''));
+
+  // Threat intelligence / blocklist hit (only here the word "verified" appears)
+  const hasThreatIntel = signalIds.some(id => id.includes('INTEL') || id.includes('FEED') || id.includes('BLOCKLIST') || id.includes('REPUTATION')) ||
+                         categories.includes('threat_intel');
+  if (hasThreatIntel) {
+    return t('OVERLAY_SUMMARY_THREAT_INTEL');
+  }
+
+  // Brand impersonation or credential collection
+  const hasPhishing = signalIds.some(id => id.includes('BRAND') || id.includes('IMPERSONATION') || id.includes('CREDENTIAL') || id.includes('PASSWORD') || id.includes('LOGIN') || id.includes('PHISH')) ||
+                      categories.includes('brand_impersonation') || categories.includes('dom_credentials') || categories.includes('payment_phishing');
+  if (hasPhishing) {
+    return t('OVERLAY_SUMMARY_PHISHING');
+  }
+
+  // Malvertising / popunder redirects
+  const hasMalvertising = signalIds.some(id => id.includes('POPUNDER') || id.includes('MALVERTISING') || id.includes('REDIRECT')) ||
+                          categories.includes('malvertising');
+  if (hasMalvertising) {
+    return t('OVERLAY_SUMMARY_MALVERTISING');
+  }
+
+  if (!isDanger) {
+    return t('OVERLAY_SUMMARY_CAUTION');
+  }
+
+  return t('OVERLAY_SUMMARY_NEUTRAL');
+}
+
 function injectOverlay(verdict) {
   if (document.getElementById('verity-security-host')) {
     return; // Already blocked
   }
+
+  // Eagerly ensure font is loaded
+  ensureVerityFontLoaded();
 
   // Halt active redirects and page loading
   try { window.stop(); } catch (e) {}
@@ -937,7 +2012,8 @@ function injectOverlay(verdict) {
   const stateTitle = isPaymentPhishing ? 'Payment Phishing Blocked' : (isDanger ? 'Dangerous' : 'Suspicious');
 
   host.dataset.action = verdict.action;
-  host.dataset.score = String(verdict.score || verdict.riskScore || 0);
+  const rawScore = verdict.score || verdict.riskScore || 0;
+  host.dataset.score = String(rawScore);
   host.dataset.stateTitle = stateTitle;
 
   const shadow = host.attachShadow({ mode: 'open' });
@@ -976,6 +2052,22 @@ function injectOverlay(verdict) {
 
   const reasonsList = allReasons.length > 0 ? allReasons : ['Suspicious threat pattern detected'];
 
+  // Calmer sentence form title with key word emphasis only
+  const titleHtml = isDanger
+    ? `${escapeHtml(typeof t === 'function' ? t('OVERLAY_TITLE_BLOCK_PRE') : 'This site looks ')}<span class="verity-status-highlight">${escapeHtml(typeof t === 'function' ? t('OVERLAY_TITLE_BLOCK_WORD') : 'dangerous')}</span>`
+    : `<span class="verity-status-highlight">${escapeHtml(typeof t === 'function' ? t('OVERLAY_TITLE_CAUTION_WORD') : 'Be careful')}</span>${escapeHtml(typeof t === 'function' ? t('OVERLAY_TITLE_CAUTION_POST') : ' on this site')}`;
+
+  const summaryText = getOverlaySummary(verdict, isDanger, isPaymentPhishing);
+
+  // Logo mark SVG with check cut-out
+  const logoMarkSvg = (typeof ICONS !== 'undefined' && ICONS['logo-mark'])
+    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS['logo-mark']}</svg>`
+    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1.06 13.54l-3.24-3.24 1.41-1.41 1.83 1.83 4.24-4.24 1.41 1.41-5.65 5.65z" fill="currentColor"/></svg>`;
+
+  const heroIconSvg = isDanger
+    ? (typeof getIconSvg === 'function' ? getIconSvg('shield-x', { size: 22 }) : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg>')
+    : (typeof getIconSvg === 'function' ? getIconSvg('triangle-alert', { size: 22 }) : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>');
+
   overlayWrap.innerHTML = `
     <!-- Main View Dialog Card -->
     <div class="v-dialog-card ${isDanger ? 'v-card-danger' : 'v-card-warning'}" id="main-view">
@@ -983,37 +2075,26 @@ function injectOverlay(verdict) {
         <div class="v-dialog-header-top">
           <div class="v-icon-badge-wrap">
             <div class="v-icon-circle ${isDanger ? 'v-icon-circle-danger' : 'v-icon-circle-warning'}">
-              ${isDanger
-                ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg>'
-                : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
-              }
+              ${heroIconSvg}
             </div>
-            <span class="verity-header-badge v-badge ${isDanger ? 'v-badge-danger' : 'v-badge-caution'}">
-              ${isDanger ? '🛑 Threat Blocked' : '⚠️ Warning'}
-            </span>
+            <!-- Duplicate pill removed per design spec; element preserved hidden for compatibility -->
+            <span class="verity-header-badge" style="display:none;" aria-hidden="true"></span>
           </div>
           <div class="v-brand-mark">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+            ${logoMarkSvg}
             <span>VERITY</span>
           </div>
         </div>
 
-        <h1 class="v-dialog-title" id="verity-dialog-title">
-          Website status: <span class="verity-status-highlight">${escapeHtml(stateTitle)}</span>
-        </h1>
+        <h1 class="v-dialog-title" id="verity-dialog-title">${titleHtml}</h1>
 
         <p class="verity-message" id="verity-dialog-desc">
-          ${isPaymentPhishing
-            ? 'This website is attempting to impersonate a financial institution to steal your payment credentials.'
-            : isDanger
-              ? 'This website matches verified signatures of phishing, brand impersonation, or credential harvesting.'
-              : 'This website exhibits unusual or unverified patterns. Verify the domain before proceeding.'}
+          ${escapeHtml(summaryText)}
         </p>
 
-        <div class="v-chip-mono" style="margin-bottom: 20px;">
+        <div class="v-chip-mono" style="margin-bottom: 20px;" title="${escapeHtml(domainParts.host + domainParts.path)}" aria-label="${escapeHtml(domainParts.host + domainParts.path)}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--v-muted-fg);flex-shrink:0;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-          <span class="v-chip-mono-muted">${escapeHtml(domainParts.subdomain)}</span>
-          <span class="v-chip-mono-emphasis">${escapeHtml(domainParts.registeredDomain)}</span>
+          <span class="v-chip-mono-muted v-chip-mono-subdomain">${escapeHtml(domainParts.subdomain)}</span><span class="v-chip-mono-emphasis v-chip-mono-registered">${escapeHtml(domainParts.registeredDomain)}</span><span class="v-chip-mono-muted v-chip-mono-path">${escapeHtml(domainParts.path)}</span>
           <span id="verity-url-display" style="display:none;">${escapeHtml(window.location.href)}</span>
         </div>
 
@@ -1022,20 +2103,20 @@ function injectOverlay(verdict) {
 
         <div class="v-accordion-item">
           <button type="button" class="v-accordion-trigger" id="v-accordion-btn" aria-expanded="true">
-            <span>Why we flagged this (${reasonsList.length})</span>
+            <span>${escapeHtml(typeof t === 'function' ? t('OVERLAY_WHY_FLAGGED', { count: reasonsList.length }) : `Why we flagged this (${reasonsList.length})`)}</span>
             <svg class="v-accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="v-accordion-content v-scroll" id="verity-tags-container"></div>
         </div>
 
         <div class="v-dialog-actions">
-          <button type="button" class="v-btn v-btn-ghost v-btn-md" id="btn-proceed">Continue anyway</button>
-          <button type="button" class="v-btn v-btn-primary v-btn-lg" id="btn-back">Take me to safety</button>
+          <button type="button" class="v-btn v-btn-ghost v-btn-md" id="btn-proceed">${escapeHtml(typeof t === 'function' ? t('OVERLAY_BTN_PROCEED') : 'Continue anyway')}</button>
+          <button type="button" class="v-btn v-btn-primary v-btn-lg" id="btn-back">${escapeHtml(typeof t === 'function' ? t('OVERLAY_BTN_SAFETY') : 'Take me to safety')}</button>
         </div>
 
         <div class="v-dialog-footer">
-          <span class="v-footer-brand">Protected by VERITY Web Protection</span>
-          <button type="button" class="v-footer-link" id="btn-report-site">Report an issue</button>
+          <span class="v-footer-brand">${escapeHtml(typeof t === 'function' ? t('OVERLAY_PROTECTED_BY') : 'Protected by VERITY Web Protection')}</span>
+          <button type="button" class="v-footer-link" id="btn-report-site">${escapeHtml(typeof t === 'function' ? t('OVERLAY_REPORT_ISSUE') : 'Report an issue')}</button>
         </div>
       </div>
     </div>
@@ -1048,21 +2129,20 @@ function injectOverlay(verdict) {
             <div class="v-icon-circle v-icon-circle-danger">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
             </div>
-            <span class="v-badge v-badge-danger">High Risk Confirmation</span>
+            <span class="v-badge v-badge-danger">${escapeHtml(typeof t === 'function' ? t('OVERLAY_CONFIRM_BADGE') : 'High Risk Confirmation')}</span>
           </div>
         </div>
 
-        <h2 class="v-dialog-title" style="color: var(--v-destructive);">Are you sure you want to proceed?</h2>
+        <h2 class="v-dialog-title" style="color: var(--v-destructive);">${escapeHtml(typeof t === 'function' ? t('OVERLAY_CONFIRM_TITLE') : 'Are you sure you want to proceed?')}</h2>
         <p class="verity-message">
-          This site is classified as <strong id="verity-confirm-state">${escapeHtml(stateTitle)}</strong>.
-          Bypassing protection exposes you to potential credential theft, phishing, or financial risk.
+          ${escapeHtml(typeof t === 'function' ? t('OVERLAY_CONFIRM_DESC', { state: stateTitle.toLowerCase() }) : `This site is classified as ${stateTitle}. Bypassing protection exposes you to potential credential theft, phishing, or financial risk.`)}
         </p>
 
         <div class="v-cooldown-bar"><div class="v-cooldown-progress" id="v-cooldown-fill"></div></div>
 
         <div class="v-dialog-actions" style="margin-top: 16px;">
-          <button type="button" class="v-btn v-btn-outline v-btn-md" id="btn-confirm-cancel">Return to safety</button>
-          <button type="button" class="v-btn v-btn-destructive v-btn-md" id="btn-confirm-proceed" disabled>Please wait (1.5s)...</button>
+          <button type="button" class="v-btn v-btn-outline v-btn-md" id="btn-confirm-cancel">${escapeHtml(typeof t === 'function' ? t('OVERLAY_CONFIRM_CANCEL') : 'Return to safety')}</button>
+          <button type="button" class="v-btn v-btn-destructive v-btn-md" id="btn-confirm-proceed" disabled>${escapeHtml(typeof t === 'function' ? t('OVERLAY_CONFIRM_WAIT', { seconds: '1.5' }) : 'Please wait (1.5s)...')}</button>
         </div>
       </div>
     </div>
@@ -1099,25 +2179,73 @@ function injectOverlay(verdict) {
     }
   }
 
-  // Populate reasons list inside accordion
+  // Populate reasons list inside accordion with category icons
   const tagsContainer = overlayWrap.querySelector('#verity-tags-container');
   if (tagsContainer) {
-    for (const r of reasonsList) {
+    const rawSignals = verdict.signals && verdict.signals.length > 0 ? verdict.signals : [];
+
+    for (let idx = 0; idx < reasonsList.length; idx++) {
+      const r = reasonsList[idx];
+      const sig = rawSignals[idx] || {};
+      const catId = sig.category || (typeof SIGNAL_CATEGORY_MAP !== 'undefined' ? SIGNAL_CATEGORY_MAP[sig.id] : null) || 'url';
+
+      let iconName = 'info';
+      switch (catId) {
+        case 'url':
+          iconName = 'link';
+          break;
+        case 'dom_credentials':
+        case 'payment_phishing':
+          iconName = 'key-round';
+          break;
+        case 'download':
+          iconName = 'download';
+          break;
+        case 'ip_host':
+        case 'malvertising':
+          iconName = 'globe';
+          break;
+        case 'ml':
+        case 'threat_intel':
+        case 'brand_impersonation':
+        case 'scam_language':
+        case 'synergy':
+          iconName = 'shield-alert';
+          break;
+        default:
+          iconName = 'info';
+          break;
+      }
+
+      const iconSvg = typeof getIconSvg === 'function'
+        ? getIconSvg(iconName, { size: 14 })
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">${(typeof ICONS !== 'undefined' && ICONS[iconName]) || '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'}</svg>`;
+
       const tagRow = document.createElement('div');
       tagRow.className = 'verity-tag';
       tagRow.innerHTML = `
-        <span class="v-reason-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        </span>
+        <span class="v-reason-icon">${iconSvg}</span>
         <span class="v-reason-text">${escapeHtml(String(r))}</span>
         <span class="v-reason-dot ${isDanger ? 'v-dot-danger' : 'v-dot-warning'}"></span>
       `;
       tagsContainer.appendChild(tagRow);
     }
-    const scorePill = document.createElement('div');
-    scorePill.className = 'verity-tag v-score-tag';
-    scorePill.textContent = `Risk Score: ${verdict.score || 0}/100`;
-    tagsContainer.appendChild(scorePill);
+
+    // Quiet Risk Score Footer replacing old bordered box
+    const scoreVal = Math.min(100, Math.max(0, Number(rawScore)));
+    const scoreFooter = document.createElement('div');
+    scoreFooter.className = 'v-score-footer';
+    const scoreLabel = typeof t === 'function' ? t('OVERLAY_RISK_SCORE_LABEL') : 'Risk score';
+    scoreFooter.innerHTML = `
+      <div class="v-score-row">
+        <span class="v-score-label">${escapeHtml(scoreLabel)}</span>
+        <span class="v-score-val">${scoreVal} / 100</span>
+      </div>
+      <div class="v-score-bar-track">
+        <div class="v-score-bar-fill ${isDanger ? 'v-score-fill-danger' : 'v-score-fill-warning'}" style="width: ${scoreVal}%;"></div>
+      </div>
+    `;
+    tagsContainer.appendChild(scoreFooter);
   }
 
   shadow.appendChild(overlayWrap);
@@ -1154,14 +2282,14 @@ function injectOverlay(verdict) {
       // 1.5s Cooldown with Progress Sweep
       if (cooldownFill && btnConfirmProceed) {
         btnConfirmProceed.disabled = true;
-        btnConfirmProceed.textContent = 'Please wait (1.5s)...';
+        btnConfirmProceed.textContent = typeof t === 'function' ? t('OVERLAY_CONFIRM_WAIT', { seconds: '1.5' }) : 'Please wait (1.5s)...';
         cooldownFill.style.width = '0%';
         requestAnimationFrame(() => {
           cooldownFill.style.width = '100%';
         });
         setTimeout(() => {
           btnConfirmProceed.disabled = false;
-          btnConfirmProceed.textContent = 'Confirm, I understand the risk';
+          btnConfirmProceed.textContent = typeof t === 'function' ? t('OVERLAY_CONFIRM_PROCEED') : 'I understand the risks, proceed';
         }, 1500);
       }
     } else {

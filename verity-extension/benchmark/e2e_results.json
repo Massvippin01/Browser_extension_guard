@@ -1,6 +1,6 @@
 {
   "verified": true,
-  "timestamp": "2026-10-12T20:03:01.502Z",
+  "timestamp": "2026-10-15T11:04:58.051Z",
   "browserExecutable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "extensionPath": "C:\\Users\\User\\AppData\\Local\\Temp\\verity_ext_e2e_clean",
   "demoPages": [
@@ -11,10 +11,10 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 96,
-        "stateTitle": "Payment Phishing Blocked",
-        "headerBadge": "🛑 Threat Blocked",
-        "reasonsCount": 14,
+        "score": 100,
+        "stateTitle": "dangerous",
+        "headerBadge": "",
+        "reasonsCount": 13,
         "reasonsSample": [
           "The connection is not secure (HTTP instead of HTTPS).",
           "The URL contains punycode or suspicious keywords: banking, netbanking.",
@@ -30,10 +30,10 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 96,
-        "stateTitle": "Payment Phishing Blocked",
-        "headerBadge": "🛑 Threat Blocked",
-        "reasonsCount": 13,
+        "score": 100,
+        "stateTitle": "dangerous",
+        "headerBadge": "",
+        "reasonsCount": 12,
         "reasonsSample": [
           "The connection is not secure (HTTP instead of HTTPS).",
           "The URL contains the name \"PayPal\" but does not belong to its official domain.",
@@ -49,9 +49,9 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 96,
-        "stateTitle": "Payment Phishing Blocked",
-        "headerBadge": "🛑 Threat Blocked",
+        "score": 100,
+        "stateTitle": "dangerous",
+        "headerBadge": "",
         "reasonsCount": 11,
         "reasonsSample": [
           "The connection is not secure (HTTP instead of HTTPS).",
@@ -68,14 +68,14 @@
       "verdict": {
         "detected": true,
         "action": "block",
-        "score": 80,
-        "stateTitle": "Payment Phishing Blocked",
-        "headerBadge": "🛑 Threat Blocked",
+        "score": 100,
+        "stateTitle": "dangerous",
+        "headerBadge": "",
         "reasonsCount": 7,
         "reasonsSample": [
           "The connection is not secure (HTTP instead of HTTPS).",
-          "Page requests sensitive credentials or payment information.",
-          "High risk: Unverified domain requesting payment credentials (Card/CVV/OTP)."
+          "On-device ML model flagged structural phishing characteristics (98% confidence).",
+          "Page requests sensitive credentials or payment information."
         ]
       },
       "matchesExpectation": true
@@ -83,17 +83,20 @@
     {
       "demo": "Demo E: Malicious APK Download (SBI YONO)",
       "url": "http://rewards-download.test:8080/demo/download",
-      "overlayFound": false,
+      "overlayFound": true,
       "verdict": {
-        "detected": false,
-        "action": "none",
-        "score": 0,
-        "stateTitle": "Clean",
-        "headerBadge": null,
-        "reasonsCount": 0,
-        "reasonsSample": []
+        "detected": true,
+        "action": "block",
+        "score": 77,
+        "stateTitle": "dangerous",
+        "headerBadge": "",
+        "reasonsCount": 2,
+        "reasonsSample": [
+          "The connection is not secure (HTTP instead of HTTPS).",
+          "On-device ML model flagged structural phishing characteristics (98% confidence)."
+        ]
       },
-      "matchesExpectation": true
+      "matchesExpectation": false
     }
   ],
   "benignPages": [

@@ -39,6 +39,31 @@ const server = http.createServer((req, res) => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // DEMO CSP — Strict CSP Test Page (font-src 'none')
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (req.url === '/demo/csp-test') {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Security-Policy': "default-src 'self'; font-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+    });
+    return res.end(`<!DOCTYPE html><html><head><title>HDFC NetBanking - Strict CSP</title>
+<style>
+  body{font-family:Arial,sans-serif;background:#f4f6f9;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+  .box{background:#fff;padding:40px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);width:350px;text-align:center;border-top:5px solid #004c8f}
+  .logo{font-size:24px;font-weight:bold;color:#004c8f;margin-bottom:20px}
+  input{width:100%;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+  button{width:100%;padding:12px;background:#004c8f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;font-weight:bold;margin-top:10px}
+</style></head><body>
+<div class="box">
+  <div class="logo">HDFC Bank NetBanking</div>
+  <p style="color:#666;font-size:14px">Welcome to HDFC Bank secure net banking login.</p>
+  <form><input type="text" placeholder="Customer ID"><input type="password" placeholder="IPIN (Password)"><input type="text" placeholder="OTP"><button type="button">SECURE LOGIN</button></form>
+  <p style="font-size:11px;color:#999;margin-top:15px">HDFC Bank Limited.</p>
+</div>
+</body></html>`);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // DEMO B — Fake Payment Gateway (Plain HTML, no embedded overlays)
   // ═══════════════════════════════════════════════════════════════════════════
   if (req.url === '/demo/payment') {

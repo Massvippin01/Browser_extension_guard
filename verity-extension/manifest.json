@@ -27,6 +27,7 @@
     {
       "matches": ["<all_urls>"],
       "js": [
+        "shared/ui/icons.js",
         "shared/messages.en.js",
         "content/content-script.js"
       ],

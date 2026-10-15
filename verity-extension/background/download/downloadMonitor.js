@@ -464,6 +464,9 @@ function scheduleCleanup(id) {
   if (!session) return;
   if (session.timer) clearTimeout(session.timer);
   session.timer = setTimeout(() => cleanup(id), CLEANUP_DELAY_MS);
+  if (session.timer && typeof session.timer.unref === 'function') {
+    session.timer.unref();
+  }
 }
 
 function cleanup(id) {
