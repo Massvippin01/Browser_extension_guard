@@ -401,6 +401,199 @@ function detectHighPressureTimer(hasPaymentOrOtp) {
   return timerElements.length > 0;
 }
 
+function detectBitbFakeWindowAttack() {
+  if (typeof window === 'undefined' || !window.location) return { detected: false };
+  const currentHost = (window.location.hostname || '').toLowerCase().replace(/^www\./, '');
+
+  const officialIdpDomains = [
+    'accounts.google.com',
+    'login.microsoftonline.com',
+    'login.live.com',
+    'appleid.apple.com',
+    'github.com',
+    'api.twitter.com',
+    'twitter.com',
+    'x.com'
+  ];
+
+  if (officialIdpDomains.some(d => currentHost === d || currentHost.endsWith('.' + d))) {
+    return { detected: false };
+  }
+
+  const candidateElements = querySelectorAllDeep('div, span, p, a, b, strong, section, header, [role="dialog"], [class*="modal" i], [class*="popup" i], [class*="window" i]');
+  const fakeUrlRegex = /https?:\/\/(accounts\.google\.com|login\.microsoftonline\.com|login\.live\.com|appleid\.apple\.com|github\.com\/login|api\.twitter\.com)[^\s"'>]*/i;
+
+  let matchedFakeUrl = null;
+  for (const el of candidateElements) {
+    if (el.children && el.children.length > 8) continue;
+    const txt = (el.innerText || el.textContent || '').trim();
+    if (!txt || txt.length > 250) continue;
+    const match = txt.match(fakeUrlRegex);
+    if (match) {
+      matchedFakeUrl = match[0];
+      break;
+    }
+  }
+
+  if (!matchedFakeUrl) {
+    const fakeInputs = querySelectorAllDeep('input[readonly], input[disabled], [role="textbox"][aria-readonly="true"]');
+    for (const inp of fakeInputs) {
+      const val = (inp.value || inp.getAttribute('value') || '').trim();
+      const match = val.match(fakeUrlRegex);
+      if (match) {
+        matchedFakeUrl = match[0];
+        break;
+      }
+    }
+  }
+
+  if (!matchedFakeUrl) return { detected: false };
+
+  const hasAuthInput = querySelectorDeep('input[type="password"], input[type="email"], input[name*="user" i], input[name*="login" i], input[name*="email" i], input[id*="email" i], input[id*="password" i]') !== null;
+  const pageText = getPageTextDeep(6000).toLowerCase();
+  const hasWindowChromeText = pageText.includes('sign in - google accounts') ||
+                              pageText.includes('sign in to your account') ||
+                              pageText.includes('microsoft — official home page') ||
+                              pageText.includes('sign in with apple') ||
+                              pageText.includes('sign in to github');
+
+  if (hasAuthInput || hasWindowChromeText) {
+    return {
+      detected: true,
+      fakeUrl: matchedFakeUrl,
+      reason: `Browser-in-the-Browser fake address bar "${matchedFakeUrl}" rendered on unverified domain "${currentHost}"`
+    };
+  }
+
+  return { detected: false };
+}
+
+function detectAitmReverseProxyDom() {
+  if (typeof window === 'undefined' || !window.location) return { detected: false };
+  const currentHost = (window.location.hostname || '').toLowerCase().replace(/^www\./, '');
+
+  const officialIdpDomains = [
+    'microsoft.com',
+    'microsoftonline.com',
+    'live.com',
+    'google.com',
+    'okta.com',
+    'windowsazure.com',
+    'office.com'
+  ];
+
+  if (officialIdpDomains.some(d => currentHost === d || currentHost.endsWith('.' + d))) {
+    return { detected: false };
+  }
+
+  const proprietarySelectors = [
+    'input[name="loginfmt"]',
+    'input[name="otc"]',
+    'input#i0116',
+    'input#i0118',
+    'input#identifierId'
+  ];
+
+  for (const sel of proprietarySelectors) {
+    const el = querySelectorDeep(sel);
+    if (el) {
+      return {
+        detected: true,
+        selector: sel,
+        reason: `Proprietary identity provider input "${sel}" detected on non-official domain "${currentHost}"`
+      };
+    }
+  }
+
+  return { detected: false };
+}
+
+function inspectQrPayload(rawValue, currentHost) {
+  if (!rawValue || typeof rawValue !== 'string') return null;
+  const lower = rawValue.trim().toLowerCase();
+
+  if (lower.startsWith('upi://pay')) {
+    return {
+      detected: true,
+      type: 'Unverified UPI Payment Deep-Link QR Code',
+      rawValue
+    };
+  }
+
+  if (lower.startsWith('http://') || lower.startsWith('https://')) {
+    try {
+      const parsed = new URL(rawValue);
+      const qrHost = parsed.hostname.toLowerCase();
+      const suspTlds = ['.xyz', '.monster', '.top', '.click', '.sbs', '.cfd', '.icu', '.live', '.buzz', '.pw'];
+      const isIp = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(qrHost);
+      const isSuspTld = suspTlds.some(tld => qrHost.endsWith(tld));
+
+      if (isIp || isSuspTld || qrHost.includes('login') || qrHost.includes('verify') || qrHost.includes('update')) {
+        return {
+          detected: true,
+          type: 'Suspicious / Phishing URL QR Code',
+          rawValue
+        };
+      }
+    } catch (_) {}
+  }
+
+  return null;
+}
+
+function detectQrFromDomAttributes() {
+  const currentHost = (typeof window !== 'undefined' && window.location ? window.location.hostname : '').toLowerCase().replace(/^www\./, '');
+  if (typeof globalThis !== 'undefined' && globalThis.__VERITY_TEST_QR_PAYLOAD__) {
+    const testResult = inspectQrPayload(globalThis.__VERITY_TEST_QR_PAYLOAD__, currentHost);
+    if (testResult) return testResult;
+  }
+
+  const qrElements = querySelectorAllDeep('[data-qr], [data-payload], img[alt*="qr" i], [class*="qr" i], [id*="qr" i]');
+  for (const el of qrElements) {
+    const rawValue = el.getAttribute('data-qr') || el.getAttribute('data-payload') || el.getAttribute('alt') || '';
+    const result = inspectQrPayload(rawValue, currentHost);
+    if (result) return result;
+  }
+  return null;
+}
+
+async function scanQrCodesOnPage() {
+  if (typeof window === 'undefined') return null;
+  const currentHost = (window.location.hostname || '').toLowerCase().replace(/^www\./, '');
+
+  const attrResult = detectQrFromDomAttributes();
+  if (attrResult) return attrResult;
+
+  if ('BarcodeDetector' in window) {
+    try {
+      const detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+      const candidates = querySelectorAllDeep('img, canvas');
+      const scanCandidates = [];
+      for (const el of candidates) {
+        const rect = el.getBoundingClientRect ? el.getBoundingClientRect() : { width: el.width || 0, height: el.height || 0 };
+        const w = rect.width;
+        const h = rect.height;
+        if (w >= 80 && w <= 600 && h >= 80 && h <= 600) {
+          scanCandidates.push(el);
+          if (scanCandidates.length >= 5) break;
+        }
+      }
+
+      for (const target of scanCandidates) {
+        try {
+          const barcodes = await detector.detect(target);
+          for (const bc of barcodes) {
+            const result = inspectQrPayload(bc.rawValue, currentHost);
+            if (result) return result;
+          }
+        } catch (_) {}
+      }
+    } catch (_) {}
+  }
+
+  return null;
+}
+
 function extractBrandAssetUrls() {
   const urls = [];
   if (typeof document === 'undefined') return urls;
@@ -596,6 +789,15 @@ function collectSignals() {
   // Tech support / remote desktop scam detection
   const techSupportScam = detectTechSupportRemoteScam(text);
 
+  // Browser-in-the-Browser fake window attack
+  const bitb = detectBitbFakeWindowAttack();
+
+  // AiTM reverse-proxy DOM signatures
+  const aitmDom = detectAitmReverseProxyDom();
+
+  // On-device QR / Quishing scan
+  const qrScan = detectQrFromDomAttributes();
+
   // Claimed providers scan (using already-extracted text, no redundant read)
   const claimedProviders = scanClaimedProviders(text);
 
@@ -628,6 +830,13 @@ function collectSignals() {
     techSupportRemoteScam: isTrustedDomain ? false : techSupportScam.detected,
     techSupportRemoteScamReason: isTrustedDomain ? null : techSupportScam.reason,
     techSupportHelpline: isTrustedDomain ? null : (techSupportScam.tool + ' ' + techSupportScam.lure),
+    bitbAttack: isTrustedDomain ? false : bitb.detected,
+    bitbTarget: isTrustedDomain ? null : bitb.fakeUrl,
+    bitbReason: isTrustedDomain ? null : bitb.reason,
+    aitmReverseProxy: isTrustedDomain ? false : aitmDom.detected,
+    aitmReason: isTrustedDomain ? null : aitmDom.reason,
+    maliciousQrPayload: isTrustedDomain ? false : (qrScan ? qrScan.detected : false),
+    maliciousQrType: isTrustedDomain ? null : (qrScan ? qrScan.type : null),
     hasUpiLink,
     pageText:  text.substring(0, 3000),
     pageTitle: (typeof document !== 'undefined' ? document.title : '') || '',
@@ -2066,6 +2275,10 @@ if (typeof window !== 'undefined') {
       reasons: [
         signal === 'SIG_CLICKFIX_CLIPBOARD_ATTACK'
           ? 'Live ClickFix clipboard command execution attack blocked.'
+          : signal === 'SIG_CLIPBOARD_ADDRESS_SWAP'
+          ? 'Live clipboard crypto/UPI address swapper attack blocked.'
+          : signal === 'SIG_ROGUE_PUSH_OR_SW_TRAP'
+          ? 'Rogue push notification or service worker registration blocked.'
           : signal === 'SIG_UNTRUSTED_SCREEN_SHARE'
           ? 'Untrusted screen sharing capture attempt blocked.'
           : 'Phishing kit credential exfiltration endpoint blocked.'
@@ -2685,6 +2898,11 @@ if (typeof globalThis !== 'undefined') {
   globalThis.collectSignals = collectSignals;
   globalThis.extractBrandAssetUrls = extractBrandAssetUrls;
   globalThis.detectTechSupportRemoteScam = detectTechSupportRemoteScam;
+  globalThis.detectBitbFakeWindowAttack = detectBitbFakeWindowAttack;
+  globalThis.detectAitmReverseProxyDom = detectAitmReverseProxyDom;
+  globalThis.scanQrCodesOnPage = scanQrCodesOnPage;
+  globalThis.inspectQrPayload = inspectQrPayload;
+  globalThis.detectQrFromDomAttributes = detectQrFromDomAttributes;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -2699,6 +2917,11 @@ if (typeof module !== 'undefined' && module.exports) {
     collectSignals,
     extractBrandAssetUrls,
     detectTechSupportRemoteScam,
+    detectBitbFakeWindowAttack,
+    detectAitmReverseProxyDom,
+    scanQrCodesOnPage,
+    inspectQrPayload,
+    detectQrFromDomAttributes,
   };
 }
 

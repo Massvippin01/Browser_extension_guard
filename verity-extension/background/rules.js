@@ -805,3 +805,64 @@ export function hasBrandVariantMatch(urlString, brandsList) {
 
   return { id: null, params: {}, score: 0, reason: null, triggered: false };
 }
+
+/**
+ * Rule 14: Adversary-in-the-Middle (AiTM) Reverse-Proxy Phishing Kit Detector
+ * Detects Evilginx3 / Modlishka proxies relaying Microsoft, Google, or Okta auth endpoints
+ * on unverified attacker domains.
+ * @param {string} urlString
+ */
+export function hasAitmProxyUrlSignature(urlString) {
+  const url = safeParseUrl(urlString);
+  if (!url) return { id: null, params: {}, score: 0, reason: null, triggered: false };
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return { id: null, params: {}, score: 0, reason: null, triggered: false };
+  }
+
+  const hostname = url.hostname.toLowerCase().replace(/^www\./, '');
+  if (isAllowlistedDomain(hostname)) {
+    return { id: null, params: {}, score: 0, reason: null, triggered: false };
+  }
+
+  const rootDomain = getDomain(hostname) || hostname;
+  const officialIdpRoots = [
+    'microsoft.com',
+    'microsoftonline.com',
+    'live.com',
+    'google.com',
+    'okta.com',
+    'windowsazure.com',
+    'office.com'
+  ];
+
+  if (officialIdpRoots.some(d => hostname === d || hostname.endsWith('.' + d) || rootDomain === d)) {
+    return { id: null, params: {}, score: 0, reason: null, triggered: false };
+  }
+
+  const fullUrlLower = url.href.toLowerCase();
+  const aitmSignatures = [
+    '/common/oauth2/',
+    '/oauth2/v2.0/authorize',
+    '/adfs/ls/',
+    '/signin/v2/identifier',
+    '/_/lookup/accountlookup',
+    '/idp/idx/identify',
+    'client-request-id=',
+    'sso_reload=true'
+  ];
+
+  const matchedSig = aitmSignatures.find(sig => fullUrlLower.includes(sig));
+  if (matchedSig) {
+    return {
+      id: 'SIG_AITM_REVERSE_PROXY_PHISH',
+      ruleId: 'RULE_AITM_PROXY_URL',
+      params: { endpoint: matchedSig },
+      score: 85,
+      category: 'brand_impersonation',
+      reason: t('SIG_AITM_REVERSE_PROXY_PHISH', { endpoint: matchedSig }),
+      triggered: true
+    };
+  }
+
+  return { id: null, params: {}, score: 0, reason: null, triggered: false };
+}

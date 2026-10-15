@@ -6,7 +6,7 @@
  *   → Reputation → ML → Risk Engine → Enforcement Decision
  */
 
-import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern } from './background/rules.js';
+import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern, hasAitmProxyUrlSignature } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
 import { getRedirectSignals, getRedirectSignalsAsync, updateShorteners, recordNavigationTarget, hydrateFromStorage, pruneTab, isSuspiciousDomain } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
@@ -92,6 +92,7 @@ async function analyzeUrl(url) {
     hasRandomLookingHostname(url),
     hasAffiliateTrackerPattern(url),
     hasPiracyOrUnverifiedMediaPattern(url),
+    hasAitmProxyUrlSignature(url),
   ];
 
   return ruleSignals;
@@ -117,6 +118,7 @@ function buildRuleSignals(url) {
     hasRandomLookingHostname(url),
     hasAffiliateTrackerPattern(url),
     hasPiracyOrUnverifiedMediaPattern(url),
+    hasAitmProxyUrlSignature(url),
   ];
 }
 
@@ -813,6 +815,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       reasons: [
         threatSignal === 'SIG_CLICKFIX_CLIPBOARD_ATTACK'
           ? 'Live ClickFix clipboard command execution attack blocked.'
+          : threatSignal === 'SIG_CLIPBOARD_ADDRESS_SWAP'
+          ? 'Live clipboard crypto/UPI address swapper attack blocked.'
+          : threatSignal === 'SIG_ROGUE_PUSH_OR_SW_TRAP'
+          ? 'Rogue push notification or service worker registration blocked.'
           : threatSignal === 'SIG_UNTRUSTED_SCREEN_SHARE'
           ? 'Untrusted screen sharing capture attempt blocked.'
           : 'Phishing kit credential exfiltration endpoint blocked.'

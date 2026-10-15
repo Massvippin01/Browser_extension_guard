@@ -87,6 +87,12 @@
     SIG_REMOTE_ACCESS_SCAM_DOWNLOAD: (p) => `Critical cyber fraud: Remote desktop access tool (${p?.tool || p?.filename || 'remote access software'}) download initiated from an unverified domain.`,
     SIG_TECH_SUPPORT_REMOTE_SCAM: (p) => `Critical cyber fraud: Remote desktop support lure detected (${p?.tool || 'AnyDesk/TeamViewer'}) paired with fake customer support or KYC helpline.`,
     SIG_UNTRUSTED_SCREEN_SHARE: (p) => 'Critical threat: Untrusted screen sharing attempt detected on suspicious domain (Digital Arrest / Tech-Support scam).',
+    SIG_BITB_FAKE_WINDOW_ATTACK: (p) => `Critical threat: Browser-in-the-Browser (BitB) fake authentication window detected impersonating ${p?.target || 'an identity provider'}.`,
+    SIG_AITM_REVERSE_PROXY_PHISH: (p) => `Critical threat: Adversary-in-the-Middle (AiTM) reverse-proxy phishing kit detected (${p?.endpoint || 'OAuth/IdP endpoint'}) capturing credentials or session cookies.`,
+    RULE_AITM_PROXY_URL: (p) => 'URL path matches proprietary identity provider authentication endpoint on unverified domain.',
+    SIG_MALICIOUS_QR_PAYLOAD: (p) => `Critical threat: Malicious QR code payload detected (${p?.type || 'Quishing / Fraudulent UPI payment'}).`,
+    SIG_CLIPBOARD_ADDRESS_SWAP: (p) => `Critical threat: Malicious clipboard hijacking detected attempting to swap cryptocurrency address or UPI ID (${p?.type || 'Address Swapper'}).`,
+    SIG_ROGUE_PUSH_OR_SW_TRAP: (p) => 'High risk: Rogue push notification prompt or background worker registration trap blocked.',
 
     // ── Download Interceptor Signals ──────────────────────────────────────────
     DOWNLOAD_CHROME_DANGEROUS: (p) => 'Chrome identified this file as dangerous.',
@@ -250,6 +256,7 @@
     RULE_MALVERTISING_REDIRECT: 'malvertising',
     SIG_MALVERTISING: 'malvertising',
     SIG_POPUNDER_SPAWN: 'malvertising',
+    SIG_ROGUE_PUSH_OR_SW_TRAP: 'malvertising',
 
     // Category: brand_impersonation
     RULE_BRAND_NAME_WRONG_DOMAIN: 'brand_impersonation',
@@ -258,6 +265,9 @@
     SIG_BRAND_IMPERSONATION: 'brand_impersonation',
     SIG_BRAND_ASSET_HOTLINK_SPOOF: 'brand_impersonation',
     SIG_CONTENT_BRAND_IMPERSONATION: 'brand_impersonation',
+    SIG_BITB_FAKE_WINDOW_ATTACK: 'brand_impersonation',
+    SIG_AITM_REVERSE_PROXY_PHISH: 'brand_impersonation',
+    RULE_AITM_PROXY_URL: 'brand_impersonation',
 
     // Category: ml
     SIG_ML_PHISHING: 'ml',
@@ -291,6 +301,8 @@
     SIG_ILLEGAL_WEB_PIN_COLLECTION: 'payment_phishing',
     SIG_UNVERIFIED_UPI_COLLECTION: 'payment_phishing',
     SIG_HIGH_PRESSURE_PAYMENT_TIMER: 'payment_phishing',
+    SIG_MALICIOUS_QR_PAYLOAD: 'payment_phishing',
+    SIG_CLIPBOARD_ADDRESS_SWAP: 'payment_phishing',
 
     // Category: synergy
     SIG_SYNERGY_IMPERSONATION_CREDENTIALS: 'synergy',

@@ -171,6 +171,31 @@ export function calculateRisk(
       categories.phishing.flagged = true;
       categories.phishing.reason = 'Untrusted screen sharing capture attempt';
     }
+    if (domSignals.bitbAttack && !isAllowlisted) {
+      emitSignal('SIG_BITB_FAKE_WINDOW_ATTACK', { target: domSignals.bitbTarget || 'identity provider' }, 95, 'dom');
+      categories.phishing.flagged = true;
+      categories.phishing.reason = domSignals.bitbReason || 'Browser-in-the-Browser fake authentication window detected';
+    }
+    if (domSignals.aitmReverseProxy && !isAllowlisted) {
+      emitSignal('SIG_AITM_REVERSE_PROXY_PHISH', { endpoint: domSignals.aitmReason || 'Proprietary IdP inputs' }, 95, 'dom');
+      categories.phishing.flagged = true;
+      categories.phishing.reason = 'AiTM reverse-proxy phishing kit detected';
+    }
+    if (domSignals.maliciousQrPayload && !isAllowlisted) {
+      emitSignal('SIG_MALICIOUS_QR_PAYLOAD', { type: domSignals.maliciousQrType || 'Quishing' }, 85, 'dom');
+      categories.scamFraud.flagged = true;
+      categories.scamFraud.reason = 'Malicious QR code payload detected';
+    }
+    if (domSignals.clipboardAddressSwap) {
+      emitSignal('SIG_CLIPBOARD_ADDRESS_SWAP', { type: domSignals.clipboardSwapType || 'Address' }, 95, 'dom');
+      categories.scamFraud.flagged = true;
+      categories.scamFraud.reason = 'Malicious clipboard address swapper detected';
+    }
+    if (domSignals.roguePushOrSwTrap) {
+      emitSignal('SIG_ROGUE_PUSH_OR_SW_TRAP', {}, 75, 'dom');
+      categories.suspicious.flagged = true;
+      categories.suspicious.reason = 'Rogue push notification or service worker registration blocked';
+    }
 
     // C. Scam Language / PUP / ClickFix
     if (domSignals.clickFixAttack) {
@@ -415,6 +440,16 @@ export function calculateRisk(
                                      !!(downloadSignals && downloadSignals.remoteAccessScam);
   const hasUntrustedScreenShare = rawSignals.some(s => s.id === 'SIG_UNTRUSTED_SCREEN_SHARE') ||
                                   !!(domSignals && domSignals.untrustedScreenShare);
+  const hasBitbAttack = rawSignals.some(s => s.id === 'SIG_BITB_FAKE_WINDOW_ATTACK') ||
+                        !!(domSignals && domSignals.bitbAttack);
+  const hasAitmReverseProxy = rawSignals.some(s => s.id === 'SIG_AITM_REVERSE_PROXY_PHISH') ||
+                              !!(domSignals && domSignals.aitmReverseProxy);
+  const hasClipboardAddressSwap = rawSignals.some(s => s.id === 'SIG_CLIPBOARD_ADDRESS_SWAP') ||
+                                  !!(domSignals && domSignals.clipboardAddressSwap);
+  const hasMaliciousQrPayload = rawSignals.some(s => s.id === 'SIG_MALICIOUS_QR_PAYLOAD') ||
+                                !!(domSignals && domSignals.maliciousQrPayload);
+  const hasRoguePushOrSwTrap = rawSignals.some(s => s.id === 'SIG_ROGUE_PUSH_OR_SW_TRAP') ||
+                               !!(domSignals && domSignals.roguePushOrSwTrap);
   const hasPaymentBrandMismatch = rawSignals.some(s => s.id === 'SIG_PAYMENT_BRAND_MISMATCH') ||
                                  (paymentAnalysis && paymentAnalysis.domainMismatch && paymentAnalysis.claimedProvider);
   const hasPaymentOrCredentialDemand = !!(
@@ -432,6 +467,11 @@ export function calculateRisk(
     hasTechSupportRemoteScam ||
     hasRemoteAccessScamDownload ||
     hasUntrustedScreenShare ||
+    hasBitbAttack ||
+    hasAitmReverseProxy ||
+    hasClipboardAddressSwap ||
+    hasMaliciousQrPayload ||
+    hasRoguePushOrSwTrap ||
     hasBrandMismatchWithCredentials;
 
   const suspTlds = [
@@ -462,6 +502,12 @@ export function calculateRisk(
     riskScore = Math.max(riskScore, 95);
   } else if (hasPhishingKitWebhookExfil) {
     riskScore = Math.max(riskScore, 95);
+  } else if (hasBitbAttack) {
+    riskScore = Math.max(riskScore, 95);
+  } else if (hasAitmReverseProxy) {
+    riskScore = Math.max(riskScore, 95);
+  } else if (hasClipboardAddressSwap) {
+    riskScore = Math.max(riskScore, 95);
   } else if (hasBrandAssetHotlinkSpoof) {
     riskScore = Math.max(riskScore, 90);
   } else if (hasRemoteAccessScamDownload) {
@@ -472,12 +518,16 @@ export function calculateRisk(
     riskScore = Math.max(riskScore, 90);
   } else if (hasKycCyberFraud) {
     riskScore = Math.max(riskScore, 85);
+  } else if (hasMaliciousQrPayload) {
+    riskScore = Math.max(riskScore, 85);
   } else if (hasTechSupportRemoteScam) {
     riskScore = Math.max(riskScore, 85);
   } else if (hasUntrustedScreenShare) {
     riskScore = Math.max(riskScore, 85);
   } else if (hasClickFix) {
     riskScore = Math.max(riskScore, 85);
+  } else if (hasRoguePushOrSwTrap) {
+    riskScore = Math.max(riskScore, 80);
   } else if (downloadSignals && downloadSignals.chromeSaysDangerous) {
     riskScore = Math.max(riskScore, 90);
   } else if (isSmugglingDanger || isSpoofDanger) {
@@ -494,7 +544,7 @@ export function calculateRisk(
   // ── 8. Apply Convergence & Allowlist Rules ──────────────────────────────────
   // A. Independent Allowlist Rule:
   // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download, credential-exfil, ClickFix, or malvertising override fires
-  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil && !hasPhishingKitWebhookExfil && !hasClickFix && !hasMalvertisingCriticalOverride && !hasRemoteAccessScamDownload && !hasBrandAssetHotlinkSpoof && !hasTechSupportRemoteScam) {
+  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil && !hasPhishingKitWebhookExfil && !hasClickFix && !hasMalvertisingCriticalOverride && !hasRemoteAccessScamDownload && !hasBrandAssetHotlinkSpoof && !hasTechSupportRemoteScam && !hasBitbAttack && !hasAitmReverseProxy && !hasClipboardAddressSwap && !hasMaliciousQrPayload) {
     riskScore = Math.min(riskScore, 40);
   }
 

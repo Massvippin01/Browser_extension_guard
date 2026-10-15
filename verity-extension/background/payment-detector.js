@@ -268,6 +268,8 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
   const hasCyberFraudSignal = !!(
     domSignals.illegalWebPinCollection ||
     domSignals.unverifiedUpiCollection ||
+    domSignals.maliciousQrPayload ||
+    domSignals.maliciousQrPayload ||
     domSignals.highPressureTimer ||
     (domSignals.claimedProviders && domSignals.claimedProviders.length > 0) ||
     (domSignals.brandAssetUrls && domSignals.brandAssetUrls.length > 0)
@@ -364,6 +366,16 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
       id: 'SIG_UNVERIFIED_UPI_COLLECTION',
       params: { hostname },
       score: 55
+    });
+  }
+
+  // 3b. Malicious Decoded QR Code Payload (Quishing / UPI Trap) (+85 pts)
+  if (domSignals.maliciousQrPayload && domainResult.domainMismatch) {
+    paymentScore += 85;
+    structuredReasons.unshift({
+      id: 'SIG_MALICIOUS_QR_PAYLOAD',
+      params: { type: domSignals.maliciousQrType || 'Quishing' },
+      score: 85
     });
   }
 
