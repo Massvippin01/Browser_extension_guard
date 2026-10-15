@@ -403,5 +403,227 @@
       "kotak bank",
       "kotak netbanking"
     ]
+  },
+  {
+    "name": "BharatPe",
+    "domains": [
+      "bharatpe.com"
+    ],
+    "aliases": [
+      "bharatpe",
+      "bharat pe"
+    ]
+  },
+  {
+    "name": "Pine Labs",
+    "domains": [
+      "pinepg.in",
+      "pinelabs.com"
+    ],
+    "aliases": [
+      "pine labs",
+      "pine pg",
+      "pinepg"
+    ]
+  },
+  {
+    "name": "Worldline",
+    "domains": [
+      "worldline.com"
+    ],
+    "aliases": [
+      "worldline"
+    ]
+  },
+  {
+    "name": "Checkout.com",
+    "domains": [
+      "checkout.com"
+    ],
+    "aliases": [
+      "checkout.com",
+      "checkout payment"
+    ]
+  },
+  {
+    "name": "Adyen",
+    "domains": [
+      "adyen.com"
+    ],
+    "aliases": [
+      "adyen"
+    ]
+  },
+  {
+    "name": "Braintree",
+    "domains": [
+      "braintreegateway.com",
+      "braintreepayments.com"
+    ],
+    "aliases": [
+      "braintree",
+      "braintree gateway"
+    ]
+  },
+  {
+    "name": "Bank of Baroda",
+    "domains": [
+      "bankofbaroda.in",
+      "bobibanking.com"
+    ],
+    "aliases": [
+      "bank of baroda",
+      "bob netbanking",
+      "baroda bank"
+    ]
+  },
+  {
+    "name": "Canara Bank",
+    "domains": [
+      "canarabank.com",
+      "canarabank.in"
+    ],
+    "aliases": [
+      "canara bank",
+      "canarabank"
+    ]
+  },
+  {
+    "name": "Union Bank of India",
+    "domains": [
+      "unionbankofindia.co.in"
+    ],
+    "aliases": [
+      "union bank",
+      "union bank of india"
+    ]
+  },
+  {
+    "name": "IndusInd Bank",
+    "domains": [
+      "indusind.com"
+    ],
+    "aliases": [
+      "indusind",
+      "indusind bank"
+    ]
+  },
+  {
+    "name": "Yes Bank",
+    "domains": [
+      "yesbank.in"
+    ],
+    "aliases": [
+      "yes bank",
+      "yesbank"
+    ]
+  },
+  {
+    "name": "IDFC FIRST Bank",
+    "domains": [
+      "idfcfirstbank.com"
+    ],
+    "aliases": [
+      "idfc bank",
+      "idfc first bank",
+      "idfcfirst"
+    ]
+  },
+  {
+    "name": "RBL Bank",
+    "domains": [
+      "rblbank.com"
+    ],
+    "aliases": [
+      "rbl bank",
+      "rblbank"
+    ]
+  },
+  {
+    "name": "Federal Bank",
+    "domains": [
+      "federalbank.co.in"
+    ],
+    "aliases": [
+      "federal bank",
+      "fednet"
+    ]
+  },
+  {
+    "name": "Chase Bank",
+    "domains": [
+      "chase.com"
+    ],
+    "aliases": [
+      "chase",
+      "chase bank",
+      "jpmorgan chase"
+    ]
+  },
+  {
+    "name": "Wells Fargo",
+    "domains": [
+      "wellsfargo.com"
+    ],
+    "aliases": [
+      "wells fargo",
+      "wellsfargo"
+    ]
+  },
+  {
+    "name": "Bank of America",
+    "domains": [
+      "bankofamerica.com",
+      "bofa.com"
+    ],
+    "aliases": [
+      "bank of america",
+      "bofa"
+    ]
+  },
+  {
+    "name": "Citibank",
+    "domains": [
+      "citibank.com",
+      "citi.com"
+    ],
+    "aliases": [
+      "citibank",
+      "citi bank",
+      "citi"
+    ]
+  },
+  {
+    "name": "HSBC",
+    "domains": [
+      "hsbc.com",
+      "hsbc.co.in",
+      "hsbc.co.uk"
+    ],
+    "aliases": [
+      "hsbc",
+      "hsbc bank"
+    ]
+  },
+  {
+    "name": "Barclays",
+    "domains": [
+      "barclays.co.uk",
+      "barclays.com"
+    ],
+    "aliases": [
+      "barclays",
+      "barclays bank"
+    ]
+  },
+  {
+    "name": "Capital One",
+    "domains": [
+      "capitalone.com"
+    ],
+    "aliases": [
+      "capital one",
+      "capitalone"
+    ]
   }
 ]

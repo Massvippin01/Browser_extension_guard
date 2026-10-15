@@ -8,7 +8,8 @@
     "webRequest",
     "storage",
     "offscreen",
-    "downloads"
+    "downloads",
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -26,12 +27,20 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
+      "js": ["content/main-world-interceptor.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": ["<all_urls>"],
       "js": [
         "shared/ui/icons.js",
         "shared/messages.en.js",
         "content/content-script.js"
       ],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     },
     {
       "matches": [
@@ -75,7 +84,8 @@
         "content/overlay.css",
         "payment-brands.json",
         "config/*",
-        "content/search/*"
+        "content/search/*",
+        "content/main-world-interceptor.js"
       ],
       "matches": ["<all_urls>"]
     }

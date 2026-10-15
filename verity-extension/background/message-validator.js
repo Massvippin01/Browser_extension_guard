@@ -20,7 +20,8 @@ export function validateMessageSender(sender, expectedRuntimeId, message) {
     'ANALYZE_URL_ONLY',
     'ANALYZE_FULL',
     'ANALYZE_SEARCH_RESULT',
-    'USER_OVERRIDE_ALLOW'
+    'USER_OVERRIDE_ALLOW',
+    'RUNTIME_THREAT_DETECTED'
   ];
 
   if (message && tabScopedActions.includes(message.action)) {

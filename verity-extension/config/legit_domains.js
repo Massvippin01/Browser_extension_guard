@@ -218,5 +218,89 @@ export default [
   {
     "domain": "bank.sbi",
     "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "razorpay.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "billdesk.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "ccavenue.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "cashfree.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "payu.in",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "payumoney.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "juspay.in",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "instamojo.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "bharatpe.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "pinepg.in",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "airpay.co.in",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "worldline.com",
+    "source": "https://www.rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=1214"
+  },
+  {
+    "domain": "checkout.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "adyen.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "braintreegateway.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "square.com",
+    "source": "https://tranco-list.eu/"
+  },
+  {
+    "domain": "yesbank.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "idfcfirstbank.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "rblbank.com",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "federalbank.co.in",
+    "source": "https://www.rbi.org.in/commonman/English/Scripts/BanksInIndia.aspx"
+  },
+  {
+    "domain": "hsbc.com",
+    "source": "https://tranco-list.eu/"
   }
 ];

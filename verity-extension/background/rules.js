@@ -284,7 +284,8 @@ export function isTrustedTopDomain(hostname) {
 
 /**
  * Rule 5b: Ad-redirect / Malvertising URL Pattern Detection
- * Catches real-world ad redirect networks: very long encoded paths, * chars, /cx/ prefixes.
+ * Catches real-world ad redirect networks, pop-unders, gambling spam, and fake download traps.
+ * Inspects both hostname, full pathname, and query string.
  * @param {string} urlString
  */
 export function hasMalvertisingPattern(urlString) {
@@ -299,32 +300,62 @@ export function hasMalvertisingPattern(urlString) {
     return { id: null, params: {}, score: 0, reason: null, triggered: false };
   }
 
+  const hrefLower = (url.href || '').toLowerCase();
+  const searchLower = (url.search || '').toLowerCase();
+  const hostLower = (url.hostname || '').toLowerCase();
   const fullPath = url.pathname + url.search;
   let score = 0;
 
-  // 1. Keyless hex/hash query strings matching /^\?[a-f0-9]{16,64}$/i (+25 pts)
-  const isHexQuery = /^\?[a-f0-9]{16,64}$/i.test(url.search);
-  if (isHexQuery) {
-    score += 25;
+  // 1. Explicit Ad-Network & Pop-Under Query Signals (+65 pts, category: malvertising)
+  // Match if url.search or url.href contains ANY of:
+  // utm_medium=popunder, utm_medium=popup, propellerads, popads, popcash, adsterra, hilltopads,
+  // clickadu, exoclick, trafficjunky, zeropark, richads, or query parameter combinations like
+  // (&|\?)(zid|zoneid|clickid|ban|subid|aff_sub)=[0-9a-z_-]+
+  const hasAdNetworkName = /(propellerads|popads|popcash|adsterra|hilltopads|clickadu|exoclick|trafficjunky|zeropark|richads)/i.test(hrefLower);
+  const hasPopunderParam = /(utm_medium=popunder|utm_medium=popup|popunder=|popup=)/i.test(hrefLower);
+  const hasAdTrackingQuery = /[?&](zid|zoneid|clickid|ban|subid|aff_sub)=[0-9a-z_-]+/i.test(url.search);
+
+  if (hasAdNetworkName || hasPopunderParam || (hasAdTrackingQuery && (hasPopunderParam || hasAdNetworkName || /(cid|dwt|campaign)/i.test(url.search)))) {
+    score += 65;
   }
 
-  // 2. Concatenated loader/rotator keywords in hostname matching /(popload|popunder|adserver|clicktrack|fastload|rotator|traffic|loaderfast|popcash|propeller)/i (+25 pts)
-  const hasLoaderRotatorKw = /(popload|popunder|adserver|clicktrack|fastload|rotator|traffic|loaderfast|popcash|propeller)/i.test(url.hostname);
+  // 2. Gambling / Casino / Fake Download Hostname Patterns (+50 pts, category: malvertising)
+  // Match hostnames containing gambling/betting patterns (ufa168, bet365, 1xbet, slot, casino, jackpot, rummy, poker, bonus)
+  // or fake download traps (fastbytes, fastdownload, fileget, dl-fast, apkmod, mediafire-dl)
+  // especially when paired with .live, .xyz, .monster, .top, .click, .sbs, .cfd, .icu, .fun, .site, .online
+  const gamblingRegex = /(ufa168|bet365|1xbet|slot|casino|jackpot|rummy|poker|bonus)/i;
+  const fakeDownloadRegex = /(fastbytes|fastdownload|fileget|dl-fast|apkmod|mediafire-dl)/i;
+  const suspTlds = [
+    '.live', '.xyz', '.monster', '.top', '.click', '.sbs', '.cfd', '.icu', '.fun', '.site', '.online',
+    '.pw', '.cc', '.ws', '.biz', '.vip', '.club', '.uno', '.bar', '.qpon', '.world',
+    '.tk', '.ml', '.ga', '.cf', '.gq', '.rest', '.skin', '.hair', '.boats', '.quest', '.shop', '.buzz', '.lat', '.cyou'
+  ];
+  const hasSuspTld = suspTlds.some(tld => hostLower.endsWith(tld));
+  const hasGamblingHost = gamblingRegex.test(hostLower);
+  const hasFakeDownloadHost = fakeDownloadRegex.test(hostLower);
+
+  if ((hasGamblingHost || hasFakeDownloadHost) && hasSuspTld) {
+    score += 50;
+  } else if (hasGamblingHost || hasFakeDownloadHost) {
+    score += 40;
+  }
+
+  // 3. Keyless Hex Query String (+45 pts, category: malvertising)
+  // Match /^\?[a-f0-9]{16,64}$/i on urlObj.search (catches ?540267a373b920a51ea99c645c7f)
+  const isHexQuery = /^\?[a-f0-9]{16,64}$/i.test(url.search);
+  if (isHexQuery) {
+    score += 45;
+  }
+
+  // 4. Concatenated loader/rotator keywords in hostname matching /(popload|popunder|adserver|clicktrack|fastload|rotator|traffic|loaderfast|popcash|propeller)/i (+25 pts)
+  const hasLoaderRotatorKw = /(popload|popunder|adserver|clicktrack|fastload|rotator|traffic|loaderfast|popcash|propeller)/i.test(hostLower);
   if (hasLoaderRotatorKw) {
     score += 25;
   }
 
-  // 3. Short alphanumeric shard subdomains matching /^[a-z0-9]{4,7}$/ with letters and digits like aar5n (+15 pts with suspicious TLD or hex query)
+  // 5. Short alphanumeric shard subdomains matching /^[a-z0-9]{4,7}$/ with letters and digits like aar5n (+15 pts with suspicious TLD or hex query)
   const sub = getSubdomain(url.hostname) || (url.hostname.split('.').length > 2 ? url.hostname.split('.')[0] : '');
   const isShardSubdomain = /^[a-z0-9]{4,7}$/i.test(sub) && /[a-z]/i.test(sub) && /[0-9]/.test(sub);
-  const suspiciousTldList = [
-    '.monster', '.click', '.sbs', '.cfd', '.rest', '.icu', '.cyou', '.buzz',
-    '.lat', '.skin', '.hair', '.boats', '.quest', '.shop', '.live', '.fun',
-    '.xyz', '.zip', '.info', '.top', '.link', '.online', '.site', '.pw',
-    '.cc', '.ws', '.biz', '.vip', '.club', '.uno', '.bar', '.qpon', '.world',
-    '.tk', '.ml', '.ga', '.cf', '.gq'
-  ];
-  const hasSuspTld = suspiciousTldList.some(tld => url.hostname.endsWith(tld));
   if (isShardSubdomain && (hasSuspTld || isHexQuery)) {
     score += 15;
   }
@@ -391,6 +422,7 @@ export function hasMalvertisingPattern(urlString) {
 
 /**
  * Rule 5d: Affiliate Tracker / Ad Tracker URL Pattern Detection
+ * Inspects both hostname, full URL href, and query string.
  * @param {string} urlString
  */
 export function hasAffiliateTrackerPattern(urlString) {
@@ -401,16 +433,19 @@ export function hasAffiliateTrackerPattern(urlString) {
   }
 
   let score = 0;
+  const hrefLower = (url.href || '').toLowerCase();
+  const searchLower = (url.search || '').toLowerCase();
   const queryKeys = Array.from(url.searchParams.keys()).map(k => k.toLowerCase());
   const queryValues = Array.from(url.searchParams.values());
   
-  const trackerKeywords = ['campaign_id', 'click_id', 'creative_id', 'aff_id', 'source', 'utm_source'];
+  const trackerKeywords = ['campaign_id', 'click_id', 'creative_id', 'aff_id', 'source', 'utm_source', 'utm_medium', 'utm_campaign'];
   const presentTrackers = trackerKeywords.filter(k => queryKeys.includes(k));
   
   const genericTrackers = [
     'ymid', 'var', 'var_1', 'var_2', 'var_3', 'z', 'sz', 'zoneid', 'zone', 'pop', 'cost', 'rev',
     'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'pub_rfid', 'pubid', 'sub1', 'sub2', 'clickid', 'aff_sub',
-    's1', 's2', 's3', 'ab2r', 'rhd', 'sf', 'os_version', 'browser_version', 'platform', 'architecture'
+    's1', 's2', 's3', 'ab2r', 'rhd', 'sf', 'os_version', 'browser_version', 'platform', 'architecture',
+    'zid', 'ban', 'subid', 'cid'
   ];
   const presentGenericTrackers = genericTrackers.filter(k => queryKeys.includes(k));
 
@@ -419,6 +454,13 @@ export function hasAffiliateTrackerPattern(urlString) {
   const isMixedDigitLabel = /^[a-z]{2,5}[0-9]{2,5}$/i.test(domainLabel);
   if (isMixedDigitLabel) {
     score += 25;
+  }
+
+  if (/(propellerads|popads|popcash|adsterra|hilltopads|clickadu|exoclick|trafficjunky|zeropark|richads)/i.test(hrefLower)) {
+    score += 45;
+  }
+  if (/(popunder|popup)/i.test(searchLower)) {
+    score += 35;
   }
 
   const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;

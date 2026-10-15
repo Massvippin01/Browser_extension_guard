@@ -150,11 +150,38 @@ export function calculateRisk(
       categories.phishing.flagged = true;
     }
 
+    // Cyber Fraud & Exfiltration
+    if (domSignals.kycCyberFraud && !isAllowlisted) {
+      emitSignal('SIG_KYC_CYBER_FRAUD', { phrase: domSignals.kycCyberFraudReason || 'Fake KYC lure' }, 80, 'dom');
+      categories.scamFraud.flagged = true;
+      categories.scamFraud.reason = domSignals.kycCyberFraudReason || 'Fake KYC/Aadhaar/PAN cyber fraud lure detected';
+    }
+    if (domSignals.phishingKitWebhookExfil) {
+      emitSignal('SIG_PHISHING_KIT_WEBHOOK_EXFIL', { endpoint: domSignals.webhookExfilEndpoint || 'Telegram/Discord webhook' }, 95, 'threat_intel');
+      categories.phishing.flagged = true;
+      categories.phishing.reason = 'Phishing kit exfiltration endpoint detected';
+    }
+    if (domSignals.techSupportRemoteScam && !isAllowlisted) {
+      emitSignal('SIG_TECH_SUPPORT_REMOTE_SCAM', { helpline: domSignals.techSupportHelpline || 'helpline' }, 85, 'dom');
+      categories.scamFraud.flagged = true;
+      categories.scamFraud.reason = domSignals.techSupportRemoteScamReason || 'Remote desktop tech-support scam lure detected';
+    }
+    if (domSignals.untrustedScreenShare) {
+      emitSignal('SIG_UNTRUSTED_SCREEN_SHARE', {}, 85, 'threat_intel');
+      categories.phishing.flagged = true;
+      categories.phishing.reason = 'Untrusted screen sharing capture attempt';
+    }
+
     // C. Scam Language / PUP / ClickFix
     if (domSignals.clickFixAttack) {
       emitSignal('SIG_CLICKFIX_CLIPBOARD_ATTACK', { phrase: domSignals.clickFixReason }, 85, 'dom');
       categories.scamFraud.flagged = true;
       categories.scamFraud.reason = domSignals.clickFixReason || 'ClickFix clipboard command lure detected';
+    }
+    if (domSignals.scamBonusLure) {
+      emitSignal('SIG_SCAM_BONUS_LURE', { phrase: domSignals.scamBonusLurePhrase }, 55, 'dom');
+      categories.scamFraud.flagged = true;
+      categories.scamFraud.reason = domSignals.scamBonusLurePhrase || 'Fake bonus/reward lure detected';
     }
     if (domSignals.scam) {
       emitSignal('SIG_SCAM_LANGUAGE', { phrase: domSignals.scamReason }, 10, 'dom');
@@ -221,6 +248,10 @@ export function calculateRisk(
     if (downloadSignals.htmlSmuggling) {
       emitSignal('SIG_HTML_SMUGGLING_DOWNLOAD', { source: downloadSignals.originatingHostname || 'unverified' }, 50, 'download');
       categories.malware.flagged = true;
+    }
+    if (downloadSignals.remoteAccessScam) {
+      emitSignal('SIG_REMOTE_ACCESS_SCAM_DOWNLOAD', { tool: downloadSignals.remoteAccessTool || 'remote access software' }, 90, 'download');
+      categories.suspicious.flagged = true;
     }
     if (downloadSignals.executableDownload) {
       emitSignal('DOWNLOAD_EXECUTABLE', { filename: downloadSignals.filename }, downloadSignals.sourceDomainSuspicious ? 45 : 15, 'download');
@@ -369,15 +400,91 @@ export function calculateRisk(
   const hasMalwareIntel = !!(threatIntel && threatIntel.malware);
   const hasClickFix = !!(domSignals && domSignals.clickFixAttack);
 
-  if (hasClickFix) {
-    riskScore = Math.max(riskScore, 85);
+  // Financial & Cyber-Fraud Overrides
+  const hasIllegalWebPinCollection = rawSignals.some(s => s.id === 'SIG_ILLEGAL_WEB_PIN_COLLECTION') ||
+                                    !!(domSignals && domSignals.illegalWebPinCollection);
+  const hasPhishingKitWebhookExfil = rawSignals.some(s => s.id === 'SIG_PHISHING_KIT_WEBHOOK_EXFIL') ||
+                                    !!(domSignals && domSignals.phishingKitWebhookExfil);
+  const hasKycCyberFraud = rawSignals.some(s => s.id === 'SIG_KYC_CYBER_FRAUD') ||
+                           !!(domSignals && domSignals.kycCyberFraud);
+  const hasBrandAssetHotlinkSpoof = rawSignals.some(s => s.id === 'SIG_BRAND_ASSET_HOTLINK_SPOOF') ||
+                                   (paymentAnalysis && paymentAnalysis.structuredReasons && paymentAnalysis.structuredReasons.some(r => r.id === 'SIG_BRAND_ASSET_HOTLINK_SPOOF'));
+  const hasTechSupportRemoteScam = rawSignals.some(s => s.id === 'SIG_TECH_SUPPORT_REMOTE_SCAM') ||
+                                   !!(domSignals && domSignals.techSupportRemoteScam);
+  const hasRemoteAccessScamDownload = rawSignals.some(s => s.id === 'SIG_REMOTE_ACCESS_SCAM_DOWNLOAD') ||
+                                     !!(downloadSignals && downloadSignals.remoteAccessScam);
+  const hasUntrustedScreenShare = rawSignals.some(s => s.id === 'SIG_UNTRUSTED_SCREEN_SHARE') ||
+                                  !!(domSignals && domSignals.untrustedScreenShare);
+  const hasPaymentBrandMismatch = rawSignals.some(s => s.id === 'SIG_PAYMENT_BRAND_MISMATCH') ||
+                                 (paymentAnalysis && paymentAnalysis.domainMismatch && paymentAnalysis.claimedProvider);
+  const hasPaymentOrCredentialDemand = !!(
+    (domSignals && (domSignals.hasCredentialCollection || domSignals.hasPasswordInput || domSignals.paymentFields?.card || domSignals.paymentFields?.cvv || domSignals.paymentFields?.otp || domSignals.paymentFields?.pin)) ||
+    (paymentAnalysis && (paymentAnalysis.paymentFields?.card || paymentAnalysis.paymentFields?.cvv || paymentAnalysis.paymentFields?.otp || paymentAnalysis.paymentFields?.pin))
+  );
+  const hasBrandMismatchWithCredentials = hasPaymentBrandMismatch && hasPaymentOrCredentialDemand && !isAllowlisted;
+
+  const hasCyberFraudOverride =
+    hasIllegalWebPinCollection ||
+    hasPhishingKitWebhookExfil ||
+    hasCredentialExfil ||
+    hasKycCyberFraud ||
+    hasBrandAssetHotlinkSpoof ||
+    hasTechSupportRemoteScam ||
+    hasRemoteAccessScamDownload ||
+    hasUntrustedScreenShare ||
+    hasBrandMismatchWithCredentials;
+
+  const suspTlds = [
+    '.live', '.xyz', '.monster', '.top', '.click', '.sbs', '.cfd', '.icu', '.fun', '.site', '.online',
+    '.pw', '.cc', '.ws', '.biz', '.vip', '.club', '.uno', '.bar', '.qpon', '.world',
+    '.tk', '.ml', '.ga', '.cf', '.gq', '.rest', '.skin', '.hair', '.boats', '.quest', '.shop', '.buzz', '.lat', '.cyou'
+  ];
+  const hasSuspiciousTld = suspTlds.some(tld => hostname.endsWith(tld));
+  const urlLower = (url || '').toLowerCase();
+  const hasPopunderAdKeyword = urlLower.includes('utm_medium=popunder') ||
+                              urlLower.includes('utm_medium=popup') ||
+                              urlLower.includes('propellerads') ||
+                              urlLower.includes('popunder') ||
+                              urlLower.includes('popads');
+  let isHexQuery = false;
+  try {
+    const parsed = new URL(url);
+    isHexQuery = /^\?[a-f0-9]{16,64}$/i.test(parsed.search);
+  } catch (_) {}
+
+  const hasMalvertisingCriticalOverride =
+    (pointsByCategory['malvertising'] || 0) >= 50 ||
+    rawSignals.some(s => s.id === 'SIG_POPUNDER_SPAWN') ||
+    (redirectSignals && (redirectSignals.popunderSpawn || redirectSignals.popunderDetected)) ||
+    ((hasPopunderAdKeyword || isHexQuery) && hasSuspiciousTld);
+
+  if (hasIllegalWebPinCollection) {
+    riskScore = Math.max(riskScore, 95);
+  } else if (hasPhishingKitWebhookExfil) {
+    riskScore = Math.max(riskScore, 95);
+  } else if (hasBrandAssetHotlinkSpoof) {
+    riskScore = Math.max(riskScore, 90);
+  } else if (hasRemoteAccessScamDownload) {
+    riskScore = Math.max(riskScore, 90);
   } else if (hasCredentialExfil) {
+    riskScore = Math.max(riskScore, 90);
+  } else if (hasBrandMismatchWithCredentials) {
+    riskScore = Math.max(riskScore, 90);
+  } else if (hasKycCyberFraud) {
+    riskScore = Math.max(riskScore, 85);
+  } else if (hasTechSupportRemoteScam) {
+    riskScore = Math.max(riskScore, 85);
+  } else if (hasUntrustedScreenShare) {
+    riskScore = Math.max(riskScore, 85);
+  } else if (hasClickFix) {
     riskScore = Math.max(riskScore, 85);
   } else if (downloadSignals && downloadSignals.chromeSaysDangerous) {
     riskScore = Math.max(riskScore, 90);
   } else if (isSmugglingDanger || isSpoofDanger) {
     riskScore = Math.max(riskScore, 75);
   } else if (hasMalwareIntel) {
+    riskScore = Math.max(riskScore, 85);
+  } else if (hasMalvertisingCriticalOverride) {
     riskScore = Math.max(riskScore, 85);
   }
 
@@ -386,8 +493,8 @@ export function calculateRisk(
 
   // ── 8. Apply Convergence & Allowlist Rules ──────────────────────────────────
   // A. Independent Allowlist Rule:
-  // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download, credential-exfil, or ClickFix fires
-  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil && !hasClickFix) {
+  // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download, credential-exfil, ClickFix, or malvertising override fires
+  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil && !hasPhishingKitWebhookExfil && !hasClickFix && !hasMalvertisingCriticalOverride && !hasRemoteAccessScamDownload && !hasBrandAssetHotlinkSpoof && !hasTechSupportRemoteScam) {
     riskScore = Math.min(riskScore, 40);
   }
 
@@ -408,6 +515,8 @@ export function calculateRisk(
       hasDangerousDownload ||
       hasCredentialExfil ||
       hasClickFix ||
+      hasMalvertisingCriticalOverride ||
+      hasCyberFraudOverride ||
       isCorroboratedMalvertising;
     if (!hasOverride && activeSources.size < 2) {
       // Demote to Caution

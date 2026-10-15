@@ -123,8 +123,21 @@ export async function analyzeDownload(downloadItem, brandsList, calculateRisk, r
   ];
   const isDangerousExtension = dangerousExtensionList.includes((fileType.extension || '').toLowerCase());
 
+  // Remote Desktop Scam Tool Detection
+  const remoteTools = ['anydesk', 'rustdesk', 'ultraviewer', 'teamviewer', 'screenconnect', 'supremo', 'ammyy', 'quickassist'];
+  const officialRemoteDomains = ['anydesk.com', 'teamviewer.com', 'rustdesk.com', 'ultraviewer.net', 'screenconnect.com', 'supremo.net', 'ammyy.com', 'microsoft.com'];
+  const lowerFilename = (filename || '').toLowerCase();
+  const matchedRemoteTool = remoteTools.find(t => lowerFilename.includes(t));
+  const isOfficialRemoteDomain = officialRemoteDomains.some(d =>
+    finalHostname === d || finalHostname.endsWith('.' + d) ||
+    sourceHostname === d || sourceHostname.endsWith('.' + d)
+  );
+  const remoteAccessScam = !!(matchedRemoteTool && !isOfficialRemoteDomain);
+
   const downloadSignals = {
     analysisContext: 'download',
+    remoteAccessScam,
+    remoteAccessTool: matchedRemoteTool || null,
     // File type
     executableDownload: fileType.isExecutable,
     scriptDownload:     fileType.isScript,

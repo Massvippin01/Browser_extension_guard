@@ -9,6 +9,7 @@
  */
 
 import { isAllowlistedDomain } from '../shared/legit-domains.js';
+import { getDomain } from '../shared/psl.js';
 import { t } from '../shared/messages.js';
 
 // ─── Payment intent keywords (page text scan) ───────────────────────────────
@@ -78,27 +79,35 @@ function detectPaymentIntent(domSignals) {
 function detectClaimedProvider(domSignals, paymentBrands) {
   if (!domSignals || !paymentBrands) return { claimedProvider: null, confidence: 0 };
 
-  // Mechanism Fix: Require a claim in page structure (document.title, form action, or logo alt/structural text),
-  // NOT body text alone. Educational or news articles mentioning payment providers in body text must not trigger.
+  // Require claim in page structure (title, form actions, headings, buttons, alt, logo URLs, structuralText)
   const pageTitle = (domSignals.pageTitle || '').toLowerCase();
   const formActions = Array.isArray(domSignals.formActions) ? domSignals.formActions.join(' ').toLowerCase() : '';
   const structuralText = (domSignals.structuralText || '').toLowerCase();
-  const structuralContext = `${pageTitle} ${formActions} ${structuralText}`.trim();
+  const headingText = (domSignals.headingText || '').toLowerCase();
+  const buttonLabels = (domSignals.buttonLabels || '').toLowerCase();
+  const logoText = (domSignals.logoText || '').toLowerCase();
+  const structuralContext = `${pageTitle} ${formActions} ${structuralText} ${headingText} ${buttonLabels} ${logoText}`.trim();
 
-  if (!structuralContext) {
-    return { claimedProvider: null, confidence: 0 };
-  }
+  const claimedArr = Array.isArray(domSignals.claimedProviders) ? domSignals.claimedProviders : [];
 
   let bestMatch = null;
   let bestScore = 0;
 
   for (const brand of paymentBrands) {
     let hits = 0;
+    const brandNameLower = brand.name.toLowerCase();
+
+    if (claimedArr.some(c => c.toLowerCase() === brandNameLower)) {
+      hits += 3;
+    }
+
     for (const alias of (brand.aliases || [])) {
-      if (structuralContext.includes(alias.toLowerCase())) {
-        hits++;
+      const aliasLower = alias.toLowerCase();
+      if (structuralContext.includes(aliasLower)) {
+        hits += 2;
       }
     }
+
     if (hits > bestScore) {
       bestScore = hits;
       bestMatch = brand;
@@ -110,7 +119,7 @@ function detectClaimedProvider(domSignals, paymentBrands) {
   return {
     claimedProvider: bestMatch.name,
     claimedProviderObj: bestMatch,
-    confidence: Math.min(bestScore * 30, 100),
+    confidence: Math.min(bestScore * 25, 100),
   };
 }
 
@@ -120,18 +129,14 @@ function detectClaimedProvider(domSignals, paymentBrands) {
 function verifyProviderDomain(hostname, claimedProviderObj, paymentBrands) {
   if (!hostname) return { officialDomainMatch: false, domainMismatch: true, isTrustedProvider: false };
 
-  // If the host is on the independent allowlist, it is inherently legitimate
-  if (isAllowlistedDomain(hostname)) {
-    return {
-      officialDomainMatch: true,
-      domainMismatch: false,
-      isTrustedProvider: true
-    };
-  }
+  const currentRootDomain = getDomain(hostname) || hostname;
 
   // Check if hostname is ANY trusted payment provider
-  const isTrustedProvider = (paymentBrands || []).some(brand =>
-    (brand.domains || []).some(d => hostname === d || hostname.endsWith('.' + d))
+  const isTrustedProvider = isAllowlistedDomain(hostname) || (paymentBrands || []).some(brand =>
+    (brand.domains || []).some(d => {
+      const brandRoot = getDomain(d) || d;
+      return hostname === d || hostname.endsWith('.' + d) || currentRootDomain === brandRoot;
+    })
   );
 
   if (!claimedProviderObj) {
@@ -142,10 +147,11 @@ function verifyProviderDomain(hostname, claimedProviderObj, paymentBrands) {
     };
   }
 
-  // Check if hostname matches the CLAIMED provider specifically
-  const officialDomainMatch = (claimedProviderObj.domains || []).some(d =>
-    hostname === d || hostname.endsWith('.' + d)
-  );
+  // Strict PSL root-domain matching for the claimed provider specifically
+  const officialDomainMatch = (claimedProviderObj.domains || []).some(d => {
+    const brandRoot = getDomain(d) || d;
+    return hostname === d || hostname.endsWith('.' + d) || currentRootDomain === brandRoot;
+  });
 
   return {
     officialDomainMatch,
@@ -161,6 +167,75 @@ function verifyProviderDomain(hostname, claimedProviderObj, paymentBrands) {
  * @param {Array} paymentBrands — Loaded payment-brands.json
  * @returns {Object|null} paymentAnalysis — null if not a payment page
  */
+
+/**
+ * Detect cross-domain visual brand asset hotlinking (favicons, logos, og:image)
+ * from official bank or payment gateway domains on an unverified origin.
+ */
+function detectBrandAssetHotlinkSpoof(hostname, domSignals, paymentBrands) {
+  if (!domSignals || !Array.isArray(domSignals.brandAssetUrls) || !paymentBrands) return null;
+  if (isAllowlistedDomain(hostname)) return null;
+
+  const currentRoot = getDomain(hostname) || hostname;
+
+  const knownBrandCdns = [
+    { brand: 'PayPal', cdn: 'paypalobjects.com' },
+    { brand: 'Stripe', cdn: 'stripe.network' },
+    { brand: 'Stripe', cdn: 'stripe.com' },
+    { brand: 'Razorpay', cdn: 'rzp.io' },
+    { brand: 'Razorpay', cdn: 'razorpay.com' },
+    { brand: 'HDFC Bank', cdn: 'hdfcbank.com' },
+    { brand: 'SBI', cdn: 'onlinesbi.sbi' },
+    { brand: 'SBI', cdn: 'sbi.co.in' },
+    { brand: 'ICICI Bank', cdn: 'icicibank.com' },
+    { brand: 'Axis Bank', cdn: 'axisbank.com' },
+    { brand: 'Kotak Bank', cdn: 'kotak.com' },
+    { brand: 'PhonePe', cdn: 'phonepe.com' },
+    { brand: 'Paytm', cdn: 'paytm.com' }
+  ];
+
+  for (const assetUrl of domSignals.brandAssetUrls) {
+    if (!assetUrl || typeof assetUrl !== 'string') continue;
+    let assetHost = '';
+    try {
+      assetHost = new URL(assetUrl, 'https://' + hostname).hostname.toLowerCase();
+    } catch (_) {
+      continue;
+    }
+    if (!assetHost || assetHost === hostname) continue;
+
+    const assetRoot = getDomain(assetHost) || assetHost;
+    if (assetRoot === currentRoot) continue; // Same root domain is not cross-origin hotlink spoof
+
+    // Check against known brand CDNs
+    const matchedCdn = knownBrandCdns.find(c => assetHost === c.cdn || assetHost.endsWith('.' + c.cdn) || assetRoot === c.cdn);
+    if (matchedCdn) {
+      return {
+        detected: true,
+        brand: matchedCdn.brand,
+        assetHost
+      };
+    }
+
+    // Check against paymentBrands
+    for (const brand of paymentBrands) {
+      const isBrandDomain = (brand.domains || []).some(d => {
+        const dRoot = getDomain(d) || d;
+        return assetHost === d || assetHost.endsWith('.' + d) || assetRoot === dRoot;
+      });
+      if (isBrandDomain) {
+        return {
+          detected: true,
+          brand: brand.name,
+          assetHost
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
 export function analyzePaymentPage(url, domSignals, paymentBrands) {
   if (!url || !domSignals || !paymentBrands) return null;
 
@@ -190,7 +265,15 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
                         (fields.otp || fields.card || fields.cvv || domSignals.hasPasswordInput) &&
                         !isAllowlistedDomain(hostname);
 
-  if (!intentResult.isPaymentPage && !isUpiTrap && !isDigitalScam) return null; // Not a payment page — skip
+  const hasCyberFraudSignal = !!(
+    domSignals.illegalWebPinCollection ||
+    domSignals.unverifiedUpiCollection ||
+    domSignals.highPressureTimer ||
+    (domSignals.claimedProviders && domSignals.claimedProviders.length > 0) ||
+    (domSignals.brandAssetUrls && domSignals.brandAssetUrls.length > 0)
+  );
+
+  if (!intentResult.isPaymentPage && !isUpiTrap && !isDigitalScam && !hasCyberFraudSignal) return null;
 
   // 2. Claimed provider detection (only for pages with payment intent or UPI trap)
   const providerResult = detectClaimedProvider(domSignals, paymentBrands);
@@ -233,13 +316,64 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
     });
   }
 
-  // Fake payment brand impersonation
+  // 0. Visual Brand Asset Hotlinking & Favicon Spoof (+85 pts)
+  const assetHotlink = detectBrandAssetHotlinkSpoof(hostname, domSignals, paymentBrands);
+  if (assetHotlink && domainResult.domainMismatch) {
+    paymentScore += 85;
+    structuredReasons.unshift({
+      id: 'SIG_BRAND_ASSET_HOTLINK_SPOOF',
+      params: { brand: assetHotlink.brand, assetHost: assetHotlink.assetHost },
+      score: 85
+    });
+  }
+
+  // 1. Strict PSL Payment Brand Mismatch (+75 pts)
+  if (providerResult.claimedProvider && domainResult.domainMismatch) {
+    paymentScore += 75;
+    structuredReasons.push({
+      id: 'SIG_PAYMENT_BRAND_MISMATCH',
+      params: { claimedProvider: providerResult.claimedProvider, claimedBrand: providerResult.claimedProvider, hostname },
+      score: 75
+    });
+  }
+
+  // Fake payment brand impersonation (legacy compatibility)
   if (providerResult.claimedProvider && domainResult.domainMismatch) {
     paymentScore += 50;
     structuredReasons.push({
       id: 'PAYMENT_FAKE_PROVIDER',
       params: { claimedProvider: providerResult.claimedProvider, hostname },
       score: 50
+    });
+  }
+
+  // 2. Illegal In-Browser UPI PIN / MPIN / ATM PIN Collection Trap (+90 pts)
+  if (domSignals.illegalWebPinCollection && domainResult.domainMismatch) {
+    paymentScore += 90;
+    structuredReasons.unshift({
+      id: 'SIG_ILLEGAL_WEB_PIN_COLLECTION',
+      params: { phrase: domSignals.illegalWebPinReason || 'UPI PIN collection requested in browser' },
+      score: 90
+    });
+  }
+
+  // 3. Untrusted UPI Deep-Link / Fake QR Collection (+55 pts)
+  if (domSignals.unverifiedUpiCollection && domainResult.domainMismatch) {
+    paymentScore += 55;
+    structuredReasons.push({
+      id: 'SIG_UNVERIFIED_UPI_COLLECTION',
+      params: { hostname },
+      score: 55
+    });
+  }
+
+  // 4. Fake Payment Countdown Timer (+30 pts)
+  if (domSignals.highPressureTimer && domainResult.domainMismatch) {
+    paymentScore += 30;
+    structuredReasons.push({
+      id: 'SIG_HIGH_PRESSURE_PAYMENT_TIMER',
+      params: {},
+      score: 30
     });
   }
 
@@ -292,10 +426,12 @@ export function analyzePaymentPage(url, domSignals, paymentBrands) {
   }
 
   const isCriticalPaymentPhishing = (
-    (!domainResult.officialDomainMatch && (fields.card || fields.cvv || fields.otp)) ||
+    (!domainResult.officialDomainMatch && (fields.card || fields.cvv || fields.otp || fields.pin)) ||
     (providerResult.claimedProvider && domainResult.domainMismatch) ||
     isUpiTrap ||
-    isDigitalScam
+    isDigitalScam ||
+    domSignals.illegalWebPinCollection ||
+    domSignals.unverifiedUpiCollection
   );
 
   if (isCriticalPaymentPhishing) {

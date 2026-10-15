@@ -10,6 +10,7 @@
 
 import { getDomain } from '../shared/psl.js';
 import { isAllowlistedDomain } from '../shared/legit-domains.js';
+import { hasPiracyOrUnverifiedMediaPattern, hasMalvertisingPattern } from './rules.js';
 
 // In-memory cache for fast, synchronous access
 const redirectChains = new Map();
@@ -256,8 +257,12 @@ export function checkPopunderSpawn(tabId, currentUrl) {
   const sourceRootDomain = sourceHost ? (getDomain(sourceHost) || sourceHost) : '';
 
   const isDifferentRootDomain = sourceRootDomain && targetRootDomain && sourceRootDomain !== targetRootDomain;
+  const isOpenerAllowlisted = sourceHost ? isAllowlistedDomain(sourceHost) : false;
+  const openerHasPiracy = sourceUrl ? hasPiracyOrUnverifiedMediaPattern(sourceUrl).triggered : false;
+
   const isTargetAllowlisted = isAllowlistedDomain(targetHost) || isAllowlistedDomain(targetRootDomain);
   const isTargetSuspicious = isSuspiciousDomain(currentUrl);
+  const targetMalv = hasMalvertisingPattern(currentUrl);
 
   const suspTLDs = [
     '.monster', '.click', '.sbs', '.cfd', '.rest', '.icu', '.cyou', '.buzz',
@@ -268,7 +273,12 @@ export function checkPopunderSpawn(tabId, currentUrl) {
   ];
   const hasSuspiciousTLD = suspTLDs.some(tld => targetHost.endsWith(tld));
 
-  if (isDifferentRootDomain && (!isTargetAllowlisted || isTargetSuspicious || hasSuspiciousTLD)) {
+  // If opener is unverified/piracy AND target navigates to different root domain matching malvertising, suspicious TLD, or redirect heuristic:
+  const isPopunderPattern = isDifferentRootDomain && !isTargetAllowlisted &&
+    (!isOpenerAllowlisted || openerHasPiracy) &&
+    (isTargetSuspicious || hasSuspiciousTLD || targetMalv.triggered);
+
+  if (isPopunderPattern || (isDifferentRootDomain && !isTargetAllowlisted && (isTargetSuspicious || hasSuspiciousTLD))) {
     let chainData = redirectChains.get(numId) || redirectChains.get(tabId);
     if (!chainData) {
       chainData = {
@@ -423,7 +433,7 @@ function buildSignalsFromData(data) {
   if (hasPopunder) {
     structuredReasons.push({
       id: 'SIG_POPUNDER_SPAWN',
-      score: 40,
+      score: 75,
       category: 'malvertising',
       source: 'redirect',
       params: {

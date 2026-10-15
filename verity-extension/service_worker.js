@@ -8,7 +8,7 @@
 
 import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
-import { getRedirectSignals, getRedirectSignalsAsync, updateShorteners, recordNavigationTarget, hydrateFromStorage, pruneTab } from './background/redirect-analyzer.js';
+import { getRedirectSignals, getRedirectSignalsAsync, updateShorteners, recordNavigationTarget, hydrateFromStorage, pruneTab, isSuspiciousDomain } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
 import { getMlScore, initializeModel } from './background/ml-scorer.js';
 import { checkReputation } from './background/reputation.js';
@@ -16,6 +16,8 @@ import { analyzePaymentPage } from './background/payment-detector.js';
 import { initDownloadMonitor } from './background/download/downloadMonitor.js';
 import { validateMessageSender } from './background/message-validator.js';
 import { isAllowlistedDomain } from './shared/legit-domains.js';
+import { initDnrBlocker, blockDomainDnr } from './background/dnr-blocker.js';
+import { getDomain } from './shared/psl.js';
 import { t } from './shared/messages.js';
 export { validateMessageSender };
 
@@ -131,6 +133,22 @@ async function runFullAnalysis(tabId, url, domSignals) {
   ]);
 
   const redirectSignals = await getRedirectSignalsAsync(tabId);
+  const tabState = await getTabRiskState(tabId);
+
+  // If this tab was marked as popunder, preserve SIG_POPUNDER_SPAWN
+  if (tabState && tabState.isPopunderTab && redirectSignals) {
+    if (!redirectSignals.structuredReasons) redirectSignals.structuredReasons = [];
+    if (!redirectSignals.structuredReasons.some(r => r.id === 'SIG_POPUNDER_SPAWN')) {
+      redirectSignals.structuredReasons.push({
+        id: 'SIG_POPUNDER_SPAWN',
+        score: 75,
+        category: 'malvertising',
+        source: 'redirect',
+        params: { sourceDomain: tabState.sourceDomain || 'external', targetDomain: tabState.targetDomain || '' }
+      });
+      redirectSignals.popunderSpawn = true;
+    }
+  }
 
   // Payment protection analysis
   const paymentAnalysis = analyzePaymentPage(url, domSignals, paymentBrands);
@@ -147,6 +165,38 @@ async function runFullAnalysis(tabId, url, domSignals) {
 
   verdict.url = url;
   verdict.paymentAnalysis = paymentAnalysis; // Attach for overlay
+
+  // Sticky High-Water Mark Rule:
+  // When content-script later sends DOM signals (which may have 0 password/login forms),
+  // MERGE accumulated URL/redirect/pop-under signals with DOM signals.
+  // NEVER allow a later message with 0 DOM forms to lower an existing BLOCK or CAUTION score during the same navigation lifecycle!
+  if (tabState) {
+    const prevMax = tabState.maxRiskScore || 0;
+    if (prevMax > verdict.score || tabState.maxAction === 'block' || tabState.isPopunderTab) {
+      verdict.score = Math.max(verdict.score, prevMax, tabState.isPopunderTab ? 85 : 0);
+      verdict.riskScore = verdict.score;
+      if (tabState.maxAction === 'block' || tabState.isPopunderTab || prevMax >= 70) {
+        verdict.action = 'block';
+        verdict.severity = 'danger';
+        verdict.state = 'danger';
+      } else if (tabState.maxAction === 'warn' || prevMax >= 35) {
+        if (verdict.action !== 'block') {
+          verdict.action = 'warn';
+          verdict.severity = 'caution';
+          verdict.state = 'caution';
+        }
+      }
+    }
+  }
+
+  await saveTabRiskState(tabId, {
+    url,
+    maxRiskScore: Math.max(tabState?.maxRiskScore || 0, verdict.score),
+    maxAction: verdict.action,
+    maxSeverity: verdict.severity,
+    lastVerdict: verdict
+  });
+
   return verdict;
 }
 
@@ -199,6 +249,15 @@ async function storeAndEnforce(tabId, verdict, frameId = 0) {
     entry[tabId.toString()] = verdict;
     await chrome.storage.session.set(entry).catch(() => {});
     updateBadge(tabId, verdict);
+
+    if (verdict.action === 'block' && (verdict.score || verdict.riskScore || 0) >= 85 && verdict.url) {
+      try {
+        const h = new URL(verdict.url).hostname.toLowerCase();
+        if (h && !isAllowlistedDomain(h)) {
+          blockDomainDnr(h);
+        }
+      } catch (_) {}
+    }
   }
 
   // Send enforcement decision to content script (target frameId if subframe)
@@ -228,43 +287,202 @@ function updateBadge(tabId, verdict) {
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-// Pop-up / Pop-under Automatic Interceptor & Killer
+// Persistent Per-Tab Risk State & Sticky High-Water Mark (MV3 Session Storage)
 // ---------------------------------------------------------------------------
-// 1. Hook webNavigation.onCreatedNavigationTarget to record origin tab & timestamp
-chrome.webNavigation.onCreatedNavigationTarget.addListener((details) => {
+const tabRiskStates = new Map();
+
+async function getTabRiskState(tabId) {
+  if (!tabId) return null;
+  const numId = typeof tabId === 'string' ? parseInt(tabId, 10) : tabId;
+  let state = tabRiskStates.get(numId);
+  if (!state && typeof chrome !== 'undefined' && chrome.storage && chrome.storage.session) {
+    try {
+      const res = await chrome.storage.session.get('tab_risk_state_' + numId);
+      if (res && res['tab_risk_state_' + numId]) {
+        state = res['tab_risk_state_' + numId];
+        tabRiskStates.set(numId, state);
+      }
+    } catch (_) {}
+  }
+  return state;
+}
+
+async function saveTabRiskState(tabId, stateUpdates) {
+  if (!tabId) return;
+  const numId = typeof tabId === 'string' ? parseInt(tabId, 10) : tabId;
+  const existing = await getTabRiskState(numId) || {};
+  const merged = { ...existing, ...stateUpdates, tabId: numId, lastUpdated: Date.now() };
+  tabRiskStates.set(numId, merged);
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.session) {
+    const payload = {};
+    payload['tab_risk_state_' + numId] = merged;
+    chrome.storage.session.set(payload).catch(() => {});
+  }
+  return merged;
+}
+
+function pruneTabRiskState(tabId) {
+  if (!tabId) return;
+  const numId = typeof tabId === 'string' ? parseInt(tabId, 10) : tabId;
+  tabRiskStates.delete(numId);
+  tabRiskStates.delete(tabId);
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.session) {
+    chrome.storage.session.remove(['tab_risk_state_' + numId, 'tab_risk_state_' + tabId]).catch(() => {});
+  }
+}
+
+function checkPopunderMatch(sourceUrl, targetUrl) {
+  if (!targetUrl || isInternalUrl(targetUrl)) return false;
+  let sourceHost = '';
+  let targetHost = '';
+  try {
+    if (sourceUrl) sourceHost = new URL(sourceUrl).hostname.toLowerCase();
+    targetHost = new URL(targetUrl).hostname.toLowerCase();
+  } catch (_) {
+    return false;
+  }
+  const sourceRoot = sourceHost ? (getDomain(sourceHost) || sourceHost) : '';
+  const targetRoot = targetHost ? (getDomain(targetHost) || targetHost) : '';
+
+  if (sourceRoot && targetRoot && sourceRoot === targetRoot) {
+    return false; // same root domain
+  }
+
+  const isTargetAllowlisted = isAllowlistedDomain(targetHost) || isAllowlistedDomain(targetRoot);
+  if (isTargetAllowlisted) return false;
+
+  const isOpenerAllowlisted = sourceHost ? isAllowlistedDomain(sourceHost) : false;
+  const openerHasPiracy = sourceUrl ? hasPiracyOrUnverifiedMediaPattern(sourceUrl).triggered : false;
+
+  const targetMalv = hasMalvertisingPattern(targetUrl);
+  const targetSuspTld = [
+    '.live', '.xyz', '.monster', '.top', '.click', '.sbs', '.cfd', '.icu', '.fun', '.site', '.online',
+    '.pw', '.cc', '.ws', '.biz', '.vip', '.club', '.uno', '.bar', '.qpon', '.world',
+    '.tk', '.ml', '.ga', '.cf', '.gq'
+  ].some(tld => targetHost.endsWith(tld));
+  const targetIsSusp = isSuspiciousDomain(targetUrl);
+
+  if ((!isOpenerAllowlisted || openerHasPiracy) && (targetMalv.triggered || targetSuspTld || targetIsSusp)) {
+    return true;
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// Pop-up / Pop-under Automatic Interceptor & Click-Hijack Defuser
+// ---------------------------------------------------------------------------
+chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   recordNavigationTarget(details);
+  const { sourceTabId, tabId, url } = details;
+  if (!tabId) return;
+
+  let sourceUrl = '';
+  try {
+    if (sourceTabId) {
+      const srcTab = await chrome.tabs.get(sourceTabId).catch(() => null);
+      if (srcTab && srcTab.url) sourceUrl = srcTab.url;
+    }
+  } catch (_) {}
+
+  const targetUrl = url || '';
+  if (targetUrl && !isInternalUrl(targetUrl)) {
+    const isPopunder = checkPopunderMatch(sourceUrl, targetUrl);
+    if (isPopunder) {
+      let targetDomain = '';
+      try { targetDomain = new URL(targetUrl).hostname; } catch (_) {}
+      let sourceDomain = '';
+      try { if (sourceUrl) sourceDomain = new URL(sourceUrl).hostname; } catch (_) {}
+
+      await saveTabRiskState(tabId, {
+        isPopunderTab: true,
+        sourceDomain,
+        targetDomain,
+        maxRiskScore: 85,
+        maxAction: 'block',
+        maxSeverity: 'danger'
+      });
+
+      const ruleSignals = await analyzeUrl(targetUrl);
+      const redirectSignals = await getRedirectSignalsAsync(tabId) || { structuredReasons: [] };
+      if (!redirectSignals.structuredReasons) redirectSignals.structuredReasons = [];
+      redirectSignals.structuredReasons.push({
+        id: 'SIG_POPUNDER_SPAWN',
+        score: 75,
+        category: 'malvertising',
+        source: 'redirect',
+        params: { sourceDomain: sourceDomain || 'external', targetDomain }
+      });
+      redirectSignals.popunderSpawn = true;
+
+      const verdict = calculateRisk(targetUrl, ruleSignals || [], null, null, null, redirectSignals);
+      verdict.score = Math.max(verdict.score || 0, 85);
+      verdict.riskScore = Math.max(verdict.riskScore || 0, 85);
+      verdict.action = 'block';
+      verdict.severity = 'danger';
+      verdict.state = 'danger';
+      verdict.url = targetUrl;
+      await storeAndEnforce(tabId, verdict, 0);
+    }
+  }
 });
 
 chrome.tabs.onCreated.addListener(async (tab) => {
   if (!tab.id) return;
-  if (tab.openerTabId) {
+  const openerTabId = tab.openerTabId;
+  const targetUrl = tab.url || tab.pendingUrl || '';
+
+  if (openerTabId) {
     recordNavigationTarget({
-      sourceTabId: tab.openerTabId,
+      sourceTabId: openerTabId,
       tabId: tab.id,
-      url: tab.url || tab.pendingUrl || '',
+      url: targetUrl,
       timeStamp: Date.now()
     });
-  }
-  const openerTabId = tab.openerTabId;
 
-  const checkAndKillPopup = async (targetUrl) => {
-    if (!targetUrl || isInternalUrl(targetUrl)) return;
-    const ruleSignals = await analyzeUrl(targetUrl);
+    if (targetUrl && !isInternalUrl(targetUrl) && targetUrl !== 'about:blank') {
+      let sourceUrl = '';
+      try {
+        const srcTab = await chrome.tabs.get(openerTabId).catch(() => null);
+        if (srcTab && srcTab.url) sourceUrl = srcTab.url;
+      } catch (_) {}
+
+      if (checkPopunderMatch(sourceUrl, targetUrl)) {
+        await saveTabRiskState(tab.id, {
+          isPopunderTab: true,
+          maxRiskScore: 85,
+          maxAction: 'block',
+          maxSeverity: 'danger'
+        });
+      }
+    }
+  }
+
+  const checkAndKillPopup = async (urlToCheck) => {
+    if (!urlToCheck || isInternalUrl(urlToCheck) || urlToCheck === 'about:blank') return;
+    const ruleSignals = await analyzeUrl(urlToCheck);
     if (!ruleSignals) return;
     const redirectSignals = await getRedirectSignalsAsync(tab.id);
-    const verdict = calculateRisk(targetUrl, ruleSignals, null, null, null, redirectSignals);
+    const tabState = await getTabRiskState(tab.id);
+    if (tabState && tabState.isPopunderTab && redirectSignals) {
+      redirectSignals.popunderSpawn = true;
+    }
+    const verdict = calculateRisk(urlToCheck, ruleSignals, null, null, null, redirectSignals);
 
-    if (verdict.action === 'block' || verdict.score >= 70) {
-      // 1. Instantly kill the pop-up window
-      chrome.tabs.remove(tab.id).catch(() => {});
+    if (verdict.action === 'block' || verdict.score >= 70 || tabState?.isPopunderTab) {
+      verdict.action = 'block';
+      verdict.severity = 'danger';
+      verdict.state = 'danger';
+      verdict.score = Math.max(verdict.score || 0, 85);
+      verdict.riskScore = verdict.score;
+      await storeAndEnforce(tab.id, verdict, 0);
 
-      // 2. Notify opener tab to render pop-up blocked notification toast
-      let host = targetUrl;
-      try { host = new URL(targetUrl).hostname; } catch (e) {}
+      // Notify opener tab toast if opened as pop-up window
+      let host = urlToCheck;
+      try { host = new URL(urlToCheck).hostname; } catch (e) {}
       if (openerTabId) {
         chrome.tabs.sendMessage(openerTabId, {
           action: 'POPUP_BLOCKED_TOAST',
-          blockedUrl: targetUrl,
+          blockedUrl: urlToCheck,
           hostname: host
         }).catch(() => {});
       }
@@ -280,6 +498,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   pruneTab(tabId);
+  pruneTabRiskState(tabId);
 });
 
 // ---------------------------------------------------------------------------
@@ -326,6 +545,21 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (!ruleSignals) return;
 
   const redirectSignals = await getRedirectSignalsAsync(tabId);
+  const tabState = await getTabRiskState(tabId);
+
+  if (tabState && tabState.isPopunderTab && redirectSignals) {
+    if (!redirectSignals.structuredReasons) redirectSignals.structuredReasons = [];
+    if (!redirectSignals.structuredReasons.some(r => r.id === 'SIG_POPUNDER_SPAWN')) {
+      redirectSignals.structuredReasons.push({
+        id: 'SIG_POPUNDER_SPAWN',
+        score: 75,
+        category: 'malvertising',
+        source: 'redirect',
+        params: { sourceDomain: tabState.sourceDomain || 'external', targetDomain: tabState.targetDomain || '' }
+      });
+      redirectSignals.popunderSpawn = true;
+    }
+  }
 
   // Fast URL-only verdict incorporating redirect signals
   const quickVerdict = calculateRisk(
@@ -337,6 +571,34 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
     redirectSignals
   );
   quickVerdict.url = url;
+
+  // Sticky High-Water Mark Integration:
+  if (tabState) {
+    const prevMax = tabState.maxRiskScore || 0;
+    if (tabState.isPopunderTab || tabState.maxAction === 'block' || prevMax >= 70) {
+      quickVerdict.score = Math.max(quickVerdict.score, prevMax, 85);
+      quickVerdict.riskScore = quickVerdict.score;
+      quickVerdict.action = 'block';
+      quickVerdict.severity = 'danger';
+      quickVerdict.state = 'danger';
+    } else if (tabState.maxAction === 'warn' || prevMax >= 35) {
+      if (quickVerdict.action !== 'block') {
+        quickVerdict.score = Math.max(quickVerdict.score, prevMax);
+        quickVerdict.riskScore = quickVerdict.score;
+        quickVerdict.action = 'warn';
+        quickVerdict.severity = 'caution';
+        quickVerdict.state = 'caution';
+      }
+    }
+  }
+
+  await saveTabRiskState(tabId, {
+    url,
+    maxRiskScore: Math.max(tabState?.maxRiskScore || 0, quickVerdict.score),
+    maxAction: quickVerdict.action,
+    maxSeverity: quickVerdict.severity,
+    lastVerdict: quickVerdict
+  });
 
   // Subframe rule: only enforce if dangerous (block threshold) to avoid disturbing clean embeds
   if (frameId !== 0 && quickVerdict.action !== 'block') {
@@ -466,6 +728,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
       }
       const redirectSignals = await getRedirectSignalsAsync(tabId);
+      const tabState = await getTabRiskState(tabId);
+      if (tabState && tabState.isPopunderTab && redirectSignals) {
+        redirectSignals.popunderSpawn = true;
+      }
       const verdict = calculateRisk(
         url,
         ruleSignals,
@@ -475,12 +741,44 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         redirectSignals
       );
       verdict.url = url;
+
+      if (tabState) {
+        const prevMax = tabState.maxRiskScore || 0;
+        if (prevMax > verdict.score || tabState.maxAction === 'block' || tabState.isPopunderTab) {
+          verdict.score = Math.max(verdict.score, prevMax, tabState.isPopunderTab ? 85 : 0);
+          verdict.riskScore = verdict.score;
+          if (tabState.maxAction === 'block' || tabState.isPopunderTab || prevMax >= 70) {
+            verdict.action = 'block';
+            verdict.severity = 'danger';
+            verdict.state = 'danger';
+          }
+        }
+      }
+
       storeAndEnforce(tabId, verdict, frameId);
       sendResponse({ verdict });
     }).catch(() => {
       sendResponse({ verdict: null });
     });
     return true; // Keep message channel open for async response
+  }
+
+  if (message.action === 'ANALYZE_SUBFRAME_CREDENTIALS') {
+    const targetTabId = tabId || (sender.tab ? sender.tab.id : null);
+    if (!targetTabId) {
+      sendResponse({ verdict: null });
+      return false;
+    }
+    runFullAnalysis(targetTabId, message.url, message.domSignals).then(verdict => {
+      if (verdict && (verdict.action === 'block' || (verdict.score || 0) >= 70)) {
+        // Enforce immediately on the top-level tab
+        storeAndEnforce(targetTabId, verdict, 0);
+      }
+      sendResponse({ verdict });
+    }).catch(() => {
+      sendResponse({ verdict: null });
+    });
+    return true; // Keep channel open
   }
 
   if (message.action === 'ANALYZE_FULL') {
@@ -499,6 +797,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ verdict: null });
     });
     return true; // Keep channel open
+  }
+
+  if (message.action === 'RUNTIME_THREAT_DETECTED') {
+    const targetTabId = tabId || (sender.tab ? sender.tab.id : null);
+    const threatSignal = message.signal || 'SIG_PHISHING_KIT_WEBHOOK_EXFIL';
+    const threatScore = 95;
+    const threatVerdict = {
+      action: 'block',
+      severity: 'danger',
+      state: 'danger',
+      score: threatScore,
+      riskScore: threatScore,
+      url: message.url || (sender.tab ? sender.tab.url : ''),
+      reasons: [
+        threatSignal === 'SIG_CLICKFIX_CLIPBOARD_ATTACK'
+          ? 'Live ClickFix clipboard command execution attack blocked.'
+          : threatSignal === 'SIG_UNTRUSTED_SCREEN_SHARE'
+          ? 'Untrusted screen sharing capture attempt blocked.'
+          : 'Phishing kit credential exfiltration endpoint blocked.'
+      ],
+      signals: [{ id: threatSignal, score: threatScore }]
+    };
+    if (targetTabId) {
+      storeAndEnforce(targetTabId, threatVerdict, 0);
+    }
+    sendResponse({ success: true, verdict: threatVerdict });
+    return false;
   }
 
   if (message.action === 'ANALYZE_SEARCH_RESULT') {
@@ -578,6 +903,7 @@ chrome.runtime.onStartup.addListener(async () => {
   await loadUrlShorteners();
   await initializeModel();
   await hydrateFromStorage();
+  await initDnrBlocker();
   console.log('[Verity] Extension started.');
 });
 
@@ -601,6 +927,7 @@ function initDownloadProtection() {
 
 // Synchronously register download listeners at top-level evaluation
 initDownloadProtection();
+initDnrBlocker().catch(() => {});
 
 // Load brands asynchronously
 Promise.all([

@@ -266,8 +266,11 @@ async function handleDownloadCreated(downloadItem) {
   const smugglingInfo = await checkHtmlSmuggling(downloadItem);
   const isRiskySmuggle = smugglingInfo.isSmuggling && (isDangerousExtension(ext) || isArchiveExtension(ext));
 
-  // If HTML smuggling paired with risky extension/archive, pause immediately (§3)
-  if (isRiskySmuggle || isDangerousExtension(ext)) {
+  const remoteTools = ['anydesk', 'rustdesk', 'ultraviewer', 'teamviewer', 'screenconnect', 'supremo', 'ammyy', 'quickassist'];
+  const isRemoteAccessTool = remoteTools.some(t => basename.toLowerCase().includes(t));
+
+  // If HTML smuggling, remote desktop tool, or dangerous extension, pause immediately
+  if (isRiskySmuggle || isDangerousExtension(ext) || isRemoteAccessTool) {
     if (typeof chrome !== 'undefined' && chrome.downloads && chrome.downloads.pause) {
       await chrome.downloads.pause(id).catch(() => {});
     }
@@ -412,6 +415,7 @@ export async function runAnalysis(downloadItem, extraContext = {}) {
 
 function buildSignalsList(ds) {
   const list = [];
+  if (ds.remoteAccessScam) list.push(`Remote desktop scam tool download (${ds.remoteAccessTool})`);
   if (ds.chromeSaysDangerous)   list.push('Chrome identified this file as dangerous');
   if (ds.htmlSmuggling)         list.push(`HTML smuggling: blob/data URI download from unverified origin (${ds.originatingHostname || 'external'})`);
   if (ds.contentDispositionSpoofed) list.push('Content-Disposition header spoofed document URL to executable/container');

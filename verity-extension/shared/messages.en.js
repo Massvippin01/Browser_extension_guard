@@ -58,6 +58,7 @@
     SIG_LOGIN_FORM: (p) => 'Login form detected.',
     SIG_SCAM_LANGUAGE: (p) => `Matches scam language: "${p?.phrase || 'urgent notice'}".`,
     SIG_CLICKFIX_CLIPBOARD_ATTACK: (p) => `Critical risk: ClickFix fake verification lure attempting clipboard command execution (PowerShell/Run-box). ${p?.phrase || ''}`.trim(),
+    SIG_SCAM_BONUS_LURE: (p) => `Deceptive bonus, prize claim, or fake reward lure detected: "${p?.phrase || 'Bonus claim'}".`,
     SIG_PUP: (p) => `Potentially unwanted script or hidden iframes detected (${p?.details || 'obfuscation'}).`,
     SIG_FINANCIAL_CONTEXT: (p) => `Financial terminology detected: ${p?.terms || 'banking keywords'}.`,
     SIG_SYNERGY_IMPERSONATION_CREDENTIALS: (p) => 'High risk: Impersonating a trusted brand while requesting sensitive credentials.',
@@ -76,6 +77,16 @@
     PAYMENT_OTP_UNVERIFIED: (p) => 'OTP collection on unverified payment domain.',
     PAYMENT_UNKNOWN_PROVIDER: (p) => 'Payment page from unrecognized or unverified payment provider.',
     PAYMENT_FORM_DETECTED: (p) => 'Payment form detected on page.',
+    SIG_PAYMENT_BRAND_MISMATCH: (p) => `Brand mismatch: Page claims to be "${p?.claimedProvider || p?.claimedBrand || 'Bank/Payment Gateway'}" but domain "${p?.hostname || ''}" is not its official domain.`,
+    SIG_ILLEGAL_WEB_PIN_COLLECTION: (p) => `Critical financial fraud: Illegal in-browser UPI PIN or ATM PIN collection detected (${p?.phrase || 'UPI PIN'}). Legitimate UPI payments never ask for PIN in web browsers.`,
+    SIG_UNVERIFIED_UPI_COLLECTION: (p) => 'Unverified UPI collect request, deep-link, or fake QR code detected on an untrusted domain.',
+    SIG_KYC_CYBER_FRAUD: (p) => `Critical cyber fraud: Fake KYC/PAN/Aadhaar verification lure combined with account suspension or penalty threat (${p?.phrase || 'KYC suspension lure'}).`,
+    SIG_PHISHING_KIT_WEBHOOK_EXFIL: (p) => `Critical threat: Phishing kit exfiltration endpoint detected (${p?.endpoint || 'Telegram/Discord webhook'}) on credential collection page.`,
+    SIG_HIGH_PRESSURE_PAYMENT_TIMER: (p) => 'Artificial high-pressure countdown timer detected on unverified payment page.',
+    SIG_BRAND_ASSET_HOTLINK_SPOOF: (p) => `Brand asset hotlinking detected: Page hotlinks official logo or favicon from "${p?.brand || p?.assetHost || 'official brand'}" on an unverified domain.`,
+    SIG_REMOTE_ACCESS_SCAM_DOWNLOAD: (p) => `Critical cyber fraud: Remote desktop access tool (${p?.tool || p?.filename || 'remote access software'}) download initiated from an unverified domain.`,
+    SIG_TECH_SUPPORT_REMOTE_SCAM: (p) => `Critical cyber fraud: Remote desktop support lure detected (${p?.tool || 'AnyDesk/TeamViewer'}) paired with fake customer support or KYC helpline.`,
+    SIG_UNTRUSTED_SCREEN_SHARE: (p) => 'Critical threat: Untrusted screen sharing attempt detected on suspicious domain (Digital Arrest / Tech-Support scam).',
 
     // ── Download Interceptor Signals ──────────────────────────────────────────
     DOWNLOAD_CHROME_DANGEROUS: (p) => 'Chrome identified this file as dangerous.',
@@ -245,6 +256,7 @@
     RULE_BRAND_VARIANT_MATCH: 'brand_impersonation',
     BRAND_TYPOSQUATTING: 'brand_impersonation',
     SIG_BRAND_IMPERSONATION: 'brand_impersonation',
+    SIG_BRAND_ASSET_HOTLINK_SPOOF: 'brand_impersonation',
     SIG_CONTENT_BRAND_IMPERSONATION: 'brand_impersonation',
 
     // Category: ml
@@ -260,6 +272,7 @@
 
     // Category: scam_language
     SIG_SCAM_LANGUAGE: 'scam_language',
+    SIG_SCAM_BONUS_LURE: 'scam_language',
     SIG_CLICKFIX_CLIPBOARD_ATTACK: 'scam_language',
     SIG_PUP: 'scam_language',
     SIG_FINANCIAL_CONTEXT: 'scam_language',
@@ -267,11 +280,17 @@
     SIG_UPI_DEBIT_TRAP: 'scam_language',
     PAYMENT_UNKNOWN_PROVIDER: 'scam_language',
     PAYMENT_FORM_DETECTED: 'scam_language',
+    SIG_KYC_CYBER_FRAUD: 'scam_language',
+    SIG_TECH_SUPPORT_REMOTE_SCAM: 'scam_language',
 
     // Category: payment_phishing
     PAYMENT_FAKE_PROVIDER: 'payment_phishing',
     PAYMENT_DOMAIN_MISMATCH: 'payment_phishing',
     SIG_PAYMENT_PHISHING: 'payment_phishing',
+    SIG_PAYMENT_BRAND_MISMATCH: 'payment_phishing',
+    SIG_ILLEGAL_WEB_PIN_COLLECTION: 'payment_phishing',
+    SIG_UNVERIFIED_UPI_COLLECTION: 'payment_phishing',
+    SIG_HIGH_PRESSURE_PAYMENT_TIMER: 'payment_phishing',
 
     // Category: synergy
     SIG_SYNERGY_IMPERSONATION_CREDENTIALS: 'synergy',
@@ -280,6 +299,7 @@
 
     // Category: download
     DOWNLOAD_CHROME_DANGEROUS: 'download',
+    SIG_REMOTE_ACCESS_SCAM_DOWNLOAD: 'download',
     SIG_HTML_SMUGGLING_DOWNLOAD: 'download',
     DOWNLOAD_EXECUTABLE: 'download',
     DOWNLOAD_SCRIPT: 'download',
@@ -299,7 +319,9 @@
     THREAT_INTEL_MALWARE: 'threat_intel',
     SECURITY_ERROR_ABORTED: 'threat_intel',
     USER_OVERRIDE_ACTIVE: 'threat_intel',
-    SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL: 'threat_intel'
+    SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL: 'threat_intel',
+    SIG_PHISHING_KIT_WEBHOOK_EXFIL: 'threat_intel',
+    SIG_UNTRUSTED_SCREEN_SHARE: 'threat_intel'
   };
 
   /**
@@ -311,11 +333,11 @@
   const CATEGORY_CAPS = {
     url: 40,
     ip_host: 60,
-    malvertising: 65,
+    malvertising: 85,
     brand_impersonation: 55,
     ml: 35,
     dom_credentials: 50,
-    scam_language: 65,
+    scam_language: 75,
     payment_phishing: 65,
     synergy: 40,
     download: 60,

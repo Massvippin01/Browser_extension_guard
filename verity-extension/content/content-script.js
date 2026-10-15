@@ -246,6 +246,215 @@ function scanClaimedProviders(pageText) {
     .map(([name]) => name);
 }
 
+
+// ─── Cyber Fraud & Exfiltration Detection Helpers ───────────────────────────
+
+function detectIllegalWebPinCollection() {
+  const inputs = querySelectorAllDeep('input');
+  const pinPattern = /(upi\s*pin|enter\s*mpin|atm\s*pin|transaction\s*pin|gpay\s*pin|phonepe\s*pin|paytm\s*pin|\bupi\s*code\b)/i;
+  for (const input of inputs) {
+    const meta = getInputMeta(input);
+    if (pinPattern.test(meta)) {
+      return { detected: true, phrase: meta.match(pinPattern)?.[0] || 'UPI PIN' };
+    }
+    const type = (input.type || '').toLowerCase();
+    if (type === 'password' || type === 'number' || type === 'tel' || type === 'text') {
+      const container = input.closest ? input.closest('div, form, p, section, li') : null;
+      if (container) {
+        const textSnippet = (container.innerText || container.textContent || '').slice(0, 300);
+        if (pinPattern.test(textSnippet)) {
+          return { detected: true, phrase: textSnippet.match(pinPattern)?.[0] || 'UPI PIN' };
+        }
+      }
+    }
+  }
+  return { detected: false, phrase: null };
+}
+
+function detectUnverifiedUpiAndQr(currentHostname) {
+  const allLinks = querySelectorAllDeep('a[href]');
+  const hasUpiLink = allLinks.some(a => (a.href || '').toLowerCase().startsWith('upi://'));
+
+  const qrElements = querySelectorAllDeep('img[src*="qr"], img[alt*="qr"], canvas, [class*="qr-code"], [id*="qr-code"], [class*="qrcode"], [id*="qrcode"]');
+  const hasQr = qrElements.length > 0;
+
+  const pageText = getPageTextDeep(10000);
+  const vpaRegex = /[a-zA-Z0-9.\-_]{2,256}@(ybl|okhdfcbank|okaxis|okicici|paytm|ibl|upi|apl|axl|barodampay|idbi|kotak|pnb|federal|rbl|indus|yesbank)/i;
+  const hasVpa = vpaRegex.test(pageText) || (allLinks.some(a => vpaRegex.test(a.href || '')));
+
+  return {
+    hasUpiLink,
+    hasQr,
+    hasVpa,
+    detected: hasUpiLink || (hasVpa && (hasQr || pageText.toLowerCase().includes('upi') || pageText.toLowerCase().includes('scan to pay')))
+  };
+}
+
+function detectKycAndAadhaarPanFraud(text) {
+  if (!text) return { detected: false, phrase: null };
+  const lowerText = text.toLowerCase();
+
+  const urgencyPhrases = [
+    'account will be blocked', 'account will be suspended', 'account blocked',
+    'kyc suspended', 'kyc pending', 'update kyc', 'complete your kyc',
+    'electricity disconnected', 'electricity connection', 'electricity connection will be disconnected',
+    'pan card deactivated', 'pan card suspended', 'pan linked',
+    'redeem reward points', 'income tax refund', 'customs parcel halted',
+    'digital arrest', 'sim will be blocked', 'sim disconnected', 'cbi notice'
+  ];
+  const matchedUrgency = urgencyPhrases.find(p => lowerText.includes(p));
+
+  const inputs = querySelectorAllDeep('input');
+  let hasKycInput = false;
+  let kycInputType = '';
+
+  for (const input of inputs) {
+    const meta = getInputMeta(input);
+    const pattern = input.getAttribute('pattern') || '';
+    if (/(pan\s*(card|no|number)|permanent\s*account\s*number)/i.test(meta) || /\[A-Z\]\{5\}/i.test(pattern) || /pancard|pan_no/i.test(meta)) {
+      hasKycInput = true;
+      kycInputType = 'PAN Number';
+      break;
+    }
+    if (/(aadhaar|aadhar|uidai)\s*(no|number|card)?/i.test(meta) || /aadhaar|aadhar/i.test(meta)) {
+      hasKycInput = true;
+      kycInputType = 'Aadhaar Number';
+      break;
+    }
+    if (/(customer\s*id|cif\s*(no|number)?|cust\s*id|client\s*id)/i.test(meta)) {
+      hasKycInput = true;
+      kycInputType = 'Customer/CIF ID';
+      break;
+    }
+    if (/(limit\s*increase|credit\s*limit|reward\s*points\s*redeem|redeem\s*points)/i.test(meta)) {
+      hasKycInput = true;
+      kycInputType = 'Reward Points / Credit Limit';
+      break;
+    }
+  }
+
+  const hasKycInText = lowerText.includes('pan card') || lowerText.includes('aadhaar') || lowerText.includes('kyc update') || lowerText.includes('cif number');
+
+  if (matchedUrgency && (hasKycInput || hasKycInText)) {
+    return {
+      detected: true,
+      phrase: `${matchedUrgency}${kycInputType ? ` (${kycInputType})` : ''}`
+    };
+  }
+
+  return { detected: false, phrase: null };
+}
+
+function detectPhishingKitWebhookExfil(hasSensitiveInputs) {
+  if (!hasSensitiveInputs) return { detected: false, endpoint: null };
+
+  const endpoints = [
+    'api.telegram.org/bot',
+    'discord.com/api/webhooks',
+    'discordapp.com/api/webhooks',
+    'script.google.com/macros/s/',
+    'formspree.io',
+    'getform.io',
+    'webhook.site',
+    'pipedream.net',
+    'ngrok-free.app',
+    'trycloudflare.com'
+  ];
+
+  const scripts = (typeof document !== 'undefined' && document.scripts) ? document.scripts : [];
+  for (let i = 0; i < scripts.length; i++) {
+    const s = (scripts[i].innerText || scripts[i].textContent || '').toLowerCase();
+    const matched = endpoints.find(ep => s.includes(ep));
+    if (matched) {
+      return { detected: true, endpoint: matched };
+    }
+  }
+
+  const forms = querySelectorAllDeep('form');
+  for (const form of forms) {
+    const action = ((form.getAttribute('action') || form.action || '')).toLowerCase();
+    const matched = endpoints.find(ep => action.includes(ep));
+    if (matched) {
+      return { detected: true, endpoint: matched };
+    }
+  }
+
+  const interactive = querySelectorAllDeep('[onsubmit], [onclick]');
+  for (const el of interactive) {
+    const handler = ((el.getAttribute('onsubmit') || '') + ' ' + (el.getAttribute('onclick') || '')).toLowerCase();
+    const matched = endpoints.find(ep => handler.includes(ep));
+    if (matched) {
+      return { detected: true, endpoint: matched };
+    }
+  }
+
+  return { detected: false, endpoint: null };
+}
+
+function detectHighPressureTimer(hasPaymentOrOtp) {
+  if (!hasPaymentOrOtp) return false;
+  const pageText = getPageTextDeep(6000);
+  const timerRegex = /(\b0?[0-9]:[0-5][0-9]\b)\s*(remaining|left|expires|valid for|timeout)/i;
+  if (timerRegex.test(pageText)) return true;
+
+  const timerElements = querySelectorAllDeep('[id*="timer"], [class*="timer"], [id*="countdown"], [class*="countdown"], [id*="otp-timer"], [class*="otp-timer"], [id*="expires"], [class*="expires"]');
+  return timerElements.length > 0;
+}
+
+function extractBrandAssetUrls() {
+  const urls = [];
+  if (typeof document === 'undefined') return urls;
+  try {
+    const iconLinks = querySelectorAllDeep('link[rel*="icon" i], link[rel*="apple-touch-icon" i]');
+    for (const link of iconLinks) {
+      const href = link.getAttribute('href') || link.href;
+      if (href && !href.startsWith('data:') && !href.startsWith('blob:')) {
+        urls.push(href);
+      }
+    }
+    const ogImages = querySelectorAllDeep('meta[property="og:image" i], meta[name="og:image" i], meta[property="twitter:image" i], meta[name="twitter:image" i]');
+    for (const meta of ogImages) {
+      const content = meta.getAttribute('content');
+      if (content && !content.startsWith('data:') && !content.startsWith('blob:')) {
+        urls.push(content);
+      }
+    }
+    const imgs = querySelectorAllDeep('header img, nav img, form img, img[class*="logo" i], img[id*="logo" i], img[alt*="logo" i]');
+    for (const img of imgs.slice(0, 15)) {
+      const src = img.getAttribute('src') || img.src;
+      if (src && !src.startsWith('data:') && !src.startsWith('blob:')) {
+        urls.push(src);
+      }
+    }
+  } catch (_) {}
+  return urls;
+}
+
+function detectTechSupportRemoteScam(text) {
+  if (!text) return { detected: false };
+  const lower = text.toLowerCase();
+
+  const remoteTools = ['anydesk', 'rustdesk', 'teamviewer', 'ultraviewer', 'quickassist', 'screenconnect', 'supremo', 'ammyy'];
+  const matchedTool = remoteTools.find(tool => lower.includes(tool));
+  if (!matchedTool) return { detected: false };
+
+  const lureKeywords = [
+    'customer care', 'helpline', 'toll free', 'toll-free', 'support number',
+    'support executive', 'helpdesk', 'kyc verification', 'kyc update',
+    'bank account blocked', 'electricity bill', 'call now', 'quick support',
+    'refund department', 'income tax refund', 'digital arrest', 'police officer'
+  ];
+  const matchedLure = lureKeywords.find(lure => lower.includes(lure));
+  if (!matchedLure) return { detected: false };
+
+  return {
+    detected: true,
+    tool: matchedTool,
+    lure: matchedLure,
+    reason: `Prompting installation of remote access tool "${matchedTool}" alongside "${matchedLure}" lure`
+  };
+}
+
 // 1. Signal Collection (Stage 1) - Gated, Lighter Scan
 function collectSignals() {
   const currentHostname = window.location.hostname.toLowerCase().replace(/^www\./, '');
@@ -298,8 +507,18 @@ function collectSignals() {
   const formActions = loginForms.map(form => form.action).filter(Boolean);
 
   // Scam heuristics
-  const scamPhrases = ['act now', 'limited time', 'your account will be suspended', 'pay with gift card', 'click here to claim'];
+  const scamPhrases = [
+    'act now', 'limited time', 'your account will be suspended', 'pay with gift card', 'click here to claim',
+    'wait! your bonus is ready', 'your personal link is ready', 'stay & claim bonus', 'spin the wheel',
+    'you have won', 'download is ready', 'claim bonus', 'claim reward'
+  ];
   let scamMatch = text ? scamPhrases.find(p => text.includes(p)) : null;
+
+  const bonusLurePhrases = [
+    'wait! your bonus is ready', 'your personal link is ready', 'stay & claim bonus',
+    'spin the wheel', 'you have won', 'download is ready'
+  ];
+  let bonusLureMatch = text ? bonusLurePhrases.find(p => text.includes(p)) : null;
 
   // PUP heuristics
   let pupMatch = null;
@@ -371,6 +590,12 @@ function collectSignals() {
     }
   }
 
+  // Brand Asset URLs for hotlinking / favicon spoof detection
+  const brandAssetUrls = extractBrandAssetUrls();
+
+  // Tech support / remote desktop scam detection
+  const techSupportScam = detectTechSupportRemoteScam(text);
+
   // Claimed providers scan (using already-extracted text, no redundant read)
   const claimedProviders = scanClaimedProviders(text);
 
@@ -383,6 +608,8 @@ function collectSignals() {
     exfilTargetDomain,
     scam: !!scamMatch,
     scamReason: scamMatch ? `Matches scam language: "${scamMatch}"` : null,
+    scamBonusLure: !!bonusLureMatch,
+    scamBonusLurePhrase: bonusLureMatch,
     pup: !!pupMatch,
     pupReason: pupMatch,
     financialMatches: financialMatch,
@@ -397,6 +624,10 @@ function collectSignals() {
     paymentFields: isTrustedDomain ? {} : paymentFields,
     hasPaymentForm: isTrustedDomain ? false : hasPaymentForm,
     claimedProviders,
+    brandAssetUrls,
+    techSupportRemoteScam: isTrustedDomain ? false : techSupportScam.detected,
+    techSupportRemoteScamReason: isTrustedDomain ? null : techSupportScam.reason,
+    techSupportHelpline: isTrustedDomain ? null : (techSupportScam.tool + ' ' + techSupportScam.lure),
     hasUpiLink,
     pageText:  text.substring(0, 3000),
     pageTitle: (typeof document !== 'undefined' ? document.title : '') || '',
@@ -1764,8 +1995,20 @@ function handleEnforcementVerdict(verdict) {
   if (!verdict) return;
   try { window.__verityLastVerdict = verdict; } catch (e) {}
   updateStatusBadge(verdict);
-  if (verdict.action === 'block') {
+  if (verdict.action === 'block' || (verdict.score || verdict.riskScore || 0) >= 70) {
     isBlocked = true;
+    try { window.stop(); } catch (e) {}
+    try {
+      document.querySelectorAll('video, audio').forEach(media => {
+        try {
+          media.pause();
+          media.muted = true;
+          media.removeAttribute('autoplay');
+          media.src = '';
+          media.load();
+        } catch (_) {}
+      });
+    } catch (_) {}
     if (statusBadgeHost) statusBadgeHost.style.display = 'none';
     injectOverlay(verdict);
   } else if (verdict.action === 'allow') {
@@ -1795,6 +2038,41 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
     } else if (message.action === 'OVERLAY_PREVIEW') {
       injectOverlay(message.verdict);
     }
+  });
+}
+
+// ─── Runtime Threat Interceptor Event Listener ──────────────────────────────
+if (typeof window !== 'undefined') {
+  window.addEventListener('__VERITY_RUNTIME_THREAT__', (event) => {
+    const detail = event?.detail || {};
+    const signal = detail.signal || 'SIG_PHISHING_KIT_WEBHOOK_EXFIL';
+
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({
+        action: 'RUNTIME_THREAT_DETECTED',
+        signal: signal,
+        detail: detail,
+        url: window.location.href
+      }).catch(() => {});
+    }
+
+    const threatScore = 95;
+    const threatVerdict = {
+      action: 'block',
+      severity: 'danger',
+      state: 'danger',
+      score: threatScore,
+      riskScore: threatScore,
+      reasons: [
+        signal === 'SIG_CLICKFIX_CLIPBOARD_ATTACK'
+          ? 'Live ClickFix clipboard command execution attack blocked.'
+          : signal === 'SIG_UNTRUSTED_SCREEN_SHARE'
+          ? 'Untrusted screen sharing capture attempt blocked.'
+          : 'Phishing kit credential exfiltration endpoint blocked.'
+      ],
+      signals: [{ id: signal, score: threatScore }]
+    };
+    injectOverlay(threatVerdict);
   });
 }
 
@@ -1915,6 +2193,7 @@ function removeOverlay() {
   }
   if (document.body) {
     document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('display');
   }
   try { window.onbeforeunload = null; } catch (e) {}
 }
@@ -1973,6 +2252,17 @@ function injectOverlay(verdict) {
   // Halt active redirects and page loading
   try { window.stop(); } catch (e) {}
   try {
+    document.querySelectorAll('video, audio').forEach(media => {
+      try {
+        media.pause();
+        media.muted = true;
+        media.removeAttribute('autoplay');
+        media.src = '';
+        media.load();
+      } catch (_) {}
+    });
+  } catch (_) {}
+  try {
     let maxId = window.setTimeout(() => {}, 0);
     for (let i = 0; i <= maxId; i++) {
       window.clearTimeout(i);
@@ -1988,12 +2278,15 @@ function injectOverlay(verdict) {
     };
   } catch (e) {}
 
-  // Lock scroll
+  // Lock scroll and hide body for blocked pages
   if (document.documentElement) {
     document.documentElement.style.setProperty('overflow', 'hidden', 'important');
   }
   if (document.body) {
     document.body.style.setProperty('overflow', 'hidden', 'important');
+    if (isDanger) {
+      document.body.style.setProperty('display', 'none', 'important');
+    }
   }
 
   const host = document.createElement('div');
@@ -2342,7 +2635,11 @@ function injectOverlay(verdict) {
 
   const parent = document.documentElement || document.body;
   if (parent) {
-    parent.appendChild(host);
+    if (parent.firstChild) {
+      parent.insertBefore(host, parent.firstChild);
+    } else {
+      parent.appendChild(host);
+    }
   }
 
   // Auto-focus primary safe action
@@ -2350,23 +2647,30 @@ function injectOverlay(verdict) {
     shadow.querySelector('#btn-back')?.focus();
   }, 50);
 
-  // Re-attachment Observer against hostile host pages
-  if (!blockObserver && parent) {
-    blockObserver = new MutationObserver((mutations) => {
-      let removed = false;
-      mutations.forEach(m => {
-        m.removedNodes.forEach(n => {
-          if (n === host || n.id === 'verity-security-host') {
-            removed = true;
-          }
-        });
-      });
-      if (removed && isBlocked) {
-        parent.appendChild(host);
+  // Self-Healing Anti-Tamper Observer against hostile page scripts
+  if (!blockObserver && document.documentElement) {
+    blockObserver = new MutationObserver(() => {
+      if (!isBlocked) return;
+      const hostInDoc = document.getElementById('verity-security-host');
+      if (!hostInDoc || !document.documentElement.contains(host)) {
+        if (document.documentElement.firstChild) {
+          document.documentElement.insertBefore(host, document.documentElement.firstChild);
+        } else {
+          document.documentElement.appendChild(host);
+        }
+      }
+      if (host.style.display === 'none' || host.hidden) {
+        host.style.setProperty('display', 'block', 'important');
+        host.hidden = false;
+      }
+      if (isDanger && document.body && document.body.style.display !== 'none') {
+        document.body.style.setProperty('display', 'none', 'important');
+      }
+      if (document.documentElement && document.documentElement.style.overflow !== 'hidden') {
         document.documentElement.style.setProperty('overflow', 'hidden', 'important');
       }
     });
-    blockObserver.observe(parent, { childList: true });
+    blockObserver.observe(document.documentElement, { childList: true, attributes: true, subtree: true });
   }
 }
 
@@ -2379,6 +2683,8 @@ if (typeof globalThis !== 'undefined') {
   globalThis.detectPaymentForm = detectPaymentForm;
   globalThis.getSensitiveDomSignature = getSensitiveDomSignature;
   globalThis.collectSignals = collectSignals;
+  globalThis.extractBrandAssetUrls = extractBrandAssetUrls;
+  globalThis.detectTechSupportRemoteScam = detectTechSupportRemoteScam;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -2391,7 +2697,67 @@ if (typeof module !== 'undefined' && module.exports) {
     detectPaymentForm,
     getSensitiveDomSignature,
     collectSignals,
+    extractBrandAssetUrls,
+    detectTechSupportRemoteScam,
   };
 }
 
 
+
+// ─── Active Cross-Origin & Webhook Submit Interceptor ───────────────────────
+if (typeof document !== 'undefined') {
+  document.addEventListener('submit', (event) => {
+    const form = event.target;
+    if (!form) return;
+
+    const pf = detectPaymentFields();
+    const hasPassword = querySelectorDeep('input[type="password"]', form) !== null ||
+                        querySelectorDeep('input[type="password"]') !== null;
+    const hasSensitive = hasPassword || pf.card || pf.cvv || pf.otp || pf.pin || pf.accountNumber;
+
+    if (!hasSensitive) return;
+
+    if (isBlocked) {
+      event.preventDefault();
+      event.stopPropagation();
+      try { window.stop(); } catch (_) {}
+      return;
+    }
+
+    let targetHost = '';
+    try {
+      const actionUrl = form.getAttribute('action') || form.action || '';
+      if (actionUrl && !actionUrl.startsWith('#') && !actionUrl.startsWith('javascript:')) {
+        targetHost = new URL(actionUrl, window.location.href).hostname.toLowerCase();
+      }
+    } catch (_) {}
+
+    const currentHost = window.location.hostname.toLowerCase();
+    const currentRoot = getBaseDomain(currentHost);
+    const targetRoot = getBaseDomain(targetHost);
+
+    const isCrossDomainExfil = !!(targetHost && targetRoot && currentRoot && targetRoot !== currentRoot);
+    const webhookDetected = detectPhishingKitWebhookExfil(true).detected;
+    const pinCollection = detectIllegalWebPinCollection().detected;
+
+    if (isCrossDomainExfil || webhookDetected || pinCollection) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      try { window.stop(); } catch (_) {}
+
+      const reasonMsg = webhookDetected ? 'Critical threat: Form transmits stolen data to external webhook/bot.' :
+                        pinCollection ? 'Critical financial fraud: Illegal UPI PIN submission intercepted.' :
+                        `Critical risk: Form transmits sensitive credentials to an untrusted external domain (${targetHost}).`;
+
+      handleEnforcementVerdict({
+        action: 'block',
+        severity: 'danger',
+        state: 'danger',
+        score: 95,
+        riskScore: 95,
+        reasons: [reasonMsg]
+      });
+    }
+  }, true);
+}
