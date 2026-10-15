@@ -541,6 +541,27 @@ export function calculateRisk(
   // Overall clamp [0, 100]
   riskScore = Math.min(Math.max(riskScore, 0), 100);
 
+  // ── Step 4: Piracy & Clean Streaming Sites Protection ─────────────────────
+  // Capped at max score 25 (SAFE / allow) when there are no phishing forms, no bank scams, and no ad rotators
+  const hasPhishingForms = !!(domSignals && (domSignals.hasCredentialCollection || domSignals.hasPasswordInput || domSignals.loginFormCount > 0));
+  const hasFakeBankOrScam = hasCyberFraudOverride || hasKycCyberFraud || hasTechSupportRemoteScam || hasBrandMismatchWithCredentials || hasIllegalWebPinCollection;
+  const hasRotatorQuery = !!(url && (
+    url.includes('utm_medium=popunder') ||
+    url.includes('propellerads') ||
+    url.includes('popads') ||
+    url.includes('wigglepoploaderfast') ||
+    /\?[a-f0-9]{16,64}/i.test(url)
+  ));
+  const isPurePiracyOrSuspiciousTld = signals.length > 0 && signals.every(s => 
+    s.id === 'RULE_PIRACY_MEDIA' || 
+    s.id === 'RULE_SUSPICIOUS_URL_PATTERN' ||
+    s.id === 'SIG_URL_SUSPICIOUS'
+  );
+
+  if (isPurePiracyOrSuspiciousTld && !hasPhishingForms && !hasFakeBankOrScam && !hasRotatorQuery) {
+    riskScore = Math.min(riskScore, 25);
+  }
+
   // ── 8. Apply Convergence & Allowlist Rules ──────────────────────────────────
   // A. Independent Allowlist Rule:
   // Pages on legit_domains.json cap at Caution (max 40) unless dangerous download, credential-exfil, ClickFix, or malvertising override fires
@@ -591,7 +612,41 @@ export function calculateRisk(
     categories.phishing.flagged = true;
   }
 
-  const reasons = signals.map(s => s.reason);
+  const reasons = signals.map(s => s.reason).filter(Boolean);
+
+  // ── Step 3.2: Unbreakable Invariants ───────────────────────────────────────
+  // 1. Allowlisted domains without explicit active download/credential exfil must return score 0, allow, safe
+  if (isAllowlisted && !hasDangerousDownload && !hasCredentialExfil) {
+    return {
+      url,
+      hostname,
+      score: 0,
+      riskScore: 0,
+      severity: 'safe',
+      state: 'safe',
+      action: 'allow',
+      signals: [],
+      categories: {
+        phishing: { flagged: false, confidence: 0, reason: null },
+        malware: { flagged: false, source: null },
+        scamFraud: { flagged: false, reason: null },
+        suspicious: { flagged: false, reason: null }
+      },
+      reasons: [],
+      ruleScore: 0,
+      activeSources: [],
+      redirectChain: null,
+      shortenerDetected: false,
+      paymentAnalysis: null
+    };
+  }
+
+  // 2. Zero reasons must mathematically force score = 0, action = allow, severity = safe
+  if (!reasons || reasons.length === 0) {
+    riskScore = 0;
+    severity = 'safe';
+    action = 'allow';
+  }
 
   return {
     score: riskScore,

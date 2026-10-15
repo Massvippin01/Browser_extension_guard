@@ -180,23 +180,19 @@ test('NextGen Case 4: Remote Access Tool Download (AnyDesk.exe) from untrusted d
   assert.ok(verdict.signals.some(s => s.id === 'SIG_REMOTE_ACCESS_SCAM_DOWNLOAD'), 'Verdict must include SIG_REMOTE_ACCESS_SCAM_DOWNLOAD');
 });
 
-test('NextGen Case 5: DNR Blocker dynamic session rules & rolling cap', async () => {
+test('NextGen Case 5: DNR Blocker purge & strict NO-OP to prevent ERR_BLOCKED_BY_CLIENT', async () => {
   resetDnrForTesting();
 
-  // Test blocking a malicious domain
+  // blockDomainDnr must be a strict NO-OP returning null
   const rule1 = await blockDomainDnr('malicious-rotator-test.xyz');
-  assert.ok(rule1, 'Rule must be registered');
-  assert.equal(rule1.action.type, 'block');
-  assert.equal(rule1.condition.urlFilter, '||malicious-rotator-test.xyz^');
+  assert.equal(rule1, null, 'Dynamic block registration must be a NO-OP returning null');
 
-  // Verify blocked domains set
-  const blocked = getBlockedDomainsDnr();
-  assert.ok(blocked.has('malicious-rotator-test.xyz'));
-
-  // Allowlisted domains must never be blocked by DNR
   const allowlistRule = await blockDomainDnr('google.com');
   assert.equal(allowlistRule, null, 'Allowlisted domains must return null and not be blocked');
-  assert.ok(!blocked.has('google.com'));
+
+  // Verify blocked domains set remains empty
+  const blocked = getBlockedDomainsDnr();
+  assert.equal(blocked.size, 0, 'No domains should ever be blocked via declarativeNetRequest');
 });
 
 test('NextGen Case 6: Legitimate Brand Gateways & Downloads (0 False Positives)', async () => {

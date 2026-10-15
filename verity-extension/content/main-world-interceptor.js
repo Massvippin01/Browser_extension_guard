@@ -10,6 +10,18 @@
 (function () {
   'use strict';
 
+  // ── Step 2.1: Immediate Early Exit on Search Engines & Top Trusted Domains ──
+  const TRUSTED_DOMAINS_REGEX = /(^|\.)(google\.[a-z.]+|bing\.com|duckduckgo\.com|yahoo\.com|brave\.com|youtube\.com|github\.com|microsoft\.com|live\.com|office\.com|apple\.com|amazon\.[a-z.]+|wikipedia\.org|reddit\.com|chatgpt\.com|openai\.com|claude\.ai|gemini\.google\.com|localhost|127\.0\.0\.1)$/i;
+
+  function isTrustedSearchOrTopDomain(hostname) {
+    if (!hostname || typeof hostname !== 'string') return false;
+    return TRUSTED_DOMAINS_REGEX.test(hostname.toLowerCase());
+  }
+
+  if (typeof location !== 'undefined' && isTrustedSearchOrTopDomain(location.hostname)) {
+    return;
+  }
+
   // Prevent multiple injections
   if (window.__VERITY_MAIN_INTERCEPTOR_ACTIVE__) return;
   Object.defineProperty(window, '__VERITY_MAIN_INTERCEPTOR_ACTIVE__', {
@@ -18,19 +30,12 @@
     configurable: false
   });
 
-  let hasTypedSensitiveData = false;
-
+  // Strict phishing webhook exfiltration endpoints
   const EXFIL_ENDPOINTS = Object.freeze([
     'api.telegram.org/bot',
     'discord.com/api/webhooks',
     'discordapp.com/api/webhooks',
-    'webhook.site',
-    'pipedream.net',
-    'ngrok-free.app',
-    'trycloudflare.com',
-    'formspree.io',
-    'getform.io',
-    'script.google.com/macros/s/'
+    'webhook.site'
   ]);
 
   const CLICKFIX_EXEC_PAYLOADS = Object.freeze([
@@ -83,28 +88,6 @@
     return EXFIL_ENDPOINTS.find(ep => lower.includes(ep)) || null;
   }
 
-  function getBaseDomain(hostname) {
-    if (!hostname) return '';
-    const parts = hostname.toLowerCase().split('.').filter(Boolean);
-    if (parts.length <= 2) return hostname.toLowerCase();
-    return parts.slice(-2).join('.');
-  }
-
-  function isCrossOriginExfil(targetUrl) {
-    if (!targetUrl || typeof targetUrl !== 'string') return false;
-    try {
-      const parsed = new URL(targetUrl, window.location.href);
-      const targetHost = parsed.hostname.toLowerCase();
-      const currentHost = window.location.hostname.toLowerCase();
-      if (!targetHost || targetHost === currentHost) return false;
-      const targetBase = getBaseDomain(targetHost);
-      const currentBase = getBaseDomain(currentHost);
-      return targetBase !== currentBase;
-    } catch (_) {
-      return false;
-    }
-  }
-
   function notifyThreat(signal, detail = {}) {
     try {
       window.dispatchEvent(new CustomEvent('__VERITY_RUNTIME_THREAT__', {
@@ -112,13 +95,6 @@
       }));
     } catch (_) {}
   }
-
-  // ── 1. Dirty Sensitive Input Monitor ───────────────────────────────────────
-  function markSensitive() {
-    hasTypedSensitiveData = true;
-  }
-
-  const sensitiveSelectors = 'input[type="password"], input[name*="otp" i], input[id*="otp" i], input[name*="cvv" i], input[id*="cvv" i], input[name*="card" i], input[id*="card" i], input[name*="pin" i], input[id*="pin" i], input[name*="pan" i], input[id*="pan" i], input[name*="aadhaar" i], input[id*="aadhaar" i]';
 
   function captureSelectedAddress() {
     try {
@@ -153,24 +129,10 @@
     }
   }, true);
 
-  document.addEventListener('input', (e) => {
-    const el = e.target;
-    if (el && el.matches && el.matches(sensitiveSelectors)) {
-      markSensitive();
-    }
-  }, true);
-
-  document.addEventListener('change', (e) => {
-    const el = e.target;
-    if (el && el.matches && el.matches(sensitiveSelectors)) {
-      markSensitive();
-    }
-  }, true);
-
   // ── 2. Intercept window.fetch ──────────────────────────────────────────────
   if (typeof window.fetch === 'function') {
     const originalFetch = window.fetch;
-    window.fetch = function (resource, init) {
+    window.fetch = function (resource, _init) {
       let targetUrl = '';
       if (typeof resource === 'string') {
         targetUrl = resource;
@@ -182,12 +144,6 @@
       if (matchedExfil) {
         notifyThreat('SIG_PHISHING_KIT_WEBHOOK_EXFIL', { endpoint: targetUrl });
         return Promise.reject(new TypeError('Blocked by Verity Security Shield: Phishing exfiltration endpoint'));
-      }
-
-      const method = (init && init.method ? init.method : 'GET').toUpperCase();
-      if (hasTypedSensitiveData && (method === 'POST' || method === 'PUT') && isCrossOriginExfil(targetUrl)) {
-        notifyThreat('SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL', { targetUrl });
-        return Promise.reject(new TypeError('Blocked by Verity Security Shield: Cross-domain credential exfiltration'));
       }
 
       return originalFetch.apply(this, arguments);
@@ -205,17 +161,12 @@
       return origOpen.apply(this, arguments);
     };
 
-    window.XMLHttpRequest.prototype.send = function (body) {
+    window.XMLHttpRequest.prototype.send = function (_body) {
       const targetUrl = this.__verityUrl || '';
       const matchedExfil = isExfilEndpoint(targetUrl);
       if (matchedExfil) {
         notifyThreat('SIG_PHISHING_KIT_WEBHOOK_EXFIL', { endpoint: targetUrl });
         throw new DOMException('Blocked by Verity Security Shield: Phishing exfiltration endpoint', 'NetworkError');
-      }
-
-      if (hasTypedSensitiveData && (this.__verityMethod === 'POST' || this.__verityMethod === 'PUT') && isCrossOriginExfil(targetUrl)) {
-        notifyThreat('SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL', { targetUrl });
-        throw new DOMException('Blocked by Verity Security Shield: Cross-domain credential exfiltration', 'NetworkError');
       }
 
       return origSend.apply(this, arguments);
@@ -225,15 +176,11 @@
   // ── 4. Intercept navigator.sendBeacon ──────────────────────────────────────
   if (navigator && typeof navigator.sendBeacon === 'function') {
     const origSendBeacon = navigator.sendBeacon;
-    navigator.sendBeacon = function (url, data) {
+    navigator.sendBeacon = function (url, _data) {
       const targetUrl = String(url || '');
       const matchedExfil = isExfilEndpoint(targetUrl);
       if (matchedExfil) {
         notifyThreat('SIG_PHISHING_KIT_WEBHOOK_EXFIL', { endpoint: targetUrl });
-        return false;
-      }
-      if (hasTypedSensitiveData && isCrossOriginExfil(targetUrl)) {
-        notifyThreat('SIG_CROSS_DOMAIN_CREDENTIAL_EXFIL', { targetUrl });
         return false;
       }
       return origSendBeacon.apply(this, arguments);

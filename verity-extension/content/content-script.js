@@ -7,6 +7,16 @@ let isBlocked = false;
 let blockObserver = null;
 let statusBadgeHost = null;
 
+// ─── Step 2.1: Immediate Early Exit Check on Search Engines & Top Trusted Domains ─
+const TRUSTED_DOMAINS_REGEX = /(^|\.)(google\.[a-z.]+|bing\.com|duckduckgo\.com|yahoo\.com|brave\.com|youtube\.com|github\.com|microsoft\.com|live\.com|office\.com|apple\.com|amazon\.[a-z.]+|wikipedia\.org|reddit\.com|chatgpt\.com|openai\.com|claude\.ai|gemini\.google\.com|localhost|127\.0\.0\.1)$/i;
+
+function isTrustedSearchOrTopDomain(hostname) {
+  if (!hostname || typeof hostname !== 'string') return false;
+  return TRUSTED_DOMAINS_REGEX.test(hostname.toLowerCase());
+}
+
+const isTrustedHostEnvironment = typeof location !== 'undefined' && isTrustedSearchOrTopDomain(location.hostname);
+
 // ─── Deep DOM & Shadow DOM Traversal ─────────────────────────────────────────
 
 /**
@@ -846,6 +856,7 @@ function collectSignals() {
 // 2. Early and Full Scans
 
 function triggerImmediateUrlScan() {
+  if (isTrustedHostEnvironment) return;
   if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
   chrome.runtime.sendMessage({ action: 'ANALYZE_URL_ONLY', url: window.location.href }, (response) => {
     if (chrome.runtime.lastError) return;
@@ -859,6 +870,7 @@ function triggerImmediateUrlScan() {
 }
 
 function triggerFullScan() {
+  if (isTrustedHostEnvironment) return;
   if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
   try {
     lastKnownSensitiveSignature = getSensitiveDomSignature();
@@ -2202,6 +2214,7 @@ function showPopupBlockedToast(hostname) {
 
 function handleEnforcementVerdict(verdict) {
   if (!verdict) return;
+  if (isTrustedHostEnvironment) return;
   try { window.__verityLastVerdict = verdict; } catch (e) {}
   updateStatusBadge(verdict);
   if (verdict.action === 'block' || (verdict.score || verdict.riskScore || 0) >= 70) {
@@ -2230,77 +2243,79 @@ function handleEnforcementVerdict(verdict) {
 }
 
 // ─── Listeners from Background ──────────────────────────────────────────────
-if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'POPUP_BLOCKED_TOAST') {
-      showPopupBlockedToast(message.hostname || message.blockedUrl);
-    } else if (message.action === 'ENFORCEMENT_DECISION') {
-      handleEnforcementVerdict(message.decision.verdict);
-    } else if (message.action === 'RE_ANALYZE') {
-      isBlocked = false;
-      removeOverlay();
-      if (statusBadgeHost) statusBadgeHost.style.display = 'block';
-      triggerImmediateUrlScan();
-      setTimeout(triggerFullScan, 500);
-    } else if (message.action === 'DOWNLOAD_VERDICT') {
-      injectDownloadWarning(message.payload);
-    } else if (message.action === 'OVERLAY_PREVIEW') {
-      injectOverlay(message.verdict);
-    }
-  });
-}
+if (!isTrustedHostEnvironment) {
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === 'POPUP_BLOCKED_TOAST') {
+        showPopupBlockedToast(message.hostname || message.blockedUrl);
+      } else if (message.action === 'ENFORCEMENT_DECISION') {
+        handleEnforcementVerdict(message.decision.verdict);
+      } else if (message.action === 'RE_ANALYZE') {
+        isBlocked = false;
+        removeOverlay();
+        if (statusBadgeHost) statusBadgeHost.style.display = 'block';
+        triggerImmediateUrlScan();
+        setTimeout(triggerFullScan, 500);
+      } else if (message.action === 'DOWNLOAD_VERDICT') {
+        injectDownloadWarning(message.payload);
+      } else if (message.action === 'OVERLAY_PREVIEW') {
+        injectOverlay(message.verdict);
+      }
+    });
+  }
 
-// ─── Runtime Threat Interceptor Event Listener ──────────────────────────────
-if (typeof window !== 'undefined') {
-  window.addEventListener('__VERITY_RUNTIME_THREAT__', (event) => {
-    const detail = event?.detail || {};
-    const signal = detail.signal || 'SIG_PHISHING_KIT_WEBHOOK_EXFIL';
+  // ─── Runtime Threat Interceptor Event Listener ──────────────────────────────
+  if (typeof window !== 'undefined') {
+    window.addEventListener('__VERITY_RUNTIME_THREAT__', (event) => {
+      const detail = event?.detail || {};
+      const signal = detail.signal || 'SIG_PHISHING_KIT_WEBHOOK_EXFIL';
 
-    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
-      chrome.runtime.sendMessage({
-        action: 'RUNTIME_THREAT_DETECTED',
-        signal: signal,
-        detail: detail,
-        url: window.location.href
-      }).catch(() => {});
-    }
+      if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({
+          action: 'RUNTIME_THREAT_DETECTED',
+          signal: signal,
+          detail: detail,
+          url: window.location.href
+        }).catch(() => {});
+      }
 
-    const threatScore = 95;
-    const threatVerdict = {
-      action: 'block',
-      severity: 'danger',
-      state: 'danger',
-      score: threatScore,
-      riskScore: threatScore,
-      reasons: [
-        signal === 'SIG_CLICKFIX_CLIPBOARD_ATTACK'
-          ? 'Live ClickFix clipboard command execution attack blocked.'
-          : signal === 'SIG_CLIPBOARD_ADDRESS_SWAP'
-          ? 'Live clipboard crypto/UPI address swapper attack blocked.'
-          : signal === 'SIG_ROGUE_PUSH_OR_SW_TRAP'
-          ? 'Rogue push notification or service worker registration blocked.'
-          : signal === 'SIG_UNTRUSTED_SCREEN_SHARE'
-          ? 'Untrusted screen sharing capture attempt blocked.'
-          : 'Phishing kit credential exfiltration endpoint blocked.'
-      ],
-      signals: [{ id: signal, score: threatScore }]
-    };
-    injectOverlay(threatVerdict);
-  });
-}
+      const threatScore = 95;
+      const threatVerdict = {
+        action: 'block',
+        severity: 'danger',
+        state: 'danger',
+        score: threatScore,
+        riskScore: threatScore,
+        reasons: [
+          signal === 'SIG_CLICKFIX_CLIPBOARD_ATTACK'
+            ? 'Live ClickFix clipboard command execution attack blocked.'
+            : signal === 'SIG_CLIPBOARD_ADDRESS_SWAP'
+            ? 'Live clipboard crypto/UPI address swapper attack blocked.'
+            : signal === 'SIG_ROGUE_PUSH_OR_SW_TRAP'
+            ? 'Rogue push notification or service worker registration blocked.'
+            : signal === 'SIG_UNTRUSTED_SCREEN_SHARE'
+            ? 'Untrusted screen sharing capture attempt blocked.'
+            : 'Phishing kit credential exfiltration endpoint blocked.'
+        ],
+        signals: [{ id: signal, score: threatScore }]
+      };
+      injectOverlay(threatVerdict);
+    });
+  }
 
-triggerImmediateUrlScan();
-initSpaMutationObserver();
+  triggerImmediateUrlScan();
+  initSpaMutationObserver();
 
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initSpaMutationObserver();
+        triggerFullScan();
+      });
+    } else {
       initSpaMutationObserver();
       triggerFullScan();
-    });
-  } else {
-    initSpaMutationObserver();
-    triggerFullScan();
+    }
   }
 }
 
@@ -2406,7 +2421,6 @@ function removeOverlay() {
   }
   if (document.body) {
     document.body.style.removeProperty('overflow');
-    document.body.style.removeProperty('display');
   }
   try { window.onbeforeunload = null; } catch (e) {}
 }
@@ -2455,6 +2469,7 @@ function getOverlaySummary(verdict, isDanger, isPaymentPhishing) {
 }
 
 function injectOverlay(verdict) {
+  if (isTrustedHostEnvironment) return;
   if (document.getElementById('verity-security-host')) {
     return; // Already blocked
   }
@@ -2491,15 +2506,12 @@ function injectOverlay(verdict) {
     };
   } catch (e) {}
 
-  // Lock scroll and hide body for blocked pages
+  // Lock scroll for blocked pages (never hide document.body!)
   if (document.documentElement) {
     document.documentElement.style.setProperty('overflow', 'hidden', 'important');
   }
   if (document.body) {
     document.body.style.setProperty('overflow', 'hidden', 'important');
-    if (isDanger) {
-      document.body.style.setProperty('display', 'none', 'important');
-    }
   }
 
   const host = document.createElement('div');
@@ -2875,9 +2887,6 @@ function injectOverlay(verdict) {
       if (host.style.display === 'none' || host.hidden) {
         host.style.setProperty('display', 'block', 'important');
         host.hidden = false;
-      }
-      if (isDanger && document.body && document.body.style.display !== 'none') {
-        document.body.style.setProperty('display', 'none', 'important');
       }
       if (document.documentElement && document.documentElement.style.overflow !== 'hidden') {
         document.documentElement.style.setProperty('overflow', 'hidden', 'important');

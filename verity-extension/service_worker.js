@@ -6,7 +6,7 @@
  *   → Reputation → ML → Risk Engine → Enforcement Decision
  */
 
-import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern, hasAitmProxyUrlSignature } from './background/rules.js';
+import { isIpBasedUrl, hasMissingHttps, hasExcessiveSubdomains, hasBrandNameInWrongDomain, hasSuspiciousUrlPattern, hasPunycodeOrKeywords, hasFinancialKeywordInHostname, hasBrandVariantMatch, hasMalvertisingPattern, hasRandomLookingHostname, hasAffiliateTrackerPattern, hasPiracyOrUnverifiedMediaPattern, hasAitmProxyUrlSignature, isTrustedTopDomain } from './background/rules.js';
 import { detectTyposquatting } from './background/brand-detector.js';
 import { getRedirectSignals, getRedirectSignalsAsync, updateShorteners, recordNavigationTarget, hydrateFromStorage, pruneTab, isSuspiciousDomain } from './background/redirect-analyzer.js';
 import { calculateRisk } from './background/risk-engine.js';
@@ -16,10 +16,44 @@ import { analyzePaymentPage } from './background/payment-detector.js';
 import { initDownloadMonitor } from './background/download/downloadMonitor.js';
 import { validateMessageSender } from './background/message-validator.js';
 import { isAllowlistedDomain } from './shared/legit-domains.js';
-import { initDnrBlocker, blockDomainDnr } from './background/dnr-blocker.js';
+import { initDnrBlocker } from './background/dnr-blocker.js';
 import { getDomain } from './shared/psl.js';
 import { t } from './shared/messages.js';
 export { validateMessageSender };
+
+export function isSafeAllowlistedOrTopDomain(url) {
+  if (!url) return false;
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return isAllowlistedDomain(hostname) || isTrustedTopDomain(hostname);
+  } catch (_) {
+    return false;
+  }
+}
+
+export function createSafeAllowVerdict(url) {
+  return {
+    url: url || '',
+    score: 0,
+    riskScore: 0,
+    action: 'allow',
+    severity: 'safe',
+    state: 'safe',
+    reasons: [],
+    signals: [],
+    categories: {
+      phishing: { flagged: false, confidence: 0, reason: null },
+      malware: { flagged: false, source: null },
+      scamFraud: { flagged: false, reason: null },
+      suspicious: { flagged: false, reason: null }
+    },
+    ruleScore: 0,
+    activeSources: [],
+    redirectChain: null,
+    shortenerDetected: false,
+    paymentAnalysis: null
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Load brands list + payment brands at startup
@@ -125,6 +159,27 @@ function buildRuleSignals(url) {
 async function runFullAnalysis(tabId, url, domSignals) {
   if (isInternalUrl(url)) return null;
 
+  // Step 3.1: Force safe allow verdict on allowlisted / trusted top domains
+  if (isSafeAllowlistedOrTopDomain(url)) {
+    pruneTabRiskState(tabId);
+    const safeVerdict = createSafeAllowVerdict(url);
+    await storeAndEnforce(tabId, safeVerdict, 0);
+    return safeVerdict;
+  }
+
+  // Delete stored risk state if tab navigated to a new hostname
+  let tabState = await getTabRiskState(tabId);
+  if (tabState && tabState.url) {
+    try {
+      const prevHost = new URL(tabState.url).hostname.toLowerCase();
+      const curHost = new URL(url).hostname.toLowerCase();
+      if (prevHost && curHost && prevHost !== curHost) {
+        pruneTabRiskState(tabId);
+        tabState = null;
+      }
+    } catch (_) {}
+  }
+
   const ruleSignals = await analyzeUrl(url);
   if (!ruleSignals) return null;
 
@@ -135,7 +190,6 @@ async function runFullAnalysis(tabId, url, domSignals) {
   ]);
 
   const redirectSignals = await getRedirectSignalsAsync(tabId);
-  const tabState = await getTabRiskState(tabId);
 
   // If this tab was marked as popunder, preserve SIG_POPUNDER_SPAWN
   if (tabState && tabState.isPopunderTab && redirectSignals) {
@@ -169,26 +223,39 @@ async function runFullAnalysis(tabId, url, domSignals) {
   verdict.paymentAnalysis = paymentAnalysis; // Attach for overlay
 
   // Sticky High-Water Mark Rule:
-  // When content-script later sends DOM signals (which may have 0 password/login forms),
-  // MERGE accumulated URL/redirect/pop-under signals with DOM signals.
-  // NEVER allow a later message with 0 DOM forms to lower an existing BLOCK or CAUTION score during the same navigation lifecycle!
-  if (tabState) {
-    const prevMax = tabState.maxRiskScore || 0;
-    if (prevMax > verdict.score || tabState.maxAction === 'block' || tabState.isPopunderTab) {
-      verdict.score = Math.max(verdict.score, prevMax, tabState.isPopunderTab ? 85 : 0);
-      verdict.riskScore = verdict.score;
-      if (tabState.maxAction === 'block' || tabState.isPopunderTab || prevMax >= 70) {
-        verdict.action = 'block';
-        verdict.severity = 'danger';
-        verdict.state = 'danger';
-      } else if (tabState.maxAction === 'warn' || prevMax >= 35) {
-        if (verdict.action !== 'block') {
-          verdict.action = 'warn';
-          verdict.severity = 'caution';
-          verdict.state = 'caution';
+  // ONLY merge if on the exact same hostname AND verdict has reasons!
+  if (tabState && verdict.reasons && verdict.reasons.length > 0) {
+    try {
+      const prevHost = tabState.url ? new URL(tabState.url).hostname.toLowerCase() : '';
+      const curHost = new URL(url).hostname.toLowerCase();
+      if (prevHost && curHost && prevHost === curHost) {
+        const prevMax = tabState.maxRiskScore || 0;
+        if (prevMax > verdict.score || tabState.maxAction === 'block' || tabState.isPopunderTab) {
+          verdict.score = Math.max(verdict.score, prevMax, tabState.isPopunderTab ? 85 : 0);
+          verdict.riskScore = verdict.score;
+          if (tabState.maxAction === 'block' || tabState.isPopunderTab || prevMax >= 70) {
+            verdict.action = 'block';
+            verdict.severity = 'danger';
+            verdict.state = 'danger';
+          } else if (tabState.maxAction === 'warn' || prevMax >= 35) {
+            if (verdict.action !== 'block') {
+              verdict.action = 'warn';
+              verdict.severity = 'caution';
+              verdict.state = 'caution';
+            }
+          }
         }
       }
-    }
+    } catch (_) {}
+  }
+
+  // Unbreakable Invariant: 0 reasons must force score = 0, action = allow, severity = safe
+  if (!verdict.reasons || verdict.reasons.length === 0) {
+    verdict.score = 0;
+    verdict.riskScore = 0;
+    verdict.action = 'allow';
+    verdict.severity = 'safe';
+    verdict.state = 'safe';
   }
 
   await saveTabRiskState(tabId, {
@@ -245,21 +312,29 @@ async function analyzeSearchResult(url, tabId) {
 async function storeAndEnforce(tabId, verdict, frameId = 0) {
   if (!verdict) return;
 
+  // Step 3: Invariant: Allowlisted/trusted domains force score 0, allow, safe, 0 reasons
+  if (isSafeAllowlistedOrTopDomain(verdict.url)) {
+    verdict.score = 0;
+    verdict.riskScore = 0;
+    verdict.action = 'allow';
+    verdict.severity = 'safe';
+    verdict.state = 'safe';
+    verdict.reasons = [];
+    verdict.signals = [];
+  } else if (!verdict.reasons || verdict.reasons.length === 0) {
+    verdict.score = 0;
+    verdict.riskScore = 0;
+    verdict.action = 'allow';
+    verdict.severity = 'safe';
+    verdict.state = 'safe';
+  }
+
   // Persist for main frame popup
   if (frameId === 0) {
     const entry = {};
     entry[tabId.toString()] = verdict;
     await chrome.storage.session.set(entry).catch(() => {});
     updateBadge(tabId, verdict);
-
-    if (verdict.action === 'block' && (verdict.score || verdict.riskScore || 0) >= 85 && verdict.url) {
-      try {
-        const h = new URL(verdict.url).hostname.toLowerCase();
-        if (h && !isAllowlistedDomain(h)) {
-          blockDomainDnr(h);
-        }
-      } catch (_) {}
-    }
   }
 
   // Send enforcement decision to content script (target frameId if subframe)
@@ -353,18 +428,17 @@ function checkPopunderMatch(sourceUrl, targetUrl) {
   const isTargetAllowlisted = isAllowlistedDomain(targetHost) || isAllowlistedDomain(targetRoot);
   if (isTargetAllowlisted) return false;
 
-  const isOpenerAllowlisted = sourceHost ? isAllowlistedDomain(sourceHost) : false;
-  const openerHasPiracy = sourceUrl ? hasPiracyOrUnverifiedMediaPattern(sourceUrl).triggered : false;
+  // Step 4.2: SIG_POPUNDER_SPAWN must ONLY fire if the newly spawned tab's URL ALSO
+  // matches an explicit ad-rotator/malvertising pattern:
+  const lowerTarget = targetUrl.toLowerCase();
+  const isExplicitAdRotator =
+    lowerTarget.includes('utm_medium=popunder') ||
+    lowerTarget.includes('propellerads') ||
+    lowerTarget.includes('popads') ||
+    lowerTarget.includes('wigglepoploaderfast') ||
+    /\?[a-f0-9]{16,64}/i.test(targetUrl);
 
-  const targetMalv = hasMalvertisingPattern(targetUrl);
-  const targetSuspTld = [
-    '.live', '.xyz', '.monster', '.top', '.click', '.sbs', '.cfd', '.icu', '.fun', '.site', '.online',
-    '.pw', '.cc', '.ws', '.biz', '.vip', '.club', '.uno', '.bar', '.qpon', '.world',
-    '.tk', '.ml', '.ga', '.cf', '.gq'
-  ].some(tld => targetHost.endsWith(tld));
-  const targetIsSusp = isSuspiciousDomain(targetUrl);
-
-  if ((!isOpenerAllowlisted || openerHasPiracy) && (targetMalv.triggered || targetSuspTld || targetIsSusp)) {
+  if (isExplicitAdRotator) {
     return true;
   }
   return false;
@@ -530,15 +604,28 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const { tabId, url, frameId } = details;
   if (isInternalUrl(url)) return;
 
+  // Step 3.1: Whenever a tab navigates with frameId === 0, DELETE all stored risk state, pop-under flags, and signals for that tabId!
+  if (frameId === 0) {
+    pruneTabRiskState(tabId);
+    pruneTab(tabId);
+  }
+
+  // Step 3.1: If current tab's hostname is in legit_domains.js or isTrustedTopDomain, FORCE score 0, allow, safe
+  if (isSafeAllowlistedOrTopDomain(url)) {
+    const verdict = createSafeAllowVerdict(url);
+    await storeAndEnforce(tabId, verdict, frameId);
+    return;
+  }
+
   if (ENABLE_DEV_ALLOWLIST && (url === 'http://localhost:3000/' || url === 'http://localhost:3000' || url === 'http://localhost:8080/' || url === 'http://localhost:8080')) {
     userOverrideTabs.delete(tabId);
-    const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
+    const verdict = createSafeAllowVerdict(url);
     await storeAndEnforce(tabId, verdict, frameId);
     return;
   }
 
   if (isUserOverridden(tabId, url)) {
-    const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [] };
+    const verdict = createSafeAllowVerdict(url);
     await storeAndEnforce(tabId, verdict, frameId);
     return;
   }
@@ -575,23 +662,39 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   quickVerdict.url = url;
 
   // Sticky High-Water Mark Integration:
-  if (tabState) {
-    const prevMax = tabState.maxRiskScore || 0;
-    if (tabState.isPopunderTab || tabState.maxAction === 'block' || prevMax >= 70) {
-      quickVerdict.score = Math.max(quickVerdict.score, prevMax, 85);
-      quickVerdict.riskScore = quickVerdict.score;
-      quickVerdict.action = 'block';
-      quickVerdict.severity = 'danger';
-      quickVerdict.state = 'danger';
-    } else if (tabState.maxAction === 'warn' || prevMax >= 35) {
-      if (quickVerdict.action !== 'block') {
-        quickVerdict.score = Math.max(quickVerdict.score, prevMax);
-        quickVerdict.riskScore = quickVerdict.score;
-        quickVerdict.action = 'warn';
-        quickVerdict.severity = 'caution';
-        quickVerdict.state = 'caution';
+  // ONLY merge if on the exact same hostname AND quickVerdict has reasons!
+  if (tabState && quickVerdict.reasons && quickVerdict.reasons.length > 0) {
+    try {
+      const prevHost = tabState.url ? new URL(tabState.url).hostname.toLowerCase() : '';
+      const curHost = new URL(url).hostname.toLowerCase();
+      if (prevHost && curHost && prevHost === curHost) {
+        const prevMax = tabState.maxRiskScore || 0;
+        if (tabState.isPopunderTab || tabState.maxAction === 'block' || prevMax >= 70) {
+          quickVerdict.score = Math.max(quickVerdict.score, prevMax, 85);
+          quickVerdict.riskScore = quickVerdict.score;
+          quickVerdict.action = 'block';
+          quickVerdict.severity = 'danger';
+          quickVerdict.state = 'danger';
+        } else if (tabState.maxAction === 'warn' || prevMax >= 35) {
+          if (quickVerdict.action !== 'block') {
+            quickVerdict.score = Math.max(quickVerdict.score, prevMax);
+            quickVerdict.riskScore = quickVerdict.score;
+            quickVerdict.action = 'warn';
+            quickVerdict.severity = 'caution';
+            quickVerdict.state = 'caution';
+          }
+        }
       }
-    }
+    } catch (_) {}
+  }
+
+  // Invariant: zero reasons forces score 0
+  if (!quickVerdict.reasons || quickVerdict.reasons.length === 0) {
+    quickVerdict.score = 0;
+    quickVerdict.riskScore = 0;
+    quickVerdict.action = 'allow';
+    quickVerdict.severity = 'safe';
+    quickVerdict.state = 'safe';
   }
 
   await saveTabRiskState(tabId, {
@@ -659,11 +762,24 @@ chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
 // Navigation Committed Listener (Ensures block overlay renders on fresh page load)
 // ---------------------------------------------------------------------------
 chrome.webNavigation.onCommitted.addListener(async (details) => {
-  const { tabId, frameId } = details;
+  const { tabId, frameId, url } = details;
+  if (frameId === 0) {
+    if (url && isSafeAllowlistedOrTopDomain(url)) {
+      pruneTabRiskState(tabId);
+      const safeVerdict = createSafeAllowVerdict(url);
+      await storeAndEnforce(tabId, safeVerdict, 0);
+      return;
+    }
+  }
   const storageResult = await chrome.storage.session.get(tabId.toString()).catch(() => ({}));
   const verdict = storageResult[tabId.toString()];
   if (verdict && verdict.action === 'block') {
-    storeAndEnforce(tabId, verdict, frameId);
+    if (verdict.url && isSafeAllowlistedOrTopDomain(verdict.url)) {
+      const safeVerdict = createSafeAllowVerdict(verdict.url);
+      storeAndEnforce(tabId, safeVerdict, frameId);
+    } else {
+      storeAndEnforce(tabId, verdict, frameId);
+    }
   }
 });
 
@@ -717,8 +833,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return false;
     }
 
+    if (isSafeAllowlistedOrTopDomain(url)) {
+      const verdict = createSafeAllowVerdict(url);
+      storeAndEnforce(tabId, verdict, frameId);
+      sendResponse({ verdict });
+      return false;
+    }
+
     if (isUserOverridden(tabId, url)) {
-      const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [], url };
+      const verdict = createSafeAllowVerdict(url);
       storeAndEnforce(tabId, verdict, frameId);
       sendResponse({ verdict });
       return false;
@@ -744,17 +867,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       );
       verdict.url = url;
 
-      if (tabState) {
-        const prevMax = tabState.maxRiskScore || 0;
-        if (prevMax > verdict.score || tabState.maxAction === 'block' || tabState.isPopunderTab) {
-          verdict.score = Math.max(verdict.score, prevMax, tabState.isPopunderTab ? 85 : 0);
-          verdict.riskScore = verdict.score;
-          if (tabState.maxAction === 'block' || tabState.isPopunderTab || prevMax >= 70) {
-            verdict.action = 'block';
-            verdict.severity = 'danger';
-            verdict.state = 'danger';
+      if (tabState && verdict.reasons && verdict.reasons.length > 0) {
+        try {
+          const prevHost = tabState.url ? new URL(tabState.url).hostname.toLowerCase() : '';
+          const curHost = new URL(url).hostname.toLowerCase();
+          if (prevHost && curHost && prevHost === curHost) {
+            const prevMax = tabState.maxRiskScore || 0;
+            if (prevMax > verdict.score || tabState.maxAction === 'block' || tabState.isPopunderTab) {
+              verdict.score = Math.max(verdict.score, prevMax, tabState.isPopunderTab ? 85 : 0);
+              verdict.riskScore = verdict.score;
+              if (tabState.maxAction === 'block' || tabState.isPopunderTab || prevMax >= 70) {
+                verdict.action = 'block';
+                verdict.severity = 'danger';
+                verdict.state = 'danger';
+              }
+            }
           }
-        }
+        } catch (_) {}
+      }
+
+      if (!verdict.reasons || verdict.reasons.length === 0) {
+        verdict.score = 0;
+        verdict.riskScore = 0;
+        verdict.action = 'allow';
+        verdict.severity = 'safe';
+        verdict.state = 'safe';
       }
 
       storeAndEnforce(tabId, verdict, frameId);
@@ -784,15 +921,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.action === 'ANALYZE_FULL') {
-    if (isUserOverridden(sender.tab.id, message.url)) {
-      const verdict = { action: 'allow', severity: 'safe', state: 'safe', score: 0, riskScore: 0, reasons: [], signals: [], url: message.url };
-      storeAndEnforce(sender.tab.id, verdict, frameId);
+    const targetTabId = sender.tab ? sender.tab.id : tabId;
+    if (isSafeAllowlistedOrTopDomain(message.url)) {
+      const verdict = createSafeAllowVerdict(message.url);
+      if (targetTabId) storeAndEnforce(targetTabId, verdict, frameId);
       sendResponse({ verdict });
       return false;
     }
-    runFullAnalysis(sender.tab.id, message.url, message.domSignals).then(verdict => {
+    if (targetTabId && isUserOverridden(targetTabId, message.url)) {
+      const verdict = createSafeAllowVerdict(message.url);
+      storeAndEnforce(targetTabId, verdict, frameId);
+      sendResponse({ verdict });
+      return false;
+    }
+    if (!targetTabId) {
+      sendResponse({ verdict: null });
+      return false;
+    }
+    runFullAnalysis(targetTabId, message.url, message.domSignals).then(verdict => {
       if (verdict) {
-        storeAndEnforce(sender.tab.id, verdict, frameId);
+        storeAndEnforce(targetTabId, verdict, frameId);
       }
       sendResponse({ verdict });
     }).catch(() => {
@@ -803,6 +951,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'RUNTIME_THREAT_DETECTED') {
     const targetTabId = tabId || (sender.tab ? sender.tab.id : null);
+    const targetUrl = message.url || (sender.tab ? sender.tab.url : '');
+    // If the domain is an allowlisted / trusted domain (e.g. Google), never trigger runtime threat
+    if (targetUrl && isSafeAllowlistedOrTopDomain(targetUrl)) {
+      sendResponse({ success: false, ignored: true });
+      return false;
+    }
     const threatSignal = message.signal || 'SIG_PHISHING_KIT_WEBHOOK_EXFIL';
     const threatScore = 95;
     const threatVerdict = {

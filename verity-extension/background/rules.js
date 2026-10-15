@@ -617,7 +617,7 @@ export function hasPiracyOrUnverifiedMediaPattern(urlString) {
     return {
       id: 'RULE_PIRACY_MEDIA',
       params: {},
-      score: 85,
+      score: 25,
       reason: t('RULE_PIRACY_MEDIA'),
       triggered: true
     };
@@ -625,7 +625,7 @@ export function hasPiracyOrUnverifiedMediaPattern(urlString) {
     return {
       id: 'RULE_PIRACY_MEDIA',
       params: {},
-      score: 60,
+      score: 20,
       reason: t('RULE_PIRACY_MEDIA'),
       triggered: true
     };
@@ -633,7 +633,7 @@ export function hasPiracyOrUnverifiedMediaPattern(urlString) {
     return {
       id: 'RULE_PIRACY_MEDIA',
       params: {},
-      score: 50,
+      score: 20,
       reason: t('RULE_PIRACY_MEDIA'),
       triggered: true
     };
